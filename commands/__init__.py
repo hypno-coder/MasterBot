@@ -1,1 +1,1 @@
-from .commands import set_main_menu  
+from .commands import set_command_menu  

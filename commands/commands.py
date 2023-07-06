@@ -4,7 +4,7 @@ from lexicon import COMMANDS
 
 
 # Функция для настройки кнопки Menu бота
-async def set_main_menu(bot: Bot):
+async def set_command_menu(bot: Bot) -> None:
     main_menu_commands = [BotCommand(
                                 command=command,
                                 description=description
