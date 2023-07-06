@@ -1,1 +1,1 @@
-from .commands import set_main_menu, delMenuRouter  
+from .commands import set_main_menu  
