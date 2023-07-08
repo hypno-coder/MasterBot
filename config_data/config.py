@@ -4,23 +4,31 @@ from environs import Env
 
 @dataclass
 class DatabaseConfig:
-    database: str         # Название базы данных
-    db_host: str          # URL-адрес базы данных
-    db_user: str          # Username пользователя базы данных
-    db_password: str      # Пароль к базе данных
+    database: str         
+    db_host: str         
+    db_user: str        
+    db_password: str   
 
 
 @dataclass
 class TgBot:
-    token: str            # Токен для доступа к телеграм-боту
-    admin_ids: list[int]  # Список id администраторов бота
+    token: str           
+    subscribe_channel: int
+    channel_link: str
+    admin_ids: list[int] 
 
 
 @dataclass
 class Config:
+    _instance = None
     tg_bot: TgBot
     db: DatabaseConfig
+    
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
 
+        return cls._instance
 
 def load_config(path: str | None) -> Config:
 
@@ -28,6 +36,8 @@ def load_config(path: str | None) -> Config:
     env.read_env(path)
 
     return Config(tg_bot=TgBot(token=env('BOT_TOKEN'),
+                               subscribe_channel=int(env('SUBSCRIBE_CHANNEL')),
+                               channel_link=env('CHANNEL_LINK'),
                                admin_ids=list(map(int, env.list('ADMIN_IDS')))),
                   db=DatabaseConfig(database=env('DATABASE'),
                                     db_host=env('DB_HOST'),

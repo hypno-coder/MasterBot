@@ -1,5 +1,5 @@
 COMMANDS: dict[str, str] = {
-                '/start': 'command_1 desription',
-                '/help': 'command_2 desription',
-                '/delmenu': 'command_3 desription',
+                '/start': 'Начало радботы с ботом',
+                '/help': 'Возможности этого бота',
+                '/delmenu': 'удалить меню из бота',
                 }
