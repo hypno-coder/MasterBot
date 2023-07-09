@@ -1,13 +1,17 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from environs import Env
 
 
 @dataclass
 class DatabaseConfig:
-    database: str         
-    db_host: str         
+    db_name: str         
     db_user: str        
-    db_password: str   
+    db_password: str  
+    db_host: str = field(init=False) 
+
+    def __post_init__(self):
+        self.db_host: str = f"mongodb+srv://{self.db_user}:{self.db_password}@eurocluster.3gyreyv.mongodb.net/{self.db_name}?retryWrites=true&w=majority"
+
 
 
 @dataclass
@@ -22,7 +26,7 @@ class TgBot:
 class Config:
     _instance = None
     tg_bot: TgBot
-    db: DatabaseConfig
+    db: DatabaseConfig 
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -39,7 +43,6 @@ def load_config(path: str | None) -> Config:
                                subscribe_channel=int(env('SUBSCRIBE_CHANNEL')),
                                channel_link=env('CHANNEL_LINK'),
                                admin_ids=list(map(int, env.list('ADMIN_IDS')))),
-                  db=DatabaseConfig(database=env('DATABASE'),
-                                    db_host=env('DB_HOST'),
+                  db=DatabaseConfig(db_name=env('DB_NAME'),
                                     db_user=env('DB_USER'),
                                     db_password=env('DB_PASSWORD')))
