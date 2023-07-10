@@ -1,7 +1,7 @@
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message
-from database import add_user, get_user, update_date_user, get_total_users_count
+from database import User 
 from lexicon import BotText
 from loader import bot, config
 
@@ -15,15 +15,16 @@ class UserSaver(BaseMiddleware):
         event: EventType,
         data: Dict[str, Any]
     ) -> Any:
-        
+
         if event.from_user == None:
             return
 
-        user = await get_user(event.from_user.id)
+        user = User(event.from_user)
+        request_status = await user.get()
 
-        if user == None:
-            result = await add_user(event.from_user) 
-            count = await get_total_users_count()
+        if request_status == None:
+            result = await user.add() 
+            count = await user.total_count()
             if result:
                 for admin_id in config.tg_bot.admin_ids:
                     await bot.send_message(
@@ -33,7 +34,7 @@ class UserSaver(BaseMiddleware):
             return await handler(event, data)
 
         else: 
-            await update_date_user(event.from_user.id, user['last_visit_date'])
+            await user.date_update() 
             return await handler(event, data)
 
         
