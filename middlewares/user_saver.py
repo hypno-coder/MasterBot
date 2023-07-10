@@ -20,9 +20,9 @@ class UserSaver(BaseMiddleware):
             return
 
         user = User(event.from_user)
-        request_status = await user.get()
+        request_status = await user.check()
 
-        if request_status == None:
+        if not request_status:
             result = await user.add() 
             count = await user.total_count()
             if result:

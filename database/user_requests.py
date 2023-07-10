@@ -5,7 +5,6 @@ from lexicon import QueryErrText
 from states import UserStatus
 
 
-# user data querys
 class User:
     now = datetime.now().date()
 
@@ -15,6 +14,22 @@ class User:
         self.reg_date: str = str(self.now)
         self.last_visit_date: str = str(self.now)
         self.status: str = status
+
+    @staticmethod
+    async def get(user_id):
+        try:
+            return await users_db.find_one({"_id": user_id})
+        except Exception:
+            await send_error_message(QueryErrText.FIND_USER.value)
+
+    @staticmethod
+    async def update(user_id, field, data):
+        try:
+            await users_db.update_one(
+                    {"_id": user_id}, 
+                    {"$set": {field: data}})
+        except Exception:
+            await send_error_message(QueryErrText.UPDATE_USER.value)
 
     async def add(self):
         try:
@@ -29,11 +44,13 @@ class User:
         except Exception:
             await send_error_message(QueryErrText.INSERT_USER.value)
             return False
-
-    # TODO сделать метод get одновременно и статическим и через обьект
-    async def get(self):
+    
+    async def check(self):
         try:
-            return await users_db.find_one({"_id": self.user_id})
+            result = await users_db.find_one({"_id": self.user_id})
+            if result == None:
+                return False
+            return True
         except Exception:
             await send_error_message(QueryErrText.FIND_USER.value)
 
@@ -46,10 +63,8 @@ class User:
         except Exception:
             await send_error_message(QueryErrText.UPDATE_USER.value)
 
-
     async def total_count(self):
         try:
             return await users_db.estimated_document_count()
         except Exception:
             await send_error_message(QueryErrText.USERS_COUNT.value)
-
