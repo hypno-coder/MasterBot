@@ -22,12 +22,13 @@ class UserSaver(BaseMiddleware):
         user = await get_user(event.from_user.id)
 
         if user == None:
-            await add_user(event.from_user) 
+            result = await add_user(event.from_user) 
             count = await get_total_users_count()
-            for admin_id in config.tg_bot.admin_ids:
-                await bot.send_message(
-                        chat_id=admin_id, 
-                        text=f"{BotText.user_saver['text1']} - {event.from_user.username} \n{BotText.user_saver['text2']} {count}")
+            if result:
+                for admin_id in config.tg_bot.admin_ids:
+                    await bot.send_message(
+                            chat_id=admin_id, 
+                            text=f"{BotText.user_saver['text1']} - {event.from_user.username} \n{BotText.user_saver['text2']} {count}")
 
             return await handler(event, data)
 
