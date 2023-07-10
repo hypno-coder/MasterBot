@@ -3,7 +3,7 @@ import logging
 
 from handlers import common, main_menu 
 from commands import set_command_menu
-from middlewares import Subscriber
+from middlewares import Subscriber, UserSaver
 from loader import dp, bot 
 
 logger = logging.getLogger(__name__)
@@ -19,6 +19,7 @@ async def main() -> None:
     await set_command_menu(bot)
 
     dp.message.middleware(Subscriber())
+    dp.message.middleware(UserSaver())
     dp.include_router(common.router)
     dp.include_router(main_menu.router)
 
