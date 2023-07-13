@@ -12,8 +12,6 @@ class DatabaseConfig:
     def __post_init__(self):
         self.db_host: str = f"mongodb+srv://{self.db_user}:{self.db_password}@eurocluster.3gyreyv.mongodb.net/{self.db_name}?retryWrites=true&w=majority"
 
-
-
 @dataclass
 class TgBot:
     token: str           
@@ -21,7 +19,6 @@ class TgBot:
     channel_link: str
     admin_ids: list[int] 
     chat_log: int
-
 
 @dataclass
 class Config:

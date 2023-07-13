@@ -1,4 +1,5 @@
 from typing import Callable, Dict, Any, Awaitable
+from aiogram import Dispatcher
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message
 from database import User 
@@ -7,8 +8,7 @@ from loader import bot, config
 
 EventType = Message | CallbackQuery 
 
-
-class UserSaver(BaseMiddleware):
+class UserSaverMiddleware(BaseMiddleware):
     async def __call__(
         self,
         handler: Callable[[EventType, Dict[str, Any]], Awaitable[Any]],
@@ -18,24 +18,30 @@ class UserSaver(BaseMiddleware):
 
         if event.from_user == None:
             return
+        self.user = User(event.from_user)
+        self.username = event.from_user.username
 
-        user = User(event.from_user)
-        request_status = await user.check()
-
-        if not request_status:
-            result = await user.add() 
-            count = await user.total_count()
-            if result:
-                for admin_id in config.tg_bot.admin_ids:
-                    await bot.send_message(
-                            chat_id=admin_id, 
-                            text=f"{BotText.user_saver['text1']} - {event.from_user.username} \n{BotText.user_saver['text2']} {count}")
-
+        result, is_user = await self.user.get_or_create()
+        data['status'] = result['status']
+        
+        if is_user == 'create':
+            await self.send_message()
+            return await handler(event, data)
+        if is_user == 'get': 
+            await self.user.date_update() 
             return await handler(event, data)
 
-        else: 
-            await user.date_update() 
-            return await handler(event, data)
+    async def send_message(self):
+        count = await self.user.total_count()
+        for admin_id in config.tg_bot.admin_ids:
+            await bot.send_message(
+                    chat_id=admin_id, 
+                    text=f"""{BotText.user_saver['text1']} - {self.username} \n
+                    {BotText.user_saver['text2']} {count}""")
+
+
+
+
 
         
 

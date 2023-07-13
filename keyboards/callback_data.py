@@ -5,5 +5,8 @@ class BotCallbackData(Enum):
     Btn2 = 'Callback_Data_Sonnik'
     Btn3 = 'Callback_Data_Taro'
     Btn4 = 'Callback_Data_AffirmDay'
-    Btn5 = 'Callback_Data_BackToMainMenu'
+    Btn5 = 'Callback_Data_Horoskop'
+    Btn6 = 'Callback_Data_MagicBot'
+    Btn7 = 'Callback_Data_MoneyCode'
+    BackMainMenu = 'Callback_Data_BackToMainMenu'
 

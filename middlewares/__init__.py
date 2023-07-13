@@ -1,2 +1,3 @@
-from .subscriber import Subscriber
-from .user_saver import UserSaver
+from .subscriber import SubscriberMiddleware
+from .user_saver import UserSaverMiddleware
+from .throttling import ThrottlingMiddleware

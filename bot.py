@@ -3,7 +3,7 @@ import logging
 
 from handlers import common, main_menu 
 from commands import set_command_menu
-from middlewares import Subscriber, UserSaver
+from middlewares import SubscriberMiddleware, UserSaverMiddleware, ThrottlingMiddleware
 from loader import dp, bot 
 
 logger = logging.getLogger(__name__)
@@ -18,8 +18,9 @@ async def main() -> None:
 
     await set_command_menu(bot)
 
-    dp.message.middleware(Subscriber())
-    dp.message.middleware(UserSaver())
+    dp.message.middleware(ThrottlingMiddleware())
+    dp.message.middleware(SubscriberMiddleware())
+    dp.message.middleware(UserSaverMiddleware())
     dp.include_router(common.router)
     dp.include_router(main_menu.router)
 
@@ -32,6 +33,7 @@ async def main() -> None:
 
     finally:
         await bot.session.close()
+        await dp.storage.close()
 
 
 if __name__ == '__main__':

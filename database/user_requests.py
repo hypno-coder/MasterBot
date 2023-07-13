@@ -1,5 +1,5 @@
-from datetime import datetime, date
-from .connector import users_db 
+from datetime import datetime
+from database.connector import users_db 
 from errors import send_error_message
 from lexicon import QueryErrText
 from states import UserStatus
@@ -11,16 +11,14 @@ class User:
     def __init__(self, user, status: str = UserStatus.FREE.value):
         self.user_id: int = user.id
         self.username: str = user.username
-        self.reg_date: str = str(self.now)
-        self.last_visit_date: str = str(self.now)
+        self.reg_date: str
+        self.last_visit_date: str
         self.status: str = status
 
     @staticmethod
     async def get(user_id):
-        try:
-            return await users_db.find_one({"_id": user_id})
-        except Exception:
-            await send_error_message(QueryErrText.FIND_USER.value)
+        result = await users_db.find_one({"_id": user_id})
+        return result
 
     @staticmethod
     async def update(user_id, field, data):
@@ -30,29 +28,36 @@ class User:
                     {"$set": {field: data}})
         except Exception:
             await send_error_message(QueryErrText.UPDATE_USER.value)
+            raise Exception(QueryErrText.UPDATE_USER.value)
 
     async def add(self):
+        data = {
+                "_id": self.user_id,
+                "username": self.username,
+                "reg_date": str(self.now),
+                "last_visit_date": str(self.now),
+                "status": self.status
+             }
         try:
-            await users_db.insert_one({
-                        "_id": self.user_id,
-                        "username": self.username,
-                        "reg_date": self.reg_date,
-                        "last_visit_date": self.last_visit_date,
-                        "status": self.status
-                    })
-            return True
+            await users_db.insert_one(data)
         except Exception:
             await send_error_message(QueryErrText.INSERT_USER.value)
-            return False
-    
-    async def check(self):
+        finally:
+            return data
+
+    async def get_or_create(self):
         try:
-            result = await users_db.find_one({"_id": self.user_id})
-            if result == None:
-                return False
-            return True
+            result = await self.get(self.user_id)
+            if result != None:
+                self.reg_date = result['reg_date']
+                self.last_visit_date = result['last_visit_date']
+                is_user = 'get'
+                return result, is_user
+            result = await self.add()
+            is_user = 'create'
+            return result, is_user
         except Exception:
-            await send_error_message(QueryErrText.FIND_USER.value)
+            raise Exception('Упал метод get_or_create')
 
     async def date_update(self):
         try:
@@ -62,6 +67,7 @@ class User:
                         {"$set": {"last_visit_date": str(self.now)}})
         except Exception:
             await send_error_message(QueryErrText.UPDATE_USER.value)
+            raise Exception(QueryErrText.UPDATE_USER.value)
 
     async def total_count(self):
         try:

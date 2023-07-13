@@ -8,7 +8,7 @@ from loader import bot, config
 EventType = Message | CallbackQuery 
 
 
-class Subscriber(BaseMiddleware):
+class SubscriberMiddleware(BaseMiddleware):
     async def __call__(
         self,
         handler: Callable[[EventType, Dict[str, Any]], Awaitable[Any]],
