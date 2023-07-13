@@ -2,7 +2,10 @@ from dataclasses import dataclass, field
 
 @dataclass
 class BotHandlerText:
-    free_menu: str = "Главное Меню"        
+    free_menu: str = "Меню бесплатных услуг"        
+    paid_menu: str = "Меню платных услуг"        
+    main_menu_placeholder: str = "Нажмите кнопку"
+    main_menu: str = "Тут вы можете выбрать платные или бесплатные услуги"
     sub_free_menu: str = "Спасибо за подписку на канал! 🎉👏🥳"
     user_saver: dict[str, str] = field(default_factory=dict)
     subscriber: dict[str, str] = field(default_factory=dict)

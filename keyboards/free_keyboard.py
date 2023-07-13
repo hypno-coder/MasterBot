@@ -1,16 +1,14 @@
 from aiogram.types import InlineKeyboardMarkup
 from keyboards.keyboards_generator import create_inline_kb
-from .callback_data import BotCallbackData
+from .callback_data import BotCBData
 
 ROW_COUNT = 2 
 FREE_KEYBOARD_BUTTONS = (
-        BotCallbackData.Btn1.name,
-        BotCallbackData.Btn2.name,
-        BotCallbackData.Btn3.name,
-        BotCallbackData.Btn4.name,
-        BotCallbackData.Btn5.name,
-        BotCallbackData.Btn6.name,
-        BotCallbackData.Btn7.name,
+        BotCBData.Btn2.name,
+        BotCBData.Btn3.name,
+        BotCBData.Btn4.name,
+        BotCBData.Btn5.name,
+        BotCBData.Btn6.name,
     )
 
 

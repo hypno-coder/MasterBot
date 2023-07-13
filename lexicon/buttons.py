@@ -2,14 +2,20 @@ from dataclasses import dataclass
 
 @dataclass
 class BotButtonsText:
-    # FreeMenu
-    Btn1: str = "Янтра"
+    # Free Menu
     Btn2: str = "Сонник"
     Btn3: str = "Таро"
     Btn4: str = "Афирмация дня"
     Btn5: str = "Гороскоп"
     Btn6: str = "Магический Бот"
+    
+    # Paid Menu
+    Btn1: str = "Янтра"
     Btn7: str = "Денежный Код"
+
+    # Main Menu
+    Paid: str = "Функции 💰"
+    Free: str = "Функции 🆓"
 
     # Common Buttons
     BackFreeMenu: str = "Главное Меню"

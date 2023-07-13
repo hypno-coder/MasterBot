@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from lexicon import BotBtnText
-from .callback_data import BotCallbackData 
+from .callback_data import BotCBData 
 
 
 # Функция для формирования инлайн-клавиатуры на лету
@@ -18,7 +18,7 @@ def create_inline_kb(width: int,
         for btn in args:
             buttons.append(InlineKeyboardButton(
                 text=getattr(BotBtnText, btn),
-                callback_data=getattr(BotCallbackData, btn).name
+                callback_data=getattr(BotCBData, btn).name
                 ))
     # Распаковываем список с кнопками в билдер методом row c параметром width
     kb_builder.row(*buttons, width=width)

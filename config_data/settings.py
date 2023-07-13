@@ -3,8 +3,10 @@ from cachetools import TTLCache
 
 # Throtling Settings
 class SpamConfig(Enum):
-    common = 10
-    free_menu = 10
+    main_menu = 2
+    paid_menu = 2
+    free_menu = 4
+    common = 4
 
 def genTrotCash():
     caches: dict[str, TTLCache] = {}
