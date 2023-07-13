@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 @dataclass
 class BotButtonsText:
-    # MainMenu
+    # FreeMenu
     Btn1: str = "Янтра"
     Btn2: str = "Сонник"
     Btn3: str = "Таро"
@@ -12,7 +12,7 @@ class BotButtonsText:
     Btn7: str = "Денежный Код"
 
     # Common Buttons
-    BackMainMenu: str = "Главное Меню"
+    BackFreeMenu: str = "Главное Меню"
 
     # Subscriber Menu
     ChekSub: str = "Проверить подписку 🧙🪄✨"

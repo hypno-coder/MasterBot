@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 
 @dataclass
 class BotHandlerText:
-    main_menu: str = "Главное Меню"        
-    sub_main_menu: str = "Спасибо за подписку на канал! 🎉👏🥳"
+    free_menu: str = "Главное Меню"        
+    sub_free_menu: str = "Спасибо за подписку на канал! 🎉👏🥳"
     user_saver: dict[str, str] = field(default_factory=dict)
     subscriber: dict[str, str] = field(default_factory=dict)
 
