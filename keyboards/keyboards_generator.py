@@ -18,7 +18,7 @@ def create_inline_kb(width: int,
         for btn in args:
             buttons.append(InlineKeyboardButton(
                 text=getattr(BotBtnText, btn),
-                callback_data=getattr(BotCBData, btn).name
+                callback_data=getattr(BotCBData, btn).value
                 ))
     # Распаковываем список с кнопками в билдер методом row c параметром width
     kb_builder.row(*buttons, width=width)

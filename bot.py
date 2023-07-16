@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from handlers import common, free_menu, main_menu, paid_menu 
+from handlers import common, free_menu, main_menu, paid_menu, sonnik  
 from commands import set_command_menu
 from middlewares import SubscriberMiddleware, UserSaverMiddleware, ThrottlingMiddleware 
 from loader import dp, bot 
@@ -24,6 +24,7 @@ async def main() -> None:
     dp.include_router(main_menu.router)
     dp.include_router(paid_menu.router)
     dp.include_router(free_menu.router)
+    dp.include_router(sonnik.router)
     dp.include_router(common.router)
 
     try:

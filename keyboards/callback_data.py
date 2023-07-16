@@ -9,5 +9,5 @@ class BotCBData(Enum):
     Btn6 = 'Callback_Data_MagicBot'
     Btn7 = 'Callback_Data_MoneyCode'
     BackFreeMenu = 'Callback_Data_BackToFreeMenu'
-    BackPaidMenu = 'Callback_Data_BackToFreeMenu'
+    BackPaidMenu = 'Callback_Data_BackToPaidMenu'
 

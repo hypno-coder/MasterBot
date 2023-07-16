@@ -1,5 +1,4 @@
 from typing import Callable, Dict, Any, Awaitable
-from aiogram import Dispatcher
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message
 from database import User 
@@ -20,16 +19,19 @@ class UserSaverMiddleware(BaseMiddleware):
             return
         self.user = User(event.from_user)
         self.username = event.from_user.username
+        try:
+            result, is_user = await self.user.get_or_create()
+            data['status'] = result['status']
+            
+            if is_user == 'create':
+                await self.send_message()
+            if is_user == 'get': 
+                await self.user.date_update() 
+        except Exception as ex:
+            print(ex) 
+        finally:
+            return await handler(event, data)
 
-        result, is_user = await self.user.get_or_create()
-        data['status'] = result['status']
-        
-        if is_user == 'create':
-            await self.send_message()
-            return await handler(event, data)
-        if is_user == 'get': 
-            await self.user.date_update() 
-            return await handler(event, data)
 
     async def send_message(self):
         count = await self.user.total_count()

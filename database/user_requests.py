@@ -57,6 +57,7 @@ class User:
             is_user = 'create'
             return result, is_user
         except Exception:
+            await send_error_message('Упал метод get_or_create')
             raise Exception('Упал метод get_or_create')
 
     async def date_update(self):

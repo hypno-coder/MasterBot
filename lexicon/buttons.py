@@ -14,8 +14,8 @@ class BotButtonsText:
     Btn7: str = "Денежный Код"
 
     # Main Menu
-    Paid: str = "Функции 💰"
-    Free: str = "Функции 🆓"
+    Paid: str = "Платные 💰"
+    Free: str = "Бесплатные 🆓"
 
     # Common Buttons
     BackFreeMenu: str = "Главное Меню"

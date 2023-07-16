@@ -17,7 +17,7 @@ async def start_paid_menu(message: Message) -> None:
 
     await remove_message(chat_id=message.chat.id, message_id=reply.message_id)
 
-@router.callback_query(lambda a: a.data == BotCBData.BackPaidMenu.name, flags=flags)
+@router.callback_query(lambda a: a.data == BotCBData.BackPaidMenu.value, flags=flags)
 async def back_to_paid_menu(callback: CallbackQuery) -> None:
     if callback.message == None:
         return
