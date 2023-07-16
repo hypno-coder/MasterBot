@@ -7,10 +7,10 @@ from lexicon import BotText, BotBtnText
 from utils import remove_message
 from config_data import SpamConfig
 
-router: Router = Router()
+menuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.free_menu.name}
 
-@router.message(Text(text=BotBtnText.Free), flags=flags)
+@menuRouter.message(Text(text=BotBtnText.Free), flags=flags)
 async def start_free_menu(message: Message) -> None:
     reply = await message.answer(text=BotText.free_menu,
                          reply_markup=free_menu_keyboard)
@@ -18,7 +18,7 @@ async def start_free_menu(message: Message) -> None:
 
 
 
-@router.callback_query(lambda a: a.data == BotCBData.BackFreeMenu.value, flags=flags)
+@menuRouter.callback_query(lambda a: a.data == BotCBData.BackFreeMenu.value, flags=flags)
 async def back_to_free_menu(callback: CallbackQuery) -> None:
     if callback.message == None:
         return

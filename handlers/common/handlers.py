@@ -7,15 +7,15 @@ from aiogram.types import Message
 from lexicon import BotText
 from config_data import SpamConfig  
 
-router: Router = Router()
+handlersRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.common.name}
 
-@router.message(Command(commands='delmenu'), flags=flags)
+@handlersRouter.message(Command(commands='delmenu'), flags=flags)
 async def remove_command_menu(message: Message, bot: Bot):
     await bot.delete_my_commands()
     await message.answer(text=BotText.remove_command_menu)
 
-@router.message(Command(commands='cancel'), ~StateFilter(default_state))
+@handlersRouter.message(Command(commands='cancel'), ~StateFilter(default_state))
 async def cancel_state(message: Message, state: FSMContext):
     await message.answer(text=BotText.cancel_state)
     await state.clear()

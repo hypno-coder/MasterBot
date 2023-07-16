@@ -1,27 +1,26 @@
 from aiogram import Router
-from aiogram import Bot, Dispatcher
-from aiogram.filters import CommandStart, Text
-from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
+from aiogram import Bot 
+from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 
-from keyboards import main_menu_keyboard, BotCBData 
-from lexicon import BotText, BotBtnText
+from keyboards import BotCBData 
+from lexicon import BotText 
 from config_data import SpamConfig
 from services import Sonnik, SonnikTypeArticle, SonnikTypeResponse 
 from errors import send_error_message
 from states import FSMSonnik
 
-router: Router = Router()
+sonnikRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.sonnik_conv.name}
 
-@router.callback_query(lambda a: a.data == BotCBData.Btn2.value, flags=flags)
+@sonnikRouter.callback_query(lambda a: a.data == BotCBData.Btn2.value, flags=flags)
 async def start_sonnik_conv(callback: CallbackQuery, bot: Bot, state: FSMContext) -> None:
     await state.set_state(FSMSonnik.enter_image)
     user_id = callback.from_user.id
     await callback.answer()
     await bot.send_message(chat_id=user_id, text=BotText.sonnik_conv['start'])
 
-@router.message(FSMSonnik.enter_image)
+@sonnikRouter.message(FSMSonnik.enter_image)
 async def process_name(message: Message, state: FSMContext) -> None:
     await message.answer(text='Ожидайте, идет проработка...')
     await state.clear()

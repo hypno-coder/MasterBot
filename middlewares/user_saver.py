@@ -5,18 +5,17 @@ from database import User
 from lexicon import BotText
 from loader import bot, config
 
-EventType = Message | CallbackQuery 
-
 class UserSaverMiddleware(BaseMiddleware):
     async def __call__(
         self,
-        handler: Callable[[EventType, Dict[str, Any]], Awaitable[Any]],
-        event: EventType,
+        handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
+        event: Message,
         data: Dict[str, Any]
     ) -> Any:
+        
+        if event.from_user == None or event.text != '/start':
+            return await handler(event, data)
 
-        if event.from_user == None:
-            return
         self.user = User(event.from_user)
         self.username = event.from_user.username
         try:

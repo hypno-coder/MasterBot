@@ -1,9 +1,9 @@
 import asyncio
 import logging
 
-from handlers import common, free_menu, main_menu, paid_menu, sonnik  
+from handlers import mainRouter
 from commands import set_command_menu
-from middlewares import SubscriberMiddleware, UserSaverMiddleware, ThrottlingMiddleware 
+from middlewares import ThrottlingMiddleware, UserSaverMiddleware, SubscriberMiddleware 
 from loader import dp, bot 
 
 logger = logging.getLogger(__name__)
@@ -16,23 +16,23 @@ async def main() -> None:
 
     logger.info('Starting bot')
 
+    # registr  commands
     await set_command_menu(bot)
 
+    # register middleware
     dp.message.middleware(ThrottlingMiddleware())
     dp.message.middleware(SubscriberMiddleware())
     dp.message.middleware(UserSaverMiddleware())
-    dp.include_router(main_menu.router)
-    dp.include_router(paid_menu.router)
-    dp.include_router(free_menu.router)
-    dp.include_router(sonnik.router)
-    dp.include_router(common.router)
+
+    # register handlers
+    dp.include_router(mainRouter)
 
     try:
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)
 
-    except Exception as err:
-        logging.error(f"Ошибка: {err}")
+    except Exception as ex:
+        logging.error(f"Ошибка: {ex}")
 
     finally:
         await bot.session.close()
