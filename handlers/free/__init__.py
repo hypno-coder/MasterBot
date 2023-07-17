@@ -1,5 +1,5 @@
 from aiogram import Router
-from .menu_handlers import menuRouter 
+from .menu import menuRouter 
 from .sonnik import sonnikRouter
 
 # folder root router

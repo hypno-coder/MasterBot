@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 class BotHandlerText:
     free_menu: str = "Меню бесплатных услуг"        
     paid_menu: str = "Меню платных услуг"        
-    main_menu_placeholder: str = "Нажмите кнопку"
+    menu_placeholder: str = "Нажмите кнопку"
     main_menu: str = "Тут вы можете выбрать платные или бесплатные услуги"
     sub_free_menu: str = "Спасибо за подписку на канал! 🎉👏🥳"
     remove_command_menu: str = 'Кнопка "Menu" удалена 🗑'

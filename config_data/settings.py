@@ -6,7 +6,9 @@ class SpamConfig(Enum):
     # menu
     main_menu = 2
     paid_menu = 2
-    free_menu = 4
+    free_menu = 2
+    jantra_menu = 2
+    code_menu = 2
 
     #conversations
     sonnik_conv = 2

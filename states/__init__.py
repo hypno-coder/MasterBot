@@ -1,2 +1,2 @@
 from .permissions import UserStatus
-from .states import FSMSonnik
+from .states import FSMSonnik, FSMCode

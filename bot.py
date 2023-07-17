@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from handlers import mainRouter
+from handlers.paid.code.handlers import codeRouter
 from commands import set_command_menu
 from middlewares import ThrottlingMiddleware, UserSaverMiddleware, SubscriberMiddleware 
 from loader import dp, bot 
@@ -25,7 +26,8 @@ async def main() -> None:
     dp.message.middleware(SubscriberMiddleware())
 
     # register handlers
-    dp.include_router(mainRouter)
+    # dp.include_router(mainRouter)
+    dp.include_router(codeRouter)
 
     try:
         await bot.delete_webhook(drop_pending_updates=True)
