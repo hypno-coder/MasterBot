@@ -6,7 +6,7 @@ from .callback_data import BotCBData
 
 
 __code_button: InlineKeyboardButton = InlineKeyboardButton(
-            text='Приобрести Кoд',
+            text='Расчитать Финкод',
             callback_data='Huyak_Cod'
             )
 

@@ -22,8 +22,8 @@ async def main() -> None:
 
     # register middleware
     dp.message.middleware(ThrottlingMiddleware())
-    dp.message.middleware(UserSaverMiddleware())
-    dp.message.middleware(SubscriberMiddleware())
+    # dp.message.middleware(UserSaverMiddleware())
+    # dp.message.middleware(SubscriberMiddleware())
 
     # register handlers
     # dp.include_router(mainRouter)
