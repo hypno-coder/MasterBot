@@ -34,9 +34,11 @@ async def process_name(message: Message, state: FSMContext) -> None:
     if error != None:
         await send_error_message(error)
         await message.answer(text='Сонник пока не работает, попробуйте позже')
+
     data: list[SonnikTypeArticle] = response["data"]
     for chapter in data:
         await message.answer(text=chapter['text'])
+
 
 
 @sonnikRouter.message(FSMSonnik.enter_image)
