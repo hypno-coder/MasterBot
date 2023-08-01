@@ -5,6 +5,7 @@ from typing import Any
 class BotButtonsText:
     # Free Menu
     Btn2: str = "Сонник"
+    Btn2_1: str = "Попробовать еще"
     Btn3: str = "Таро"
     Btn4: str = "Афирмация дня"
     Btn5: str = "Гороскоп"

@@ -1,17 +1,18 @@
-from typing import TypedDict, Optional
+from typing import TypedDict
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.by import By
 
-import time
 
 class SonnikTypeArticle(TypedDict):
     title: str
     text : str
 
+
 class SonnikTypeResponse(TypedDict):
     data: list[SonnikTypeArticle]
     error: str | None
+
 
 class Sonnik:
     __time_to_wait: int = 2
