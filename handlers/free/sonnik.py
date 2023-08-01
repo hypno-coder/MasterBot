@@ -1,6 +1,7 @@
+import re
 from aiogram import Router
 from aiogram import Bot 
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message 
 from aiogram.fsm.context import FSMContext
 
 from keyboards import BotCBData 
@@ -20,7 +21,7 @@ async def start_sonnik_conv(callback: CallbackQuery, bot: Bot, state: FSMContext
     await callback.answer()
     await bot.send_message(chat_id=user_id, text=BotText.sonnik_conv['start'])
 
-@sonnikRouter.message(FSMSonnik.enter_image)
+@sonnikRouter.message(lambda a: bool(re.match(r'^[А-Яа-я]+$', a.text)) ,FSMSonnik.enter_image)
 async def process_name(message: Message, state: FSMContext) -> None:
     await message.answer(text='Ожидайте, идет проработка...')
     await state.clear()
@@ -28,13 +29,19 @@ async def process_name(message: Message, state: FSMContext) -> None:
     if message.text == None:
         return
     text_image: str = message.text
-    response: SonnikTypeResponse = sonnik.interpret(text_image)
-    error_status: bool = response["error"]
-    if error_status:
-        await send_error_message('упал парсинг сонника')
+    response: SonnikTypeResponse = sonnik.interpret(text_image.strip())
+    error: str | None = response["error"]
+    if error != None:
+        await send_error_message(error)
         await message.answer(text='Сонник пока не работает, попробуйте позже')
     data: list[SonnikTypeArticle] = response["data"]
     for chapter in data:
         await message.answer(text=chapter['text'])
+
+
+@sonnikRouter.message(FSMSonnik.enter_image)
+async def text_filter(message: Message):
+    await message.answer(text='Нужно писать в сooбщении только ОДНО слово кирилицей без каких либо других символов или цифр')
+
 
 

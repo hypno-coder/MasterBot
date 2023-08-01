@@ -1,58 +1,48 @@
-from typing import TypedDict
+from typing import TypedDict, Optional
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.by import By
 
+import time
+
 class SonnikTypeArticle(TypedDict):
     title: str
-    type : str
     text : str
 
 class SonnikTypeResponse(TypedDict):
     data: list[SonnikTypeArticle]
-    error: bool
+    error: str | None
 
 class Sonnik:
-    def __init__(self):
-        self.__time_to_wait: int = 2
-        self.__count_result = 2
-        self.__is_error = False
-        self.__url: str = 'https://horo.mail.ru/sonnik/'
-        self.__xpath_button: str = "//button[contains(@class, 'button') and contains(@class, 'button_nowrap') and contains(@class, 'button_color_project')]"
-        self.__xpath_search_by_urls: str = "//div[contains(@class, 'newsitem') and contains(@class, 'newsitem_vertical') and contains(@class, 'newsitem_special') and contains(@class, 'newsitem_border_bottom') and contains(@class, 'js-pgng_item')]"
-        self.__xpath_text: str = "//div[contains(@class, 'article__item') and contains(@class, 'article__item_alignment_left') and contains(@class, 'article__item_html')]" 
+    __time_to_wait: int = 2
+    __count_result: int = 2
+    __url: str = 'https://horo.mail.ru/sonnik/'
+    __xpath_button: str = "//button[contains(@class, 'button') and contains(@class, 'button_nowrap') and contains(@class, 'button_color_project')]"
+    __xpath_search_by_urls: str = "//div[contains(@class, 'newsitem') and contains(@class, 'newsitem_vertical') and contains(@class, 'newsitem_special') and contains(@class, 'newsitem_border_bottom') and contains(@class, 'js-pgng_item')]"
+    __xpath_text: str = "//div[contains(@class, 'article__item') and contains(@class, 'article__item_alignment_left') and contains(@class, 'article__item_html')]" 
 
     def interpret(self, dream_text_image: str) -> SonnikTypeResponse:
         self.__dream_text_image: str = dream_text_image
         options_chrome = webdriver.ChromeOptions()
         options_chrome.add_argument('--headless')
-        return self.__page_parsing(options_chrome)
+        return self.__parsing_page(options_chrome)
         
-    def __page_parsing(self, options) -> SonnikTypeResponse:
-        data = []
-        current_downloads: int = 0 
-        max_download_count: int = 2
+    def __parsing_page(self, options) -> SonnikTypeResponse:
+        data: list[SonnikTypeArticle] = []
 
-        while True:
-            try:
-               self.__browser = webdriver.Chrome(options=options) 
-               self.__page_load(self.__url)
-               self.__enter_text_image()
-               self.__push_button()
-               data: list[SonnikTypeArticle] = self.__get_data()
-            except Exception as ex:
-                if current_downloads < max_download_count:
-                    current_downloads += 1
-                    self.__browser.quit()
-                    continue
-                else:
-                    print(f"Ошибка парсинга \n {ex}")
-                    self.__is_error = True
-                    self.__browser.quit()
-                    return {"data": data, "error": self.__is_error}
-            else:
-                self.__browser.quit()
-                return {"data": data, "error": self.__is_error}
+        try:
+            self.__browser = webdriver.Chrome(options=options) 
+            self.__page_load(self.__url)
+            self.__enter_text_image()
+            self.__push_button()
+            data: list[SonnikTypeArticle] = self.__get_data()
+            self.__browser.quit()
+        except Exception as ex:
+            print(f'Упал класс Sonnik, ошибка: {ex}')
+            return {"data": data, "error": f'Упал класс Sonnik, ошибка: {ex}'}
+
+        else:
+            return {"data": data, "error": None}
 
     def __page_load(self, url) -> None:
         self.__browser.get(url)
@@ -68,39 +58,56 @@ class Sonnik:
         button.click()
 
     def __get_data(self) -> list[SonnikTypeArticle]:
-        result: list[SonnikTypeArticle] = []
+        data: list[SonnikTypeArticle] = []
         self.__browser.implicitly_wait(self.__time_to_wait)
-        articles: list[dict[str, str]] = self.__get_article_urls()
+        articles: list[dict[str, str]] | None = self.__get_article_urls()
+
+        if articles == None:
+            result: SonnikTypeArticle = self.__parsing_article()
+            data.append(result)
+            return data
+
         for article in articles:
             self.__page_load(article["url"])
-            title: str = self.__browser.find_element(By.TAG_NAME, "h1").text
-            article_text: str = self.__browser.find_element(By.XPATH, self.__xpath_text).text
-            data: SonnikTypeArticle = {
-                    "type" : article["type"],
-                    "title": title,
-                    "text" : article_text,
-                    }
-            result.append(data)
+            result: SonnikTypeArticle = self.__parsing_article()
+            data.append(result)
             self.__browser.back()
 
-        return result
+        return data
+    
+    def __parsing_article(self) -> SonnikTypeArticle:
+        title: str = self.__browser.find_element(By.TAG_NAME, "h1").text
+        article_text: str = self.__browser.find_element(By.XPATH, self.__xpath_text).text
 
-    def __get_article_urls(self) -> list[dict[str, str]]:
+        article: SonnikTypeArticle = {
+                "title": title,
+                "text" : article_text,
+                }
+        return article
+
+    def __get_article_urls(self) -> list[dict[str, str]] | None:
         links: list[dict[str, str]] = []
         self.__browser.implicitly_wait(self.__time_to_wait)
         elements: list[WebElement] = self.__browser.find_elements(By.XPATH, self.__xpath_search_by_urls )
-        for element in elements[:self.__count_result]:
-            url: str | None = element.find_element(By.TAG_NAME, "a").get_attribute('href')
-            type: str | None = element.find_element(By.CLASS_NAME, "newsitem__param").text
-            if isinstance(url, str):
-                data: dict = {"url": url, "type": type}
-                links.append(data)
-            else:
-                print('Парсинг не смог собрать ссылки')
 
-        return links 
+        if elements != []:
+            for element in elements[:self.__count_result]:
+                result: str | None = self.__parsing_urls(element)
+                if result == None:
+                    continue
+                links.append({'url': result})
 
+        return None if links == [] else links
+
+    def __parsing_urls(self, webElement) -> str | None:
+        url: str | None =  webElement.find_element(By.TAG_NAME, "a").get_attribute('href')
+        if url == None :
+            return None
+        return url
 
 if '__main__' == __name__:
     sonnik = Sonnik()
-    sonnik.interpret('Лошадь')
+    result = sonnik.interpret('лошадь')
+    result = sonnik.interpret('лосось')
+    result = sonnik.interpret(';sdlkf')
+    print(result)
