@@ -1,3 +1,4 @@
+import time
 from aiogram import Router
 from aiogram.filters import Text
 from aiogram.types import Message, CallbackQuery 
@@ -14,6 +15,7 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.free_menu.name}
 async def start_free_menu(message: Message) -> None:
     reply = await message.answer(text=BotText.free_menu,
                          reply_markup=free_menu_keyboard)
+    await message.delete()
     await remove_message(chat_id=message.chat.id, message_id=reply.message_id)
 
 

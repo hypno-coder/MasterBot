@@ -17,6 +17,7 @@ class SonnikTypeResponse(TypedDict):
 class Sonnik:
     __time_to_wait: int = 2
     __count_result: int = 2
+    __max_length: int = 4000
     __url: str = 'https://horo.mail.ru/sonnik/'
     __xpath_button: str = "//button[contains(@class, 'button') and contains(@class, 'button_nowrap') and contains(@class, 'button_color_project')]"
     __xpath_search_by_urls: str = "//div[contains(@class, 'newsitem') and contains(@class, 'newsitem_vertical') and contains(@class, 'newsitem_special') and contains(@class, 'newsitem_border_bottom') and contains(@class, 'js-pgng_item')]"
@@ -82,9 +83,25 @@ class Sonnik:
 
         article: SonnikTypeArticle = {
                 "title": title,
-                "text" : article_text,
+                "text" : self.__truncate_text(article_text),
                 }
         return article
+
+    def __truncate_text(self, text) -> str:
+        if len(text) <= self.__max_length:
+            return text
+    
+        sentences: str = text.split('.')
+        truncated_text: str = ''
+
+        for sentence in sentences:
+            if len(truncated_text) + len(sentence) + 1 <= self.__max_length:
+                truncated_text += sentence + '.'
+            else:
+                break
+        
+        return truncated_text
+
 
     def __get_article_urls(self) -> list[dict[str, str]] | None:
         links: list[dict[str, str]] = []
@@ -105,10 +122,3 @@ class Sonnik:
         if url == None :
             return None
         return url
-
-if '__main__' == __name__:
-    sonnik = Sonnik()
-    result = sonnik.interpret('лошадь')
-    result = sonnik.interpret('лосось')
-    result = sonnik.interpret(';sdlkf')
-    print(result)

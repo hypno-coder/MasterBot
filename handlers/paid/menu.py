@@ -15,6 +15,7 @@ async def start_paid_menu(message: Message) -> None:
     reply = await message.answer(text=BotText.paid_menu,
                          reply_markup=paid_menu_keyboard)
 
+    await message.delete()
     await remove_message(chat_id=message.chat.id, message_id=reply.message_id)
 
 @menuRouter.callback_query(lambda a: a.data == BotCBData.BackPaidMenu.value, flags=flags)
