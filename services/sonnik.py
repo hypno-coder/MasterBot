@@ -119,6 +119,4 @@ class Sonnik:
 
     def __parsing_urls(self, webElement) -> str | None:
         url: str | None =  webElement.find_element(By.TAG_NAME, "a").get_attribute('href')
-        if url == None :
-            return None
         return url

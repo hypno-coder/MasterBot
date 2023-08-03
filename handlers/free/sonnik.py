@@ -31,14 +31,14 @@ async def start_sonnik_conv(callback: CallbackQuery, bot: Bot, state: FSMContext
 
 
 @sonnikRouter.message(lambda a: bool(re.match(r'^[А-Яа-я]+$', a.text)) ,FSMSonnik.enter_image)
-async def process_name(message: Message, bot: Bot, state: FSMContext) -> None:
+async def process_image(message: Message, bot: Bot, state: FSMContext) -> None:
 
     context = await state.get_data()
     chat_id = context['sonnik_chat_id']
     message_id = context['sonnik_message_id']
     await bot.edit_message_text(
             chat_id=chat_id, message_id=message_id, 
-            text='Загрузка может занять до 5 минут ...')
+            text=BotText.sonnik_download_message)
 
     await state.clear()
     sonnik = Sonnik()
@@ -54,13 +54,13 @@ async def process_name(message: Message, bot: Bot, state: FSMContext) -> None:
 
     if error != None:
         await send_error_message(error)
-        await message.answer(text='Сонник пока не работает, попробуйте позже')
+        await message.answer(text=BotText.sonnik_error_message)
         return
 
     for chapter in data:
         await message.answer(text=f"__{chapter['title']}__ \n\n {chapter['text']}")
 
-    await message.answer(text="Попробовать другой образ сна :", reply_markup=sonnik_repeat_keyboard)
+    await message.answer(text=BotText.sonnik_try_another_image, reply_markup=sonnik_repeat_keyboard)
 
 
 
@@ -70,8 +70,7 @@ async def text_filter(message: Message, bot: Bot):
     await message.delete()
     data = await bot.send_message(
             chat_id=id,
-            text=f'"{message.text}" - не подходит. Нужно писать в сooбщении только ОДНО' + ' ' + 
-            'слово кирилицей без каких либо других символов или цифр. Введите образ сна заново:')
+            text=f"{message.text} {BotText.sonnik_wrong_message}")
     await remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=10)
     
 
