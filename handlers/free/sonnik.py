@@ -7,7 +7,8 @@ from aiogram.fsm.context import FSMContext
 from keyboards import BotCBData 
 from lexicon import BotText 
 from config_data import SpamConfig
-from services import Sonnik, SonnikTypeArticle, SonnikTypeResponse 
+from services import SonnikTypeArticle, SonnikTypeResponse
+from external_services.celery import run_sonnik_interpretation 
 from states import FSMSonnik
 from keyboards import sonnik_repeat_keyboard
 from errors import send_error_message
@@ -41,12 +42,11 @@ async def process_image(message: Message, bot: Bot, state: FSMContext) -> None:
             text=BotText.sonnik_download_message)
 
     await state.clear()
-    sonnik = Sonnik()
     if message.text == None:
         return
 
     text_image: str = message.text
-    response: SonnikTypeResponse = sonnik.interpret(text_image.strip())
+    response: SonnikTypeResponse = run_sonnik_interpretation(text_image.strip())
     error: str | None = response["error"]
     data: list[SonnikTypeArticle] = response["data"]
 
