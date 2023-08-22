@@ -63,6 +63,8 @@ async def order(message: Message, bot: Bot, state: FSMContext):
                                    label="Денежный код",
                                    amount=39000,
                                    )])
+                               
+    await state.set_state(FSMCode.checkout_query_code)
 
 
 @codeRouter.message(FSMCode.payment_code, flags=flags)
@@ -71,18 +73,17 @@ async def wrong_input(message: Message) -> None:
         return
     await message.reply("Не правильный формат даты")
 
-@codeRouter.pre_checkout_query()
+@codeRouter.pre_checkout_query(FSMCode.checkout_query_code, flags=flags)
 async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+    print('pre_checkout_query')
 
-# @codeRouter.message(F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT))
-@codeRouter.message()
+@codeRouter.message(F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT))
 async def successful_payment(message: Message, bot: Bot, state: FSMContext) -> None:
     import pprint
     pprint.pprint(message.__doc__)
     data = await state.get_data()
-    if message.text == None:
-        return 
-    result: str = await calculate_code(data['date'])
-    await message.answer(result)
+    # result: str = await calculate_code(data['date'])
+    await message.answer('сработало')
+    # await message.answer(result)
 

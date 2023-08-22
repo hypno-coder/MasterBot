@@ -26,8 +26,8 @@ async def main() -> None:
     # dp.message.middleware(SubscriberMiddleware())
 
     # register handlers
-    dp.include_router(mainRouter)
-    # dp.include_router(codeRouter)
+    # dp.include_router(mainRouter)
+    dp.include_router(codeRouter)
 
     try:
         await bot.delete_webhook(drop_pending_updates=True)
