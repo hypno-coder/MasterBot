@@ -14,7 +14,7 @@ class BotButtonsText:
     # Paid Menu
     Btn1: str = "Янтра"
     Btn11: str = "Создать Янтру"
-    Btn7: str = "Денежный Код"
+    MoneyCodeBtn1: str = "Денежный Код"
     BackPaidMenu: str = "Назад"
 
     # Main Menu

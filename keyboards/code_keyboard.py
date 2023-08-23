@@ -7,7 +7,7 @@ from .callback_data import BotCBData
 
 __code_button: InlineKeyboardButton = InlineKeyboardButton(
             text='Расчитать Финкод',
-            callback_data='Huyak_Cod'
+            callback_data=BotCBData.MoneyCodeBtn1.value
             )
 
 code_menu_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(

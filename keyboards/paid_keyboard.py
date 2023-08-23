@@ -5,7 +5,7 @@ from .callback_data import BotCBData
 ROW_COUNT = 1 
 PAID_KEYBOARD_BUTTONS = (
         BotCBData.Btn1.name,
-        BotCBData.Btn7.name,
+        BotCBData.MoneyCodeBtn1.name,
     )
 
 
