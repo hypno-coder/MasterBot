@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 @dataclass
 class BotHandlerText:
     # Common
+    fio: str = "Укажите ФИО в формате: \"Фамилия Имя Очество\""
     free_menu: str = "Меню бесплатных услуг"        
     paid_menu: str = "Меню платных услуг"        
     menu_placeholder: str = "Нажмите кнопку"
@@ -22,14 +23,24 @@ class BotHandlerText:
     sonnik_wrong_message: str = ' - не подходит. Нужно писать в сooбщении только ОДНО' + ' ' + 'слово кирилицей без каких либо других символов или цифр. Введите образ сна заново:'
 
     # Money code
-    title_money_code: str = "Денежный код"
-    description_money_code: str = "Покупка услуги 'Денежный код'"
-    fio_for_money_code: str = "Укажите ФИО в формате: \"Фамилия Имя Очество\""
-    payload_money_code: str = "Payment money code"
-    only_thursday: str = "Денежный Код можно заказать только в Четверг"
-    date_for_money_code: str = "Укажите дату рождения в формате 06.08.1987"
-    your_code: str = "Ваш код: "
+    money_code_title: str = "Денежный код"
+    money_code_payment_description: str = "Покупка услуги 'Денежный код'"
+    money_code_payload: str = "Payment money code"
+    money_code_only_thursday: str = "Денежный Код можно заказать только в Четверг"
+    money_code_date: str = "Укажите дату рождения в формате 06.08.1987"
+    money_code_for_you: str = "Ваш код: "
+    money_code_document: str = "Это инструкция которая поможет вам разобраться как использовать Денежный Код"
+    money_code_description = "Приветствую! Это бот Мастерская Желаний, со временем здесь появится Сонник, Гороскоп, Афирмации, Янтра. А сейчас здесь можно расчитать свой финкод. Для этого нажми кнопку \"Расчитать Финкод\"."
 
+    # Money calendar
+    money_calendar_title: str = "Денежный Календарь"
+    money_calendar_payment_description: str = "Покупка услуги Денежный Календарь"
+    money_calendar_payload: str = "Payment money calendar"
+    money_calendar_for_you: str = "Ваши денежные дни на текущий месяц: \n"
+    money_calendar_description: str = "Приветствую! Это бот Мастерская Желаний, со временем здесь появится Сонник, Гороскоп, Афирмации, Янтра. А сейчас здесь можно расчитать свой финкод. Для этого нажми кнопку \"Расчитать Финкод\"."
+    # Utils
+    remove_message_error: str = "Попытка удаления уже отредактированooго сooбщения:"
+    message_delay: str = "Вы стали в очередь, ждите ответ в течении: "
 
     def __post_init__(self):
         self.subscriber: dict[str, str] = {
@@ -40,10 +51,6 @@ class BotHandlerText:
                 "text2": "Всего пользователей: "
                 }
         self.sonnik_conv: dict[str, str] = {
-                "start":"Опишите ОДНИМ словом образ вашего сна :"}
-
- 
+                "start":"Опишите ОДНИМ словом образ вашего сна: "}
 
 BotText = BotHandlerText()
-
-

@@ -6,3 +6,4 @@ from .callback_data import BotCBData
 from .subscriber import sub_common_keyboard, sub_inline_keyboard
 from .code_keyboard  import code_menu_keyboard 
 from .sonnik_repeat_keyboard import sonnik_repeat_keyboard
+from .calendar_keyboard import calendar_menu_keyboard

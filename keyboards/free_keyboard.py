@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup
 from keyboards.keyboards_generator import create_inline_kb
 from .callback_data import BotCBData
 
-ROW_COUNT = 2 
+MENU_ITEMS_PER_ROW = 2
 FREE_KEYBOARD_BUTTONS = (
         BotCBData.Btn2.name,
         BotCBData.Btn3.name,
@@ -13,4 +13,4 @@ FREE_KEYBOARD_BUTTONS = (
 
 
 
-free_menu_keyboard: InlineKeyboardMarkup = create_inline_kb(ROW_COUNT, *FREE_KEYBOARD_BUTTONS)    
+free_menu_keyboard: InlineKeyboardMarkup = create_inline_kb(MENU_ITEMS_PER_ROW, *FREE_KEYBOARD_BUTTONS)    

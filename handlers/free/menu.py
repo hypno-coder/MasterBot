@@ -1,4 +1,3 @@
-import time
 from aiogram import Router
 from aiogram.filters import Text
 from aiogram.types import Message, CallbackQuery 
@@ -20,7 +19,7 @@ async def start_free_menu(message: Message) -> None:
 
 
 
-@menuRouter.callback_query(lambda a: a.data == BotCBData.BackMainMenu.value, flags=flags)
+@menuRouter.callback_query(lambda a: a.data == BotCBData.BackToMainMenu.value, flags=flags)
 async def back_to_free_menu(callback: CallbackQuery) -> None:
     if callback.message == None:
         return

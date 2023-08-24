@@ -12,10 +12,19 @@ class BotButtonsText:
     Btn6: str = "Магический Бот"
     
     # Paid Menu
-    Btn1: str = "Янтра"
-    Btn11: str = "Создать Янтру"
+    YantraBtn1: str = "Янтра"
     MoneyCodeBtn1: str = "Денежный Код"
-    BackPaidMenu: str = "Назад"
+    MoneyCalendarBtn1: str = "Денежный Календарь"
+    BackToPaidMenu: str = "Назад"
+
+    # Menu MoneyCode
+    MoneyCodeBtn2="Расчитать Финкод"
+
+    # Menu MoneyCalendar
+    MoneyCalendarBtn2="Расчитать Денежный Календарь"
+
+    # Menu Yantra
+    YantraBtn2: str = "Создать Янтру"
 
     # Main Menu
     Paid: str = "Платные 💰"

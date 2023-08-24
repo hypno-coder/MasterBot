@@ -6,12 +6,12 @@ from .callback_data import BotCBData
 
 jantra_menu_keyboard = [
         InlineKeyboardButton(
-            text=BotBtnText.Btn11,
-            callback_data=BotCBData.Btn11.value
+            text=BotBtnText.YantraBtn2,
+            callback_data=BotCBData.YantraBtn2.value
             ),
         InlineKeyboardButton(
-            text=BotBtnText.BackPaidMenu,
-            callback_data=BotCBData.BackPaidMenu.value
+            text=BotBtnText.BackToPaidMenu,
+            callback_data=BotCBData.BackToPaidMenu.value
             )
 
         ]
