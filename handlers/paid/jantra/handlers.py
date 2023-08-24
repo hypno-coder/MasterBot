@@ -2,90 +2,84 @@ from typing import cast
 from aiogram import Router, Bot, F
 from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
 from aiogram.fsm.context import FSMContext
-from aiogram.types.input_file import FSInputFile
+from aiogram.types.input_file import BufferedInputFile 
 
-from keyboards import code_menu_keyboard 
 from loader import payment
 from staticfiles import FilePath
 from keyboards import BotCBData
 from lexicon import BotText 
 from config_data import SpamConfig
-from states import FSMCode
-from filters import DateFilter, DayFilter
-from services import calculate_code
+from states import FSMJantra
+from filters import DateFilter 
+from services import Jantra 
 from utils import send_message_with_delay
 
 jantraHandlerRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.code_menu.name}
 
-@jantraHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCodeBtn1.value, flags=flags)
-async def start_code_conversation(callback: CallbackQuery, state: FSMContext):
-    if callback.message == None:
-        return
-    await callback.message.edit_text(text=BotText.money_code_description, reply_markup=code_menu_keyboard)
-    await state.set_state(FSMCode.enter_full_name)
-
-@jantraHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCodeBtn2.value, FSMCode.enter_full_name, DayFilter(is_day=True), flags=flags)
+@jantraHandlerRouter.callback_query(
+        lambda a: a.data == BotCBData.JantraBtn2.value, flags=flags)
 async def eter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     message = cast(CallbackQuery, callback.message)
     await message.answer(
             text=BotText.fio) 
-    await state.set_state(FSMCode.enter_date)
-@jantraHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCodeBtn2.value, flags=flags)
-async def day_except(callback: CallbackQuery, state: FSMContext) -> None:
-    message = cast(CallbackQuery, callback.message)
-    await message.answer(
-            text=BotText.money_code_only_thursday)
-    await state.clear()
+    await state.set_state(FSMJantra.enter_date)
 
-@jantraHandlerRouter.message(FSMCode.enter_date, flags=flags)
-async def eter_date(message: Message, state: FSMContext) -> None:
+@jantraHandlerRouter.message(FSMJantra.enter_date, flags=flags)
+async def enter_date(message: Message, state: FSMContext) -> None:
     await message.answer(
             text=BotText.money_code_date)
-    await state.set_state(FSMCode.payment_code)
+    await state.set_state(FSMJantra.payment)
 
-@jantraHandlerRouter.message(DateFilter(is_date=True), FSMCode.payment_code, flags=flags)
+@jantraHandlerRouter.message(DateFilter(is_date=True), FSMJantra.payment, flags=flags)
 async def order(message: Message, bot: Bot, state: FSMContext):
-    await state.set_data({"date": message.text})
+    if message.from_user == None:
+        return
+
+    user_id = message.from_user.id
+    await state.set_data({f"date-{user_id}": message.text})
     await bot.send_invoice( 
                            chat_id=message.chat.id,
-                           title=BotText.money_code_title,
-                           description=BotText.money_code_payment_description,
-                           payload=BotText.money_code_payload,
+                           title=BotText.jantra_title,
+                           description=BotText.jantra_payment_description,
+                           payload=BotText.jantra_payload,
                            provider_token=payment.yoomoney.token,
                            currency=payment.currency,
                            prices=[
                                LabeledPrice(
-                                   label=BotText.money_code_title,
-                                   amount=int(str(payment.price.money_code) + '00'),
+                                   label=BotText.jantra_title,
+                                   amount=int(str(payment.price.jantra) + '00'),
                                    )])
                                
-    await state.set_state(FSMCode.checkout_query_code)
+    await state.set_state(FSMJantra.checkout_query)
 
-@jantraHandlerRouter.message(FSMCode.payment_code, flags=flags)
+@jantraHandlerRouter.message(FSMJantra.payment, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return
+
     await message.reply(BotText.invalid_format_date)
 
-@jantraHandlerRouter.pre_checkout_query(FSMCode.checkout_query_code, flags=flags)
+@jantraHandlerRouter.pre_checkout_query(FSMJantra.checkout_query, flags=flags)
 async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, state: FSMContext):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
-    await state.set_state(FSMCode.successful_payment)
+    await state.set_state(FSMJantra.successful_payment)
 
 @jantraHandlerRouter.message(
-        F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT), FSMCode.successful_payment, flags=flags)
+        F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT), FSMJantra.successful_payment, flags=flags)
 async def successful_payment(message: Message, state: FSMContext) -> None:
+    if message.from_user == None:
+        return
+
+    user_id = message.from_user.id
     chat_id = message.chat.id
     data = await state.get_data() 
-    result: str = await calculate_code(data['date']) 
-    document = FSInputFile(FilePath.money_code_pdf.value)
-    video = FSInputFile(FilePath.money_code_video.value)
-    await state.clear()
+    date: str = data[f"date-{user_id}"] 
+    image, number = Jantra.create(date)
+    input_image = BufferedInputFile(image, 'jantra.png')
+
     await send_message_with_delay(
             chat_id, 
             100, 200, 
-            text=BotText.money_code_for_you+result,
-            video=video, 
-            document=document, 
-            document_caption=BotText.money_code_document)
+            text=BotText.jantra_lucky_number+str(number), image=input_image)
+    

@@ -6,22 +6,17 @@ from aiogram.filters import BaseFilter
 
 class DateFilter(BaseFilter):
     key: str = 'is_date'
-    thursday: int = 3
     
     def __init__(self, is_date):
         self.is_date = is_date
 
     async def __call__(self, message: Message):
-        if message.text == None or self.is_day_today():
+        if message.text == None:
             return False
 
         try:
             datetime.strptime(message.text, "%d.%m.%Y")
             return True
-        except ValueError:
+        except Exception as ex:
+            print(ex)
             return False
-
-    def is_day_today(self):
-        today = datetime.today()
-        return today.weekday() == self.thursday
-

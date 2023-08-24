@@ -26,7 +26,7 @@ async def start_code_conversation(callback: CallbackQuery, state: FSMContext):
     await state.set_state(FSMCode.enter_full_name)
 
 @codeHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCodeBtn2.value, FSMCode.enter_full_name, DayFilter(is_day=True), flags=flags)
-async def eter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
+async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     message = cast(CallbackQuery, callback.message)
     await message.answer(
             text=BotText.fio) 
@@ -39,7 +39,7 @@ async def day_except(callback: CallbackQuery, state: FSMContext) -> None:
     await state.clear()
 
 @codeHandlerRouter.message(FSMCode.enter_date, flags=flags)
-async def eter_date(message: Message, state: FSMContext) -> None:
+async def enter_date(message: Message, state: FSMContext) -> None:
     await message.answer(
             text=BotText.money_code_date)
     await state.set_state(FSMCode.payment_code)

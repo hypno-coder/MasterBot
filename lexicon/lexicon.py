@@ -24,7 +24,7 @@ class BotHandlerText:
 
     # Money code
     money_code_title: str = "Денежный код"
-    money_code_payment_description: str = "Покупка услуги 'Денежный код'"
+    money_code_payment_description: str = "Покупка услуги: 'Денежный код'"
     money_code_payload: str = "Payment money code"
     money_code_only_thursday: str = "Денежный Код можно заказать только в Четверг"
     money_code_date: str = "Укажите дату рождения в формате 06.08.1987"
@@ -34,10 +34,17 @@ class BotHandlerText:
 
     # Money calendar
     money_calendar_title: str = "Денежный Календарь"
-    money_calendar_payment_description: str = "Покупка услуги Денежный Календарь"
+    money_calendar_payment_description: str = "Покупка услуги: Денежный Календарь"
     money_calendar_payload: str = "Payment money calendar"
     money_calendar_for_you: str = "Ваши денежные дни на текущий месяц: \n"
     money_calendar_description: str = "Приветствую! Это бот Мастерская Желаний, со временем здесь появится Сонник, Гороскоп, Афирмации, Янтра. А сейчас здесь можно расчитать свой финкод. Для этого нажми кнопку \"Расчитать Финкод\"."
+
+    # Jantra
+    jantra_title: str = "Янтра"
+    jantra_payment_description: str = "Покупка услуги: Янтра"
+    jantra_payload: str = "Payment money Jantra"
+    jantra_lucky_number: str = "Ваш код удачи: "
+
     # Utils
     remove_message_error: str = "Попытка удаления уже отредактированooго сooбщения:"
     message_delay: str = "Вы стали в очередь, ждите ответ в течении: "

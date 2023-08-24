@@ -27,14 +27,14 @@ async def start_calendar_conversation(callback: CallbackQuery, state: FSMContext
 @calendarHandlerRouter.callback_query(
         lambda a: a.data == BotCBData.MoneyCalendarBtn2.value, 
         FSMCalendar.enter_full_name, flags=flags)
-async def eter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
+async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     message = cast(CallbackQuery, callback.message)
     await message.answer(
             text=BotText.fio)
     await state.set_state(FSMCalendar.enter_date)
 
 @calendarHandlerRouter.message(FSMCalendar.enter_date, flags=flags)
-async def eter_date(message: Message, state: FSMContext) -> None:
+async def enter_date(message: Message, state: FSMContext) -> None:
     await message.answer(
             text=BotText.money_code_date)
     await state.set_state(FSMCalendar.payment_calendar)

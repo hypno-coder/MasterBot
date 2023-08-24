@@ -1,6 +1,6 @@
 import random
 from asyncio import sleep 
-from aiogram.types.input_file import FSInputFile
+from aiogram.types.input_file import FSInputFile, BufferedInputFile
 
 from loader import bot
 from lexicon import BotText
@@ -17,6 +17,7 @@ async def send_message_with_delay(
         min_delay: int = 1800, 
         max_delay: int = 4800,
         text: str | None = None,
+        image: BufferedInputFile | None = None,
         video: FSInputFile | None = None,
         document:  FSInputFile | None = None,
         document_caption: str = ''
@@ -34,3 +35,5 @@ async def send_message_with_delay(
         await bot.send_video(chat_id, video)
     if document != None:
         await bot.send_document(chat_id, document, caption=document_caption)
+    if image != None:
+        await bot.send_photo(chat_id, image)

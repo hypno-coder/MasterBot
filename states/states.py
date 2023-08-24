@@ -19,4 +19,12 @@ class FSMCalendar(StatesGroup):
     calculate_calendare_date = State()
     checkout_query_code = State()
     successful_payment = State()
+    
+class FSMJantra(StatesGroup):
+    enter_date = State()
+    payment = State()
+    calculate_data = State()
+    checkout_query = State()
+    successful_payment = State()
+
 
