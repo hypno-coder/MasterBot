@@ -4,7 +4,7 @@ from .callback_data import BotCBData
 
 MENU_ITEMS_PER_ROW = 1
 PAID_KEYBOARD_BUTTONS = (
-        BotCBData.YantraBtn1.name,
+        BotCBData.JantraBtn1.name,
         BotCBData.MoneyCodeBtn1.name,
         BotCBData.MoneyCalendarBtn1.name,
     )

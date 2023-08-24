@@ -1,9 +1,9 @@
 from enum import Enum
 
 class BotCBData(Enum):
-    # Yantra
-    YantraBtn1 = 'Callback_Data_Yantra'
-    YantraBtn2 = 'Callback_Data_Create_Yantra'
+    # Jantra
+    JantraBtn1 = 'Callback_Data_Jantra'
+    JantraBtn2 = 'Callback_Data_Create_Jantra'
     
     # MoneyCode
     MoneyCodeBtn1 = 'Callback_Data_MoneyCode'

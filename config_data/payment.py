@@ -4,7 +4,7 @@ from environs import Env
 @dataclass
 class Price:
     money_code: int
-    yantra: int
+    jantra: int
     money_calendar: int
 
 @dataclass
@@ -28,6 +28,6 @@ def load_payment(path: str | None) -> Payment:
                    currency=env('CURRENCY'), 
                    price=Price(
                        money_code=env('MONEY_CODE'), 
-                       yantra=env('YANTRA'),
+                       jantra=env('JANTRA'),
                        money_calendar=env('MONEY_CALENDAR'))
                    )

@@ -11,22 +11,24 @@ from config_data import SpamConfig
 jantraMenuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.jantra_menu.name}
 
-@jantraMenuRouter.callback_query(lambda a: a.data == BotCBData.YantraBtn1.value, flags=flags)
-async def yantra_menu(callback: CallbackQuery, state: FSMContext) -> None:
-    print('menu')
+@jantraMenuRouter.callback_query(lambda a: a.data == BotCBData.JantraBtn1.value, flags=flags)
+async def jantra_menu(callback: CallbackQuery, state: FSMContext) -> None:
+    if callback.message == None:
+        return
+
     page = 1
     await state.set_data(data={"page": page})
     text = jantra_text[page]
-    if callback.message == None:
-        return
+
     resp: Message | bool = await callback.message.edit_text(
         text=text,
         reply_markup=create_pagination_keyboard(
                     'backward',
                     f'{page}/{len(jantra_text)}',
                     'forward'))
-    # if isinstance(resp, Message):
-        # await remove_message(message_id=resp.message_id, chat_id=callback.message.chat.id, delay=2000)
+
+    if isinstance(resp, Message):
+        await remove_message(message_id=resp.message_id, chat_id=callback.message.chat.id, delay=2000)
 
 @jantraMenuRouter.callback_query(Text(text='forward'))
 async def process_forward_press(callback: CallbackQuery, state: FSMContext):
