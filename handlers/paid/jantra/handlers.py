@@ -77,7 +77,6 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     date: str = data[f"date-{user_id}"] 
     image, number = Jantra.create(date)
     input_image = BufferedInputFile(image, 'jantra.png')
-
     await send_message_with_delay(
             chat_id, 
             100, 200, 
