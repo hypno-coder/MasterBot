@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 @dataclass
 class BotHandlerText:
     # Common
+    help: str = "Для того, что бы прервать диалог с ботом введите /cancel. \nДля того, что бы начать заново введите /start."
     fio: str = "Укажите ФИО в формате: \"Фамилия Имя Очество\""
     free_menu: str = "Меню бесплатных услуг"        
     paid_menu: str = "Меню платных услуг"        

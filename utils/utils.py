@@ -1,6 +1,5 @@
 import random
 from asyncio import sleep
-from aiogram.types import message_id 
 from aiogram.types.input_file import FSInputFile, BufferedInputFile
 
 from loader import bot
@@ -30,6 +29,7 @@ async def send_message_with_delay(
     delay = random.randint(min_delay, max_delay)
     await sleep(delay)
     await bot.delete_message(chat_id=reply.chat.id, message_id=reply.message_id)
+
     if text != None:
         await bot.send_message(chat_id, text)
     if video != None:
