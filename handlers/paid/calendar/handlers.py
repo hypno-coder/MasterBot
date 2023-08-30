@@ -37,9 +37,9 @@ async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
 async def enter_date(message: Message, state: FSMContext) -> None:
     await message.answer(
             text=BotText.money_code_date)
-    await state.set_state(FSMCalendar.payment_calendar)
+    await state.set_state(FSMCalendar.payment)
 
-@calendarHandlerRouter.message(FSMCalendar.payment_calendar, flags=flags)
+@calendarHandlerRouter.message(FSMCalendar.payment, flags=flags)
 async def order(message: Message, bot: Bot, state: FSMContext):
     await bot.send_invoice( 
                            chat_id=message.chat.id,
@@ -54,9 +54,9 @@ async def order(message: Message, bot: Bot, state: FSMContext):
                                    amount=int(str(payment.price.money_calendar) + '00'),
                                    )])
                                
-    await state.set_state(FSMCalendar.checkout_query_code)
+    await state.set_state(FSMCalendar.checkout_query)
 
-@calendarHandlerRouter.pre_checkout_query(FSMCalendar.checkout_query_code, flags=flags)
+@calendarHandlerRouter.pre_checkout_query(FSMCalendar.checkout_query, flags=flags)
 async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, state: FSMContext):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
     await state.set_state(FSMCalendar.successful_payment)

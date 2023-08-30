@@ -14,6 +14,8 @@ class BotHandlerText:
     invalid_format_date: str = "Не правильный формат даты"
     user_saver: dict[str, str] = field(default_factory=dict)
     subscriber: dict[str, str] = field(default_factory=dict)
+    legal_age: str = "Ваш возраст должен быть от 13 до 80 лет"
+
 
     # Sonnik
     sonnik_conv: dict[str, str] = field(default_factory=dict)

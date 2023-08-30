@@ -11,7 +11,7 @@ from keyboards import BotCBData
 from lexicon import BotText 
 from config_data import SpamConfig
 from states import FSMCode
-from filters import DateFilter, DayFilter
+from filters import DateFilter, DayFilter, AgeFilter
 from services import calculate_code
 from utils import send_message_with_delay
 
@@ -42,9 +42,9 @@ async def day_except(callback: CallbackQuery, state: FSMContext) -> None:
 async def enter_date(message: Message, state: FSMContext) -> None:
     await message.answer(
             text=BotText.money_code_date)
-    await state.set_state(FSMCode.payment_code)
+    await state.set_state(FSMCode.payment)
 
-@codeHandlerRouter.message(DateFilter(is_date=True), FSMCode.payment_code, flags=flags)
+@codeHandlerRouter.message(DateFilter(is_date=True), AgeFilter(is_age=True), FSMCode.payment, flags=flags)
 async def order(message: Message, bot: Bot, state: FSMContext):
     await state.set_data({"date": message.text})
     await bot.send_invoice( 
@@ -60,15 +60,22 @@ async def order(message: Message, bot: Bot, state: FSMContext):
                                    amount=int(str(payment.price.money_code) + '00'),
                                    )])
                                
-    await state.set_state(FSMCode.checkout_query_code)
+    await state.set_state(FSMCode.checkout_query)
 
-@codeHandlerRouter.message(FSMCode.payment_code, flags=flags)
+@codeHandlerRouter.message(DateFilter(is_date=True), FSMCode.payment, flags=flags)
+async def wrong_age(message: Message) -> None:
+    if message.text == None:
+        return
+
+    await message.reply(BotText.legal_age)
+
+@codeHandlerRouter.message(FSMCode.payment, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return
     await message.reply(BotText.invalid_format_date)
 
-@codeHandlerRouter.pre_checkout_query(FSMCode.checkout_query_code, flags=flags)
+@codeHandlerRouter.pre_checkout_query(FSMCode.checkout_query, flags=flags)
 async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, state: FSMContext):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
     await state.set_state(FSMCode.successful_payment)

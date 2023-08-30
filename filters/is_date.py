@@ -1,5 +1,3 @@
-# import re
-from typing import cast
 from datetime import datetime
 from aiogram.types import Message 
 from aiogram.filters import BaseFilter

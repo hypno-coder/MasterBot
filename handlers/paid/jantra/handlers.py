@@ -9,7 +9,7 @@ from keyboards import BotCBData
 from lexicon import BotText 
 from config_data import SpamConfig
 from states import FSMJantra
-from filters import DateFilter 
+from filters import DateFilter, AgeFilter
 from services import Jantra 
 from utils import send_message_with_delay
 
@@ -30,7 +30,7 @@ async def enter_date(message: Message, state: FSMContext) -> None:
             text=BotText.money_code_date)
     await state.set_state(FSMJantra.payment)
 
-@jantraHandlerRouter.message(DateFilter(is_date=True), FSMJantra.payment, flags=flags)
+@jantraHandlerRouter.message(DateFilter(is_date=True), AgeFilter(is_age=True), FSMJantra.payment, flags=flags)
 async def order(message: Message, bot: Bot, state: FSMContext):
     if message.from_user == None:
         return
@@ -51,6 +51,13 @@ async def order(message: Message, bot: Bot, state: FSMContext):
                                    )])
                                
     await state.set_state(FSMJantra.checkout_query)
+
+@jantraHandlerRouter.message(DateFilter(is_date=True), FSMJantra.payment, flags=flags)
+async def wrong_age(message: Message) -> None:
+    if message.text == None:
+        return
+
+    await message.reply(BotText.legal_age)
 
 @jantraHandlerRouter.message(FSMJantra.payment, flags=flags)
 async def wrong_input(message: Message) -> None:
@@ -80,4 +87,3 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
             chat_id, 
             100, 200, 
             text=BotText.jantra_lucky_number+str(number), image=input_image)
-    

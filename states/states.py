@@ -7,17 +7,17 @@ class FSMSonnik(StatesGroup):
 class FSMCode(StatesGroup):
     enter_full_name = State()
     enter_date = State()
-    payment_code = State()
-    calculate_code = State()
-    checkout_query_code = State()
+    payment = State()
+    calculate = State()
+    checkout_query = State()
     successful_payment = State()
 
 class FSMCalendar(StatesGroup):
     enter_full_name = State()
     enter_date = State()
-    payment_calendar = State()
-    calculate_calendare_date = State()
-    checkout_query_code = State()
+    payment = State()
+    calculate = State()
+    checkout_query = State()
     successful_payment = State()
     
 class FSMJantra(StatesGroup):
