@@ -12,7 +12,8 @@ menuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.paid_menu.name}
 
 @menuRouter.message(CommandStart(), flags=flags)
-async def start_paid_menu(message: Message) -> None:
+async def start_paid_menu(message: Message, state: FSMContext) -> None:
+    await state.clear()
     reply = await message.answer(text=BotText.paid_menu,
                          reply_markup=paid_menu_keyboard)
 

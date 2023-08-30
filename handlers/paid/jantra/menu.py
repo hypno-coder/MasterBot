@@ -28,7 +28,7 @@ async def jantra_menu(callback: CallbackQuery, state: FSMContext) -> None:
                     'forward'))
 
     if isinstance(resp, Message):
-        await remove_message(message_id=resp.message_id, chat_id=callback.message.chat.id, delay=2000)
+        await remove_message(message_id=resp.message_id, chat_id=callback.message.chat.id, delay=3000)
 
 @jantraMenuRouter.callback_query(Text(text='forward'))
 async def process_forward_press(callback: CallbackQuery, state: FSMContext):

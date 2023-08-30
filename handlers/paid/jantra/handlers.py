@@ -5,7 +5,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types.input_file import BufferedInputFile 
 
 from loader import payment
-from staticfiles import FilePath
 from keyboards import BotCBData
 from lexicon import BotText 
 from config_data import SpamConfig
