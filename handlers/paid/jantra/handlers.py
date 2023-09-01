@@ -124,6 +124,7 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     input_image = BufferedInputFile(image, 'jantra.png')
     await send_message_with_delay(
             chat_id, 
+            BotText.jantra_title,
             100, 200, 
-            name=BotText.jantra_title,
-            text=BotText.jantra_lucky_number+str(number), image=input_image)
+            text=f'<b>{BotText.jantra_lucky_number+str(number)}</b>', 
+            image=input_image)

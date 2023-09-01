@@ -116,7 +116,7 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
 
     await send_message_with_delay(
             chat_id, 
+            BotText.money_calendar_title,
             100, 200, 
             greeting=fio,
-            name=BotText.money_calendar_title,
             text=BotText.money_calendar_for_you + result)

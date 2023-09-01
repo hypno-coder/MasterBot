@@ -14,9 +14,9 @@ async def remove_message(chat_id: int, message_id: int, delay: int = 60) -> None
 
 async def send_message_with_delay(
         chat_id: int, 
+        name: str,
         min_delay: int = 1800, 
         max_delay: int = 4800,
-        name: str | None = None,
         greeting: str | None = None,
         text: str | None = None,
         image: BufferedInputFile | None = None,
@@ -27,14 +27,13 @@ async def send_message_with_delay(
 
     reply = await bot.send_message(
             chat_id,
-            text=BotText.message_delay + f'{round(min_delay/60)}-{round(max_delay/60)} минут')
+            text=BotText.pay_success + name + BotText.message_delay + f'{round(min_delay/60)}-{round(max_delay/60)} минут')
+
     delay = random.randint(min_delay, max_delay)
     await sleep(delay)
     await bot.delete_message(chat_id=reply.chat.id, message_id=reply.message_id)
     await bot.send_message(chat_id=chat_id, text='====================')
 
-    if name != None:
-        await bot.send_message(chat_id=chat_id, text=f'<b>{name}</b>')
     if greeting != None:
         await bot.send_message(chat_id=chat_id, text=f'<i>{greeting}</i>')
     if image != None:

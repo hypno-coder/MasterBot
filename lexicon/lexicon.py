@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 class BotHandlerText:
     # Common
     help: str = "Для того, что бы прервать диалог с ботом введите /cancel. \nДля того, что бы начать заново введите /start."
-    enter_fio: str = "Укажите ФИО в формате: \"Фамилия Имя Очество\""
+    enter_fio: str = "Укажите ФИО в формате: \"Фамилия Имя Очество\" (Фамилия которая дана при рождении)"
     free_menu: str = "Меню бесплатных услуг"        
     paid_menu: str = "Меню платных услуг"        
     menu_placeholder: str = "Нажмите кнопку"
@@ -54,7 +54,8 @@ class BotHandlerText:
 
     # Utils
     remove_message_error: str = "Попытка удаления уже отредактированooго сooбщения:"
-    message_delay: str = "Вы стали в очередь, ждите ответ в течении: "
+    pay_success: str = "Оплата прошла успешно "
+    message_delay: str = " отправлю в течении: "
 
     def __post_init__(self):
         self.subscriber: dict[str, str] = {
