@@ -16,6 +16,7 @@ async def send_message_with_delay(
         chat_id: int, 
         min_delay: int = 1800, 
         max_delay: int = 4800,
+        name: str | None = None,
         text: str | None = None,
         image: BufferedInputFile | None = None,
         video: FSInputFile | None = None,
@@ -29,12 +30,17 @@ async def send_message_with_delay(
     delay = random.randint(min_delay, max_delay)
     await sleep(delay)
     await bot.delete_message(chat_id=reply.chat.id, message_id=reply.message_id)
+    await bot.send_message(chat_id=chat_id, text='====================')
 
+    if name != None:
+        await bot.send_message(chat_id=chat_id, text=f'<b>{name}</b>')
+    if image != None:
+        await bot.send_photo(chat_id, image)
     if text != None:
         await bot.send_message(chat_id, text)
     if video != None:
         await bot.send_video(chat_id, video)
     if document != None:
         await bot.send_document(chat_id, document, caption=document_caption)
-    if image != None:
-        await bot.send_photo(chat_id, image)
+    
+    await bot.send_message(chat_id=chat_id, text='====================')

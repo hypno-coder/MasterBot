@@ -93,6 +93,7 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
             chat_id, 
             100, 200, 
             text=BotText.money_code_for_you+result,
+            name=BotText.money_code_title,
             video=video, 
             document=document, 
             document_caption=BotText.money_code_document)

@@ -2,6 +2,7 @@ from aiogram import Router
 from aiogram.types import CallbackQuery, Message 
 from aiogram.filters import Text 
 from aiogram.fsm.context import FSMContext 
+from aiogram import html
 
 from keyboards import create_pagination_keyboard, BotCBData
 from lexicon import jantra_text
@@ -27,8 +28,6 @@ async def jantra_menu(callback: CallbackQuery, state: FSMContext) -> None:
                     f'{page}/{len(jantra_text)}',
                     'forward'))
 
-    if isinstance(resp, Message):
-        await remove_message(message_id=resp.message_id, chat_id=callback.message.chat.id, delay=3000)
 
 @jantraMenuRouter.callback_query(Text(text='forward'))
 async def process_forward_press(callback: CallbackQuery, state: FSMContext):

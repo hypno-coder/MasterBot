@@ -68,4 +68,8 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     chat_id = message.chat.id
     numbers = get_calendar_dates()
     result = ''.join(str(num) for num in numbers)
-    await send_message_with_delay(chat_id, 100, 200, text=BotText.money_calendar_for_you + result)
+    await send_message_with_delay(
+            chat_id, 
+            100, 200, 
+            name=BotText.money_calendar_title,
+            text=BotText.money_calendar_for_you + result)

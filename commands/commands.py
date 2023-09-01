@@ -3,7 +3,6 @@ from aiogram.types import BotCommand
 from lexicon import COMMANDS
 
 
-# Функция для настройки кнопки Menu бота
 async def set_command_menu(bot: Bot) -> None:
     menu_commands = [BotCommand(
                                 command=command,

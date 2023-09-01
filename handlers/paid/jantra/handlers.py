@@ -36,7 +36,7 @@ async def order(message: Message, bot: Bot, state: FSMContext):
         return
 
     user_id = message.from_user.id
-    await state.set_data({f"date-{user_id}": message.text})
+    await state.set_data({f"date_{user_id}": message.text})
     await bot.send_invoice( 
                            chat_id=message.chat.id,
                            title=BotText.jantra_title,
@@ -80,10 +80,11 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     user_id = message.from_user.id
     chat_id = message.chat.id
     data = await state.get_data() 
-    date: str = data[f"date-{user_id}"] 
+    date: str = data[f"date_{user_id}"] 
     image, number = Jantra.create(date)
     input_image = BufferedInputFile(image, 'jantra.png')
     await send_message_with_delay(
             chat_id, 
             100, 200, 
+            name=BotText.jantra_title,
             text=BotText.jantra_lucky_number+str(number), image=input_image)
