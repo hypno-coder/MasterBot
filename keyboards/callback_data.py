@@ -4,14 +4,20 @@ class BotCBData(Enum):
     # Jantra
     JantraBtn1 = 'Callback_Data_Jantra'
     JantraBtn2 = 'Callback_Data_Create_Jantra'
+    JantraBtn3 = 'Callback_Data_Confirm_Data_Jantra'
+    JantraBtn4 = 'Callback_Data_Fix_Data_Jantra'
     
     # MoneyCode
-    MoneyCodeBtn1 = 'Callback_Data_MoneyCode'
-    MoneyCodeBtn2 = 'Callback_Data_Calculate_MoneyCode'
+    MoneyCodeBtn1 = 'Callback_Data_Money_Code'
+    MoneyCodeBtn2 = 'Callback_Data_Calculate_Money_Code'
+    MoneyCodeBtn3 = 'Callback_Data_Confirm_Data_Code'
+    MoneyCodeBtn4 = 'Callback_Data_Fix_Data_Code'
 
     # MoneyCalendar
-    MoneyCalendarBtn1 = 'Callback_Data_MoneyCalendar'
-    MoneyCalendarBtn2 = 'Callback_Data_Calculate_MoneyCalendar'
+    MoneyCalendarBtn1 = 'Callback_Data_Money_Calendar'
+    MoneyCalendarBtn2 = 'Callback_Data_Calculate_Money_Calendar'
+    MoneyCalendarBtn3 = 'Callback_Data_Confirm_Data_Calendar'
+    MoneyCalendarBtn4 = 'Callback_Data_Fix_Data_Calendar'
 
     # Common
     Btn2 = 'Callback_Data_Sonnik'

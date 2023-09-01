@@ -19,12 +19,19 @@ class BotButtonsText:
 
     # Menu MoneyCode
     MoneyCodeBtn2="Расчитать Финкод"
+    MoneyCodeBtn3="Подтвердить данные"
+    MoneyCodeBtn4="Исправить данные"
 
     # Menu MoneyCalendar
     MoneyCalendarBtn2="Расчитать Денежный Календарь"
+    MoneyCalendarBtn3="Подтвердить данные"
+    MoneyCalendarBtn4="Исправить данные"
+
 
     # Menu Jantra
     JantraBtn2: str = "Создать Янтру"
+    JantraBtn3="Подтвердить данные"
+    JantraBtn4="Исправить данные"
 
     # Main Menu
     Paid: str = "Платные 💰"

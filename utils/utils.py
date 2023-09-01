@@ -17,6 +17,7 @@ async def send_message_with_delay(
         min_delay: int = 1800, 
         max_delay: int = 4800,
         name: str | None = None,
+        greeting: str | None = None,
         text: str | None = None,
         image: BufferedInputFile | None = None,
         video: FSInputFile | None = None,
@@ -34,6 +35,8 @@ async def send_message_with_delay(
 
     if name != None:
         await bot.send_message(chat_id=chat_id, text=f'<b>{name}</b>')
+    if greeting != None:
+        await bot.send_message(chat_id=chat_id, text=f'<i>{greeting}</i>')
     if image != None:
         await bot.send_photo(chat_id, image)
     if text != None:

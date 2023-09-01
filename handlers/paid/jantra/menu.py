@@ -2,11 +2,9 @@ from aiogram import Router
 from aiogram.types import CallbackQuery, Message 
 from aiogram.filters import Text 
 from aiogram.fsm.context import FSMContext 
-from aiogram import html
 
 from keyboards import create_pagination_keyboard, BotCBData
 from lexicon import jantra_text
-from utils import remove_message
 from config_data import SpamConfig
 
 jantraMenuRouter: Router = Router()
@@ -21,7 +19,7 @@ async def jantra_menu(callback: CallbackQuery, state: FSMContext) -> None:
     await state.set_data(data={"page": page})
     text = jantra_text[page]
 
-    resp: Message | bool = await callback.message.edit_text(
+    await callback.message.edit_text(
         text=text,
         reply_markup=create_pagination_keyboard(
                     'backward',

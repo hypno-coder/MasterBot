@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 class BotHandlerText:
     # Common
     help: str = "Для того, что бы прервать диалог с ботом введите /cancel. \nДля того, что бы начать заново введите /start."
-    fio: str = "Укажите ФИО в формате: \"Фамилия Имя Очество\""
+    enter_fio: str = "Укажите ФИО в формате: \"Фамилия Имя Очество\""
     free_menu: str = "Меню бесплатных услуг"        
     paid_menu: str = "Меню платных услуг"        
     menu_placeholder: str = "Нажмите кнопку"
@@ -16,6 +16,11 @@ class BotHandlerText:
     user_saver: dict[str, str] = field(default_factory=dict)
     subscriber: dict[str, str] = field(default_factory=dict)
     legal_age: str = "Ваш возраст должен быть от 13 до 80 лет"
+    check_data: str = "Проверьте правильность введенных данных: " 
+    fio: str = "ФИО: "
+    birthday: str = "Дата рождения: "
+    selected_action: str = "Выберите, дальнейшее действие: "
+    enter_date: str = "Укажите дату рождения в формате 06.08.1987"
 
 
     # Sonnik
@@ -30,7 +35,6 @@ class BotHandlerText:
     money_code_payment_description: str = "Покупка услуги: 'Денежный код'"
     money_code_payload: str = "Payment money code"
     money_code_only_thursday: str = "Денежный Код можно заказать только в Четверг"
-    money_code_date: str = "Укажите дату рождения в формате 06.08.1987"
     money_code_for_you: str = "Ваш код: "
     money_code_document: str = "Это инструкция которая поможет вам разобраться как использовать Денежный Код"
     money_code_description = "Приветствую! Это бот Мастерская Желаний, со временем здесь появится Сонник, Гороскоп, Афирмации, Янтра. А сейчас здесь можно расчитать свой финкод. Для этого нажми кнопку \"Расчитать Финкод\"."
