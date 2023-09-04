@@ -16,7 +16,7 @@ async def start_main_menu(message: Message) -> None:
                          reply_markup=main_menu_keyboard)
     await message.delete()
 
-@menuRouter.message(Text(text=BotBtnText.ChekSub), flags=flags)
+@menuRouter.message(Text(text=BotBtnText.CheckSub), flags=flags)
 async def check_sub(message: Message) -> None:
     await message.answer(text=BotText.sub,
                          reply_markup=ReplyKeyboardRemove(remove_keyboard=True))

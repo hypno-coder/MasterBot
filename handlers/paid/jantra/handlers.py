@@ -42,9 +42,9 @@ async def enter_date(message: Message, state: FSMContext) -> None:
 
 @jantraHandlerRouter.message(
         ~Text(contains=['/']),
+        FSMJantra.check_data, 
         DateFilter(is_date=True), 
         AgeFilter(is_age=True),
-        FSMJantra.check_data, 
         flags=flags)
 async def check_data(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
@@ -63,7 +63,11 @@ async def check_data(message: Message, state: FSMContext) -> None:
 
 
 
-@jantraHandlerRouter.message(~Text(contains=['/']), DateFilter(is_date=True), FSMJantra.check_data, flags=flags)
+@jantraHandlerRouter.message(
+        ~Text(contains=['/']), 
+        FSMJantra.check_data, 
+        DateFilter(is_date=True), 
+        flags=flags)
 async def wrong_age(message: Message) -> None:
     if message.text == None:
         return
@@ -125,6 +129,7 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     input_image = BufferedInputFile(image, 'jantra.png')
     await send_message_with_delay(
             chat_id, 
+            name=BotText.jantra_title,
             back_button_callback=BotCBData.BackToPaidMenu.name,
             greeting=fio,
             text=f'<b>{BotText.jantra_lucky_number+str(number)}</b>', 

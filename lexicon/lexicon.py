@@ -22,6 +22,7 @@ class BotHandlerText:
     birthday: str = "Дата рождения: "
     selected_action: str = "Выберите, дальнейшее действие: "
     enter_date: str = "Укажите дату рождения в формате 06.08.1987"
+    successful_subscription: str = "Поздравляем! Вы успешно подписались на канал Мастерская Желаний, теперь вы можете пользоваться ботом."
 
 
     # Sonnik
@@ -56,8 +57,8 @@ class BotHandlerText:
 
     # Utils
     remove_message_error: str = "Попытка удаления уже отредактированooго сooбщения:"
-    pay_success: str = "Оплата прошла успешно "
-    message_delay: str = ",результат отправлю в течении: "
+    pay_success: str = "Оплата прошла успешно, "
+    message_delay: str = "результат отправлю в течении: "
 
     def __post_init__(self):
         self.subscriber: dict[str, str] = {

@@ -9,7 +9,6 @@ class AgeFilter(BaseFilter):
     
     def __init__(self, is_age):
         self.is_age = is_age 
-
     async def __call__(self, message: Message):
         if message.text == None:
             return False

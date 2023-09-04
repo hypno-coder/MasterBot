@@ -16,7 +16,7 @@ sub_inline_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[[inline_button_1]], 
     )
 
-common_button_1: KeyboardButton = KeyboardButton(text=BotBtnText.ChekSub)
+common_button_1: KeyboardButton = KeyboardButton(text=BotBtnText.CheckSub)
 sub_common_keyboard: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
                                     keyboard=[[common_button_1]], 
                                     resize_keyboard=True)

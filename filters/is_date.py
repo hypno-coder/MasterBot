@@ -7,7 +7,6 @@ class DateFilter(BaseFilter):
     
     def __init__(self, is_date):
         self.is_date = is_date
-
     async def __call__(self, message: Message):
         if message.text == None:
             return False

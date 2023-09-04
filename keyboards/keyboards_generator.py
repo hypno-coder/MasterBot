@@ -9,7 +9,6 @@ def create_inline_kb(width: int,
                      **kwargs: str) -> InlineKeyboardMarkup:
     kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
     buttons: list[InlineKeyboardButton] = []
-
     if args:
         for btn in args:
             buttons.append(InlineKeyboardButton(
@@ -18,8 +17,7 @@ def create_inline_kb(width: int,
                 ))
 
     kb_builder.row(*buttons, width=width)
-
-    return kb_builder.as_markup(resize_keyboard=True)
+    return kb_builder.as_markup()
 
 def create_pagination_keyboard(
         *buttons: str, keyboard: list[InlineKeyboardButton]) -> InlineKeyboardMarkup:
@@ -30,6 +28,5 @@ def create_pagination_keyboard(
         callback_data=button) for button in buttons])
     for button in keyboard:  
         kb_builder.row(button)
-        kb_builder.row(*keyboard)
     return kb_builder.as_markup()
 

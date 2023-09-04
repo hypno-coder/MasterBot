@@ -32,4 +32,3 @@ class SubscriberMiddleware(BaseMiddleware):
                 chat_id=event.from_user.id, 
                 text=BotText.subscriber['common_text'], 
                 reply_markup=sub_common_keyboard)
-

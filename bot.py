@@ -19,10 +19,10 @@ async def main() -> None:
     # registr  commands
     await set_command_menu(bot)
 
-    # register middleware
-    # dp.message.middleware(ThrottlingMiddleware())
-    # dp.message.middleware(UserSaverMiddleware())
-    # dp.message.middleware(SubscriberMiddleware())
+    #register middleware
+    dp.message.middleware(ThrottlingMiddleware())
+    dp.message.middleware(UserSaverMiddleware())
+    dp.message.middleware(SubscriberMiddleware())
 
     # register handlers
     dp.include_router(mainRouter)
@@ -37,7 +37,6 @@ async def main() -> None:
     finally:
         await bot.session.close()
         await dp.storage.close()
-
 
 if __name__ == '__main__':
     asyncio.run(main())

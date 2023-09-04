@@ -1,6 +1,6 @@
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import Message
 from database import User 
 from lexicon import BotText
 from loader import bot, config

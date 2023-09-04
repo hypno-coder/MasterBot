@@ -44,7 +44,10 @@ async def enter_date(message: Message, state: FSMContext) -> None:
 
 @codeHandlerRouter.message(
         ~Text(contains=['/']),
-        DateFilter(is_date=True), AgeFilter(is_age=True), FSMCode.check_data, flags=flags)
+        FSMCode.check_data,
+        DateFilter(is_date=True), 
+        AgeFilter(is_age=True), 
+        flags=flags)
 async def check_data(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -61,7 +64,7 @@ async def check_data(message: Message, state: FSMContext) -> None:
     await message.answer(text=BotText.selected_action, reply_markup=code_action_menu_keyboard)
 
 
-@codeHandlerRouter.message(~Text(contains=['/']), DateFilter(is_date=True), FSMCode.check_data, flags=flags)
+@codeHandlerRouter.message(~Text(contains=['/']), FSMCode.check_data, DateFilter(is_date=True), flags=flags)
 async def wrong_age(message: Message) -> None:
     if message.text == None:
         return
@@ -124,6 +127,7 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
 
     await send_message_with_delay(
             chat_id, 
+            name=BotText.money_code_title,
             back_button_callback=BotCBData.BackToPaidMenu.name,
             text=f'<b>{BotText.money_code_for_you+result}</b>',
             greeting=fio,

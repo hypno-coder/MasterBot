@@ -12,6 +12,7 @@ from keyboards import BotCBData
 from lexicon import BotText 
 from config_data import SpamConfig
 from states import FSMCalendar
+from filters import DateFilter, AgeFilter
 from services import get_calendar_dates 
 from utils import send_message_with_delay
 
@@ -41,7 +42,12 @@ async def enter_date(message: Message, state: FSMContext) -> None:
     await state.set_state(FSMCalendar.check_data)
 
 
-@calendarHandlerRouter.message(~Text(contains=['/']), FSMCalendar.check_data, flags=flags)
+@calendarHandlerRouter.message(
+        ~Text(contains=['/']), 
+        FSMCalendar.check_data, 
+        DateFilter(is_date=True), 
+        AgeFilter(is_age=True),
+        flags=flags)
 async def check_data(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -59,7 +65,29 @@ async def check_data(message: Message, state: FSMContext) -> None:
             text=BotText.selected_action, 
             reply_markup=calendar_action_menu_keyboard)
 
-    
+
+@calendarHandlerRouter.message(
+        ~Text(contains=['/']), 
+        FSMCalendar.check_data, 
+        DateFilter(is_date=True), 
+        flags=flags)
+async def wrong_age(message: Message) -> None:
+    if message.text == None:
+        return
+
+    await message.reply(BotText.legal_age)
+
+
+@calendarHandlerRouter.message(
+        ~Text(contains=['/']), 
+        FSMCalendar.check_data, 
+        flags=flags)
+async def wrong_input(message: Message) -> None:
+    if message.text == None:
+        return
+
+    await message.reply(BotText.invalid_format_date)
+
 
 @calendarHandlerRouter.callback_query(
         lambda a: a.data == BotCBData.MoneyCalendarBtn3.value,
@@ -108,6 +136,7 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
 
     await send_message_with_delay(
             chat_id, 
+            name=BotText.money_calendar_title,
             back_button_callback=BotCBData.BackToPaidMenu.name,
             greeting=fio,
             document=document, 

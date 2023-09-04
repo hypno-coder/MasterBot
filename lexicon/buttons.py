@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Any
+from loader import payment
 
 @dataclass
 class BotButtonsText:
@@ -12,9 +13,9 @@ class BotButtonsText:
     Btn6: str = "Магический Бот"
     
     # Paid Menu
-    JantraBtn1: str = "Янтра"
-    MoneyCodeBtn1: str = "ФинКод"
-    MoneyCalendarBtn1: str = "Денежный Календарь"
+    JantraBtn1: str = f"Янтра: {payment.price.jantra}₽"
+    MoneyCodeBtn1: str = f"ФинКод: {payment.price.money_code}₽"
+    MoneyCalendarBtn1: str = f"Денежный Календарь: {payment.price.money_calendar}₽"
     BackToPaidMenu: str = "Назад"
 
     # Menu MoneyCode
@@ -45,7 +46,7 @@ class BotButtonsText:
 
 
     # Subscriber Menu
-    ChekSub: str = "Проверить подписку 🧙🪄✨"
+    CheckSub: str = "Проверить подписку 🧙🪄✨"
     Sub: str = "Подписаться"
 
     def __init__(self):

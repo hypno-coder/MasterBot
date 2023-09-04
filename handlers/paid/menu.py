@@ -1,10 +1,10 @@
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import CommandStart
-from aiogram.types import Message, CallbackQuery 
+from aiogram.filters import CommandStart, Text
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove 
 
 from keyboards import paid_menu_keyboard, BotCBData
-from lexicon import BotText 
+from lexicon import BotText, BotBtnText 
 from config_data import SpamConfig
 
 menuRouter: Router = Router()
@@ -27,3 +27,13 @@ async def start_paid_menu(event: Message | CallbackQuery, state: FSMContext) -> 
         await message.answer(text=BotText.paid_menu,
                          reply_markup=paid_menu_keyboard)
         await message.delete()
+
+@menuRouter.message(Text(text=BotBtnText.CheckSub), flags=flags)
+async def check_sub_paid_menu(message: Message) -> None:
+    await message.answer(text=BotText.successful_subscription, 
+                         reply_markup=ReplyKeyboardRemove(remove_keyboard=True, selective=True))
+    await message.answer(text=BotText.paid_menu,
+                         reply_markup=paid_menu_keyboard)
+
+
+

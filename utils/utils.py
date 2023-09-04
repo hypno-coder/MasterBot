@@ -16,6 +16,7 @@ async def remove_message(chat_id: int, message_id: int, delay: int = 60) -> None
 
 async def send_message_with_delay(
         chat_id: int, 
+        name: str,
         back_button_callback: str | None = None,
         min_delay: int = 1800, 
         max_delay: int = 4800,
@@ -27,14 +28,25 @@ async def send_message_with_delay(
         document_caption: str = ''
         ) -> None:
 
+    def get_keyboard():
+        ITEMS_PER_ROW = 1
+        if back_button_callback != None:
+            return create_inline_kb(ITEMS_PER_ROW, back_button_callback) 
+        return None
+
     reply = await bot.send_message(
             chat_id,
-            text=BotText.pay_success + BotText.message_delay + f'{round(min_delay/60)}-{round(max_delay/60)} минут')
+            text=BotText.pay_success +' '+ BotText.message_delay + f'{round(min_delay/60)}-{round(max_delay/60)} минут', 
+            reply_markup=get_keyboard())
 
     delay = random.randint(min_delay, max_delay)
-    # await sleep(delay)
-    await bot.delete_message(chat_id=reply.chat.id, message_id=reply.message_id)
+    await sleep(delay)
+    try:
+        await bot.delete_message(chat_id=reply.chat.id, message_id=reply.message_id)
+    except Exception as ex:
+        print(ex)
     await bot.send_message(chat_id=chat_id, text='===========================')
+    await bot.send_message(chat_id=chat_id, text=f'<b>{name}</b>')
 
     if greeting != None:
         await bot.send_message(chat_id=chat_id, text=f'<i>{greeting}</i>')
@@ -48,9 +60,5 @@ async def send_message_with_delay(
         await bot.send_video(chat_id, video)
 
     await bot.send_message(chat_id=chat_id, text='===========================')
-    if back_button_callback != None:
-        ITEMS_PER_ROW = 1
-        keyboard: InlineKeyboardMarkup = create_inline_kb(ITEMS_PER_ROW, back_button_callback) 
-        await bot.send_message(chat_id, text=BotText.back_menu, reply_markup=keyboard)
 
-    
+    await bot.send_message(chat_id, text=BotText.back_menu, reply_markup=get_keyboard()) 
