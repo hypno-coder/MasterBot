@@ -4,7 +4,7 @@ from aiogram.filters import BaseFilter
 
 class DayFilter(BaseFilter):
     key: str = 'is_day'
-    thursday: int = 4
+    thursday: int = 0
     
     def __init__(self, is_day):
         self.is_day = is_day

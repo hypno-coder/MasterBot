@@ -2,9 +2,12 @@ from typing import cast
 from aiogram import Router, Bot, F
 from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
 from aiogram.fsm.context import FSMContext
+from aiogram.types.input_file import FSInputFile
 
 from keyboards import calendar_menu_keyboard, calendar_action_menu_keyboard
 from loader import payment
+from aiogram.filters import Text 
+from staticfiles import FilePath
 from keyboards import BotCBData
 from lexicon import BotText 
 from config_data import SpamConfig
@@ -16,7 +19,7 @@ calendarHandlerRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.calendar_menu.name}
 
 
-@calendarHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCalendarBtn1.value, flags=flags)
+@calendarHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCalendarBtn2.value, flags=flags)
 async def start_calendar_conversation(callback: CallbackQuery, state: FSMContext):
     if callback.message == None:
         return
@@ -37,7 +40,7 @@ async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(FSMCalendar.enter_date)
 
 
-@calendarHandlerRouter.message(FSMCalendar.enter_date, flags=flags)
+@calendarHandlerRouter.message(~Text(contains=['/']), FSMCalendar.enter_date, flags=flags)
 async def enter_date(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -49,7 +52,8 @@ async def enter_date(message: Message, state: FSMContext) -> None:
     await message.answer(text=BotText.enter_date)
     await state.set_state(FSMCalendar.check_data)
 
-@calendarHandlerRouter.message(FSMCalendar.check_data, flags=flags)
+
+@calendarHandlerRouter.message(~Text(contains=['/']), FSMCalendar.check_data, flags=flags)
 async def check_data(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -101,6 +105,7 @@ async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, sta
 
 
 @calendarHandlerRouter.message(
+        ~Text(contains=['/']),
         F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT), FSMCalendar.successful_payment, flags=flags)
 async def successful_payment(message: Message, state: FSMContext) -> None:
     if message.from_user == None: 
@@ -113,10 +118,13 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     result = ''.join(str(num) for num in numbers)
     data: dict = await state.get_data() 
     fio: str = data[f'fio-{user_id}'] 
+    document = FSInputFile(FilePath.money_calendar_pdf.value)
 
     await send_message_with_delay(
             chat_id, 
             BotText.money_calendar_title,
             100, 200, 
             greeting=fio,
+            document=document, 
+            document_caption=BotText.money_calendar_document,
             text=BotText.money_calendar_for_you + result)

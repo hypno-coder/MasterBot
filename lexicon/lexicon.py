@@ -45,6 +45,7 @@ class BotHandlerText:
     money_calendar_payload: str = "Payment money calendar"
     money_calendar_for_you: str = "Ваши денежные дни на текущий месяц: \n"
     money_calendar_description: str = "Приветствую! Это бот Мастерская Желаний, со временем здесь появится Сонник, Гороскоп, Афирмации, Янтра. А сейчас здесь можно расчитать свой финкод. Для этого нажми кнопку \"Расчитать Финкод\"."
+    money_calendar_document: str = "Это инструкция которая поможет вам разобраться как использовать Денежный Календарь"
 
     # Jantra
     jantra_title: str = "Янтра"

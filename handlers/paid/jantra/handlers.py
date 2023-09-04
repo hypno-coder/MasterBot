@@ -1,5 +1,6 @@
 from typing import cast
 from aiogram import Router, Bot, F
+from aiogram.filters import Text
 from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
 from aiogram.fsm.context import FSMContext
 from aiogram.types.input_file import BufferedInputFile 
@@ -27,7 +28,7 @@ async def eter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(FSMJantra.enter_date)
 
 
-@jantraHandlerRouter.message(FSMJantra.enter_date, flags=flags)
+@jantraHandlerRouter.message(~Text(contains=['/']), FSMJantra.enter_date, flags=flags)
 async def enter_date(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -41,6 +42,7 @@ async def enter_date(message: Message, state: FSMContext) -> None:
 
 
 @jantraHandlerRouter.message(
+        ~Text(contains=['/']),
         DateFilter(is_date=True), 
         AgeFilter(is_age=True),
         FSMJantra.check_data, 
@@ -63,7 +65,7 @@ async def check_data(message: Message, state: FSMContext) -> None:
     await state.clear()
 
 
-@jantraHandlerRouter.message(DateFilter(is_date=True), FSMJantra.check_data, flags=flags)
+@jantraHandlerRouter.message(~Text(contains=['/']), DateFilter(is_date=True), FSMJantra.check_data, flags=flags)
 async def wrong_age(message: Message) -> None:
     if message.text == None:
         return
@@ -71,7 +73,7 @@ async def wrong_age(message: Message) -> None:
     await message.reply(BotText.legal_age)
 
 
-@jantraHandlerRouter.message(FSMJantra.check_data, flags=flags)
+@jantraHandlerRouter.message(~Text(contains=['/']), FSMJantra.check_data, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return
@@ -111,6 +113,7 @@ async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, sta
 
 
 @jantraHandlerRouter.message(
+        ~Text(contains=['/']),
         F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT), FSMJantra.successful_payment, flags=flags)
 async def successful_payment(message: Message, state: FSMContext) -> None:
     if message.from_user == None:

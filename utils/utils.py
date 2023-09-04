@@ -40,9 +40,10 @@ async def send_message_with_delay(
         await bot.send_photo(chat_id, image)
     if text != None:
         await bot.send_message(chat_id, text)
-    if video != None:
-        await bot.send_video(chat_id, video)
     if document != None:
         await bot.send_document(chat_id, document, caption=document_caption)
+    if video != None:
+        await bot.send_video(chat_id, video)
+
     
     await bot.send_message(chat_id=chat_id, text='====================')

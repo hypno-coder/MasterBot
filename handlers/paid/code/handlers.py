@@ -1,45 +1,27 @@
 from typing import cast
 from aiogram import Router, Bot, F
+from aiogram.filters import Text
 from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
 from aiogram.fsm.context import FSMContext
 from aiogram.types.input_file import FSInputFile
 
-from keyboards import code_menu_keyboard, code_action_menu_keyboard
+from keyboards import code_action_menu_keyboard
 from loader import payment
 from staticfiles import FilePath
 from keyboards import BotCBData
 from lexicon import BotText 
 from config_data import SpamConfig
 from states import FSMCode
-from filters import DateFilter, DayFilter, AgeFilter
+from filters import DateFilter, AgeFilter
 from services import calculate_code
 from utils import send_message_with_delay
 
 codeHandlerRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.code_menu.name}
 
-@codeHandlerRouter.callback_query(
-        lambda a: a.data == BotCBData.MoneyCodeBtn1.value, 
-        DayFilter(is_day=True), 
-        flags=flags)
-async def start_code_conversation(callback: CallbackQuery, state: FSMContext):
-    if callback.message == None:
-        return
-    await callback.message.edit_text(text=BotText.money_code_description, reply_markup=code_menu_keyboard)
-    await state.set_state(FSMCode.enter_full_name)
-    await callback.answer()
-
-
-@codeHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCodeBtn1.value, flags=flags)
-async def day_except(callback: CallbackQuery, state: FSMContext) -> None:
-    message = cast(CallbackQuery, callback.message)
-    await message.answer(
-            text=BotText.money_code_only_thursday)
-    await state.clear()
-
 
 @codeHandlerRouter.callback_query(
-        lambda a: a.data == BotCBData.MoneyCodeBtn2.value, FSMCode.enter_full_name, flags=flags)
+        lambda a: a.data == BotCBData.MoneyCodeBtn2.value, flags=flags)
 @codeHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCodeBtn4.value, flags=flags)
 async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     message = cast(CallbackQuery, callback.message)
@@ -48,7 +30,7 @@ async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(FSMCode.enter_date)
 
 
-@codeHandlerRouter.message(FSMCode.enter_date, flags=flags)
+@codeHandlerRouter.message(~Text(contains=['/']), FSMCode.enter_date, flags=flags)
 async def enter_date(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -62,6 +44,7 @@ async def enter_date(message: Message, state: FSMContext) -> None:
 
 
 @codeHandlerRouter.message(
+        ~Text(contains=['/']),
         DateFilter(is_date=True), AgeFilter(is_age=True), FSMCode.check_data, flags=flags)
 async def check_data(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
@@ -81,7 +64,7 @@ async def check_data(message: Message, state: FSMContext) -> None:
     await state.clear()
 
 
-@codeHandlerRouter.message(DateFilter(is_date=True), FSMCode.check_data, flags=flags)
+@codeHandlerRouter.message(~Text(contains=['/']), DateFilter(is_date=True), FSMCode.check_data, flags=flags)
 async def wrong_age(message: Message) -> None:
     if message.text == None:
         return
@@ -89,7 +72,7 @@ async def wrong_age(message: Message) -> None:
     await message.reply(BotText.legal_age)
 
 
-@codeHandlerRouter.message(FSMCode.check_data, flags=flags)
+@codeHandlerRouter.message(~Text(contains=['/']), FSMCode.check_data, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return
@@ -128,6 +111,7 @@ async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, sta
 
 
 @codeHandlerRouter.message(
+        ~Text(contains=['/']),
         F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT), FSMCode.successful_payment, flags=flags)
 async def successful_payment(message: Message, state: FSMContext) -> None:
     if message.from_user == None: 
@@ -144,8 +128,8 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
 
     await send_message_with_delay(
             chat_id, 
-            BotText.money_code_title,
-            100, 200, 
+            name=BotText.money_code_title,
+            min_delay=100, max_delay=200, 
             text=BotText.money_code_for_you+result,
             greeting=fio,
             video=video, 

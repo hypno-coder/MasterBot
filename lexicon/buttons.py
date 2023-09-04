@@ -13,25 +13,25 @@ class BotButtonsText:
     
     # Paid Menu
     JantraBtn1: str = "Янтра"
-    MoneyCodeBtn1: str = "Денежный Код"
+    MoneyCodeBtn1: str = "ФинКод"
     MoneyCalendarBtn1: str = "Денежный Календарь"
     BackToPaidMenu: str = "Назад"
 
     # Menu MoneyCode
-    MoneyCodeBtn2="Расчитать Финкод"
-    MoneyCodeBtn3="Подтвердить данные"
-    MoneyCodeBtn4="Исправить данные"
+    MoneyCodeBtn2: str = "Расчитать Финкод"
+    MoneyCodeBtn3: str = "Подтвердить данные"
+    MoneyCodeBtn4: str = "Исправить данные"
 
     # Menu MoneyCalendar
-    MoneyCalendarBtn2="Расчитать Денежный Календарь"
-    MoneyCalendarBtn3="Подтвердить данные"
-    MoneyCalendarBtn4="Исправить данные"
+    MoneyCalendarBtn2: str = "Расчитать Денежный Календарь"
+    MoneyCalendarBtn3: str = "Подтвердить данные"
+    MoneyCalendarBtn4: str = "Исправить данные"
 
 
     # Menu Jantra
     JantraBtn2: str = "Создать Янтру"
-    JantraBtn3="Подтвердить данные"
-    JantraBtn4="Исправить данные"
+    JantraBtn3: str = "Подтвердить данные"
+    JantraBtn4: str = "Исправить данные"
 
     # Main Menu
     Paid: str = "Платные 💰"
@@ -39,9 +39,9 @@ class BotButtonsText:
 
     # Common Buttons
     BackMainMenu: str = "Главное Меню"
-    Backward: str = "<<"
-    Forward: str = ">>"
     PagiKeyboard: dict[str, str] = field(default_factory=dict)
+    backward: str = "<<"
+    borward: str = ">>"
 
 
     # Subscriber Menu
