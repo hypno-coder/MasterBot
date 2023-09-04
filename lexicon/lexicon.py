@@ -3,10 +3,11 @@ from dataclasses import dataclass, field
 @dataclass
 class BotHandlerText:
     # Common
+    back_menu: str = "Для возврата в меню:"
     help: str = "Для того, что бы прервать диалог с ботом введите /cancel. \nДля того, что бы начать заново введите /start."
     enter_fio: str = "Укажите ФИО в формате: \"Фамилия Имя Очество\" (Фамилия которая дана при рождении)"
-    free_menu: str = "Меню бесплатных услуг"        
-    paid_menu: str = "Меню платных услуг"        
+    free_menu: str = "Меню бесплатных услуг:"        
+    paid_menu: str = "Меню платных услуг:"        
     menu_placeholder: str = "Нажмите кнопку"
     main_menu: str = "Выберете платные или бесплатные функции"
     sub: str = "Спасибо за подписку на канал! 🎉👏🥳"
@@ -56,7 +57,7 @@ class BotHandlerText:
     # Utils
     remove_message_error: str = "Попытка удаления уже отредактированooго сooбщения:"
     pay_success: str = "Оплата прошла успешно "
-    message_delay: str = " отправлю в течении: "
+    message_delay: str = ",результат отправлю в течении: "
 
     def __post_init__(self):
         self.subscriber: dict[str, str] = {

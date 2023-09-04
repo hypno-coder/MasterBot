@@ -36,8 +36,7 @@ async def enter_date(message: Message, state: FSMContext) -> None:
         return
 
     fio: str = message.text 
-    user_id: int = message.from_user.id
-    await state.set_data({f'fio-{user_id}': fio})
+    await state.set_data({'fio': fio})
 
     await message.answer(text=BotText.enter_date)
     await state.set_state(FSMCode.check_data)
@@ -50,18 +49,16 @@ async def check_data(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
 
-    user_id: int = message.from_user.id
     data = await state.get_data() 
-    fio: str = data[f'fio-{user_id}']
+    fio: str = data['fio']
     birthday: str = message.text 
-    await state.set_data({f'birthday-{user_id}': birthday})
+    data.update({'birthday': birthday})
+    await state.update_data(data)
 
     await message.answer(text=BotText.check_data)
     await message.answer(text=f'{BotText.fio}{fio}')
     await message.answer(text=f'{BotText.birthday}{birthday}')
     await message.answer(text=BotText.selected_action, reply_markup=code_action_menu_keyboard)
-
-    await state.clear()
 
 
 @codeHandlerRouter.message(~Text(contains=['/']), DateFilter(is_date=True), FSMCode.check_data, flags=flags)
@@ -117,20 +114,18 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     if message.from_user == None: 
         return
 
-    user_id: int = message.from_user.id
     chat_id: int = message.chat.id
     data: dict = await state.get_data() 
-    fio: str = data[f'fio-{user_id}'] 
-    result: str = await calculate_code(data[f'birthday-{user_id}']) 
+    fio: str = data['fio'] 
+    birthday: str = data['birthday'] 
+    result: str = await calculate_code(birthday) 
     document = FSInputFile(FilePath.money_code_pdf.value)
     video = FSInputFile(FilePath.money_code_video.value)
-    await state.clear()
 
     await send_message_with_delay(
             chat_id, 
-            name=BotText.money_code_title,
-            min_delay=100, max_delay=200, 
-            text=BotText.money_code_for_you+result,
+            back_button_callback=BotCBData.BackToPaidMenu.name,
+            text=f'<b>{BotText.money_code_for_you+result}</b>',
             greeting=fio,
             video=video, 
             document=document, 

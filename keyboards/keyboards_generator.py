@@ -19,7 +19,7 @@ def create_inline_kb(width: int,
 
     kb_builder.row(*buttons, width=width)
 
-    return kb_builder.as_markup()
+    return kb_builder.as_markup(resize_keyboard=True)
 
 def create_pagination_keyboard(
         *buttons: str, keyboard: list[InlineKeyboardButton]) -> InlineKeyboardMarkup:
@@ -28,7 +28,8 @@ def create_pagination_keyboard(
         text=BotBtnText.find(button.split('_')[-1]) 
         if buttons.index(button) in [0, len(buttons)-1] else button,
         callback_data=button) for button in buttons])
-    for button in keyboard:  # Добавляем кнопки из переменной keyboard по одной в новую строку
+    for button in keyboard:  
         kb_builder.row(button)
+        kb_builder.row(*keyboard)
     return kb_builder.as_markup()
 

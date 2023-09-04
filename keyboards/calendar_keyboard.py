@@ -7,7 +7,7 @@ from .callback_data import BotCBData
 MENU_ITEMS_PER_ROW = 1
 
 CALENDAR_ACTION_MENU_BUTTONS = (
-        BotCBData.MoneyCalendarBtn2.name,
+        BotCBData.MoneyCalendarBtn3.name,
         BotCBData.MoneyCalendarBtn4.name,
     )
 

@@ -18,7 +18,7 @@ class BotButtonsText:
     BackToPaidMenu: str = "Назад"
 
     # Menu MoneyCode
-    MoneyCodeBtn2: str = "Расчитать Финкод"
+    MoneyCodeBtn2: str = "Расчитать ФинKод"
     MoneyCodeBtn3: str = "Подтвердить данные"
     MoneyCodeBtn4: str = "Исправить данные"
 

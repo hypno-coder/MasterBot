@@ -12,7 +12,6 @@ class FSMCode(StatesGroup):
     successful_payment = State()
 
 class FSMCalendar(StatesGroup):
-    enter_full_name = State()
     enter_date = State()
     check_data = State()
     calculate = State()

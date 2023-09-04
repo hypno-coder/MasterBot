@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery
 from aiogram.filters import Text 
 from aiogram.fsm.context import FSMContext 
 
-from keyboards import create_pagination_keyboard, calendar_menu_keyboard, BotCBData
+from keyboards import create_pagination_keyboard, code_menu_keyboard, BotCBData
 from filters import DayFilter
 from lexicon import BotText 
 from lexicon import code_text
@@ -32,7 +32,7 @@ async def code_menu(callback: CallbackQuery, state: FSMContext) -> None:
                     'code_backward',
                     f'{page}/{len(code_text)}',
                     'code_forward',
-                    keyboard=calendar_menu_keyboard ))
+                    keyboard=code_menu_keyboard ))
         
     await callback.answer()
 
@@ -66,7 +66,7 @@ async def process_forward_press(callback: CallbackQuery, state: FSMContext):
                 'code_backward',
                 f'{page}/{len(code_text)}',
                 'code_forward',
-                keyboard=calendar_menu_keyboard ))
+                keyboard=code_menu_keyboard ))
     await callback.answer()
 
 @codeMenuRouter.callback_query(Text(text='code_backward'))
@@ -89,5 +89,5 @@ async def process_backward_press(callback: CallbackQuery, state: FSMContext):
                 'code_backward',
                 f'{page}/{len(code_text)}',
                 'code_forward',
-                keyboard=calendar_menu_keyboard ))
+                keyboard=code_menu_keyboard ))
     await callback.answer()

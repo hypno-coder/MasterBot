@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.types.input_file import FSInputFile
 
-from keyboards import calendar_menu_keyboard, calendar_action_menu_keyboard
+from keyboards import calendar_action_menu_keyboard
 from loader import payment
 from aiogram.filters import Text 
 from staticfiles import FilePath
@@ -19,19 +19,8 @@ calendarHandlerRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.calendar_menu.name}
 
 
-@calendarHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCalendarBtn2.value, flags=flags)
-async def start_calendar_conversation(callback: CallbackQuery, state: FSMContext):
-    if callback.message == None:
-        return
-    await callback.message.edit_text(
-            text=BotText.money_calendar_description, 
-            reply_markup=calendar_menu_keyboard)
-    await state.set_state(FSMCalendar.enter_full_name)
-    await callback.answer()
-
-
 @calendarHandlerRouter.callback_query(
-        lambda a: a.data == BotCBData.MoneyCalendarBtn2.value, FSMCalendar.enter_full_name, flags=flags)
+        lambda a: a.data == BotCBData.MoneyCalendarBtn2.value, flags=flags)
 @calendarHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCalendarBtn4.value, flags=flags)
 async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     message = cast(CallbackQuery, callback.message)
@@ -46,8 +35,7 @@ async def enter_date(message: Message, state: FSMContext) -> None:
         return
 
     fio: str = message.text 
-    user_id: int = message.from_user.id
-    await state.set_data({f'fio-{user_id}': fio})
+    await state.set_data({'fio': fio})
 
     await message.answer(text=BotText.enter_date)
     await state.set_state(FSMCalendar.check_data)
@@ -58,18 +46,18 @@ async def check_data(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
 
-    user_id: int = message.from_user.id
     data = await state.get_data() 
-    fio: str = data[f'fio-{user_id}']
+    fio: str = data['fio']
     birthday: str = message.text 
-    await state.set_data({f'birthday-{user_id}': birthday})
+    data.update({'birthday': birthday})
+    await state.update_data(data)
 
     await message.answer(text=BotText.check_data)
     await message.answer(text=f'{BotText.fio}{fio}')
     await message.answer(text=f'{BotText.birthday}{birthday}')
-    await message.answer(text=BotText.selected_action, reply_markup=calendar_action_menu_keyboard)
-
-    await state.clear()
+    await message.answer(
+            text=BotText.selected_action, 
+            reply_markup=calendar_action_menu_keyboard)
 
     
 
@@ -111,20 +99,17 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     if message.from_user == None: 
         return
 
-    await state.clear()
-    user_id: int = message.from_user.id
     chat_id: int = message.chat.id
     numbers: str = get_calendar_dates()
     result = ''.join(str(num) for num in numbers)
     data: dict = await state.get_data() 
-    fio: str = data[f'fio-{user_id}'] 
+    fio: str = data['fio'] 
     document = FSInputFile(FilePath.money_calendar_pdf.value)
 
     await send_message_with_delay(
             chat_id, 
-            BotText.money_calendar_title,
-            100, 200, 
+            back_button_callback=BotCBData.BackToPaidMenu.name,
             greeting=fio,
             document=document, 
             document_caption=BotText.money_calendar_document,
-            text=BotText.money_calendar_for_you + result)
+            text=f'<b>{BotText.money_calendar_for_you}</b> {result}')

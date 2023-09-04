@@ -34,8 +34,7 @@ async def enter_date(message: Message, state: FSMContext) -> None:
         return
 
     fio: str = message.text 
-    user_id: int = message.from_user.id
-    await state.set_data({f'fio-{user_id}': fio})
+    await state.set_data({'fio': fio})
 
     await message.answer(text=BotText.enter_date)
     await state.set_state(FSMJantra.check_data)
@@ -51,18 +50,17 @@ async def check_data(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
 
-    user_id: int = message.from_user.id
     data = await state.get_data() 
-    fio: str = data[f'fio-{user_id}']
+    fio: str = data['fio']
     birthday: str = message.text 
-    await state.set_data({f'birthday-{user_id}': birthday})
+    data.update({'birthday': birthday})
+    await state.update_data(data)
 
     await message.answer(text=BotText.check_data)
     await message.answer(text=f'{BotText.fio}{fio}')
     await message.answer(text=f'{BotText.birthday}{birthday}')
     await message.answer(text=BotText.selected_action, reply_markup=jantra_action_menu_keyboard)
 
-    await state.clear()
 
 
 @jantraHandlerRouter.message(~Text(contains=['/']), DateFilter(is_date=True), FSMJantra.check_data, flags=flags)
@@ -119,15 +117,15 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     if message.from_user == None:
         return
 
-    user_id: int = message.from_user.id
     chat_id: int = message.chat.id
     data = await state.get_data() 
-    date: str = data[f"birthday-{user_id}"] 
-    image, number = Jantra.create(date)
+    fio: str = data['fio']
+    birthday: str = data['birthday'] 
+    image, number = Jantra.create(birthday)
     input_image = BufferedInputFile(image, 'jantra.png')
     await send_message_with_delay(
             chat_id, 
-            BotText.jantra_title,
-            100, 200, 
+            back_button_callback=BotCBData.BackToPaidMenu.name,
+            greeting=fio,
             text=f'<b>{BotText.jantra_lucky_number+str(number)}</b>', 
             image=input_image)
