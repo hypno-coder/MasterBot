@@ -40,6 +40,7 @@ async def code_menu(callback: CallbackQuery, state: FSMContext) -> None:
         lambda a: a.data == BotCBData.MoneyCodeBtn1.value, 
         flags=flags)
 async def day_except(callback: CallbackQuery, state: FSMContext) -> None:
+    callback.answer()
     message = cast(CallbackQuery, callback.message)
     await message.answer(
             text=BotText.money_code_only_thursday)
