@@ -1,13 +1,9 @@
-from typing import cast
-
 from aiogram import Router
 from aiogram.types import CallbackQuery 
 from aiogram.filters import Text 
 from aiogram.fsm.context import FSMContext 
 
 from keyboards import create_pagination_keyboard, code_menu_keyboard, BotCBData
-from filters import DayFilter
-from lexicon import BotText 
 from lexicon import code_text
 from config_data import SpamConfig
 
@@ -16,7 +12,6 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.code_menu.name}
 
 @codeMenuRouter.callback_query(
         lambda a: a.data == BotCBData.MoneyCodeBtn1.value, 
-        DayFilter(is_day=True), 
         flags=flags)
 async def code_menu(callback: CallbackQuery, state: FSMContext) -> None:
     if callback.message == None:
@@ -35,16 +30,6 @@ async def code_menu(callback: CallbackQuery, state: FSMContext) -> None:
                     keyboard=code_menu_keyboard ))
         
     await callback.answer()
-
-@codeMenuRouter.callback_query(
-        lambda a: a.data == BotCBData.MoneyCodeBtn1.value, 
-        flags=flags)
-async def day_except(callback: CallbackQuery, state: FSMContext) -> None:
-    callback.answer()
-    message = cast(CallbackQuery, callback.message)
-    await message.answer(
-            text=BotText.money_code_only_thursday)
-    await state.clear()
 
 
 @codeMenuRouter.callback_query(Text(text='code_forward'))

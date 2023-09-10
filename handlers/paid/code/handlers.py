@@ -10,6 +10,7 @@ from loader import payment
 from staticfiles import FilePath
 from keyboards import BotCBData
 from lexicon import BotText 
+from filters import DayFilter
 from config_data import SpamConfig
 from states import FSMCode
 from filters import DateFilter, AgeFilter
@@ -21,13 +22,28 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.code_menu.name}
 
 
 @codeHandlerRouter.callback_query(
-        lambda a: a.data == BotCBData.MoneyCodeBtn2.value, flags=flags)
-@codeHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCodeBtn4.value, flags=flags)
+        DayFilter(is_day=True), 
+        lambda a: a.data == BotCBData.MoneyCodeBtn2.value, 
+        flags=flags)
+@codeHandlerRouter.callback_query(
+        DayFilter(is_day=True), 
+        lambda a: a.data == BotCBData.MoneyCodeBtn4.value, 
+        flags=flags)
 async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     message = cast(CallbackQuery, callback.message)
     await message.answer(
             text=BotText.enter_fio) 
     await state.set_state(FSMCode.enter_date)
+
+
+@codeHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCodeBtn2.value, flags=flags)
+@codeHandlerRouter.callback_query(lambda a: a.data == BotCBData.MoneyCodeBtn4.value, flags=flags)
+async def day_except(callback: CallbackQuery, state: FSMContext) -> None:
+    callback.answer()
+    message = cast(CallbackQuery, callback.message)
+    await message.answer(
+            text=BotText.money_code_only_thursday)
+    await state.clear()
 
 
 @codeHandlerRouter.message(~Text(contains=['/']), FSMCode.enter_date, flags=flags)
