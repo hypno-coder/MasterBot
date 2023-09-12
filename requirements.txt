@@ -51,4 +51,3 @@ vine==5.0.0
 wcwidth==0.2.6
 wsproto==1.2.0
 yarl==1.9.2
-YooMoney==0.1.0
