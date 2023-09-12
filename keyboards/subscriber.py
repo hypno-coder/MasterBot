@@ -1,4 +1,3 @@
-from lexicon.buttons import BotBtnText
 from loader import config
 from lexicon import BotBtnText
 

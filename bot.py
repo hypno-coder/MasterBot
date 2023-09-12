@@ -20,9 +20,9 @@ async def main() -> None:
     await set_command_menu(bot)
 
     #register middleware
-    dp.message.middleware(ThrottlingMiddleware())
-    dp.message.middleware(UserSaverMiddleware())
-    dp.message.middleware(SubscriberMiddleware())
+    # dp.message.middleware(ThrottlingMiddleware())
+    # dp.message.middleware(UserSaverMiddleware())
+    # dp.message.middleware(SubscriberMiddleware())
 
     # register handlers
     dp.include_router(mainRouter)

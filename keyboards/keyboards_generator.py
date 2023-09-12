@@ -33,10 +33,24 @@ def create_pagination_keyboard(
         kb_builder.row(button)
     return kb_builder.as_markup()
 
-def create_inline_keyboard(width: int, buttons: Type[Enum]) -> InlineKeyboardMarkup:
+def create_inline_keyboard(
+        width: int, 
+        keyboard: Type[Enum], 
+        backButton: Enum | None = None) -> InlineKeyboardMarkup:
+
     kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    for button in buttons:
-        kb_builder.add(InlineKeyboardButton(text = button.value, callback_data=button.name))
+    for button in keyboard:
+        if button.name.startswith('Back'):
+            continue
+        kb_builder.add(
+                InlineKeyboardButton(text = button.value, 
+                                     callback_data=button.name))
+    if backButton != None:
+        kb_builder.row(
+                InlineKeyboardButton(
+                    text=backButton.value, 
+                    callback_data=backButton.name)
+                )
     kb_builder.adjust(width)
     return kb_builder.as_markup()
 

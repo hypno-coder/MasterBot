@@ -1,20 +1,12 @@
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.types import InlineKeyboardMarkup
 
-def get_zodiac_keyboard() -> None:
-    keyboard_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    keyboard_builder.button(text='Овен', callback_data='Aries')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    keyboard_builder.button(text=' ', callback_data='')
-    
+from lexicon import ZodiacButtons, FreeMenuButtons 
+from .keyboards_generator import create_inline_keyboard
+
+MENU_ITEMS_PER_ROW = 3
+
+zodiac_menu: InlineKeyboardMarkup = create_inline_keyboard(
+        MENU_ITEMS_PER_ROW, 
+        ZodiacButtons, 
+        FreeMenuButtons.BackToFreeMenu)
+

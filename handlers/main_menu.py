@@ -1,4 +1,3 @@
-import time
 from aiogram import Router
 from aiogram.filters import CommandStart, Text
 from aiogram.types import Message, ReplyKeyboardRemove

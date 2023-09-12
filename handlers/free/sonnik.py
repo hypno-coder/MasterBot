@@ -8,7 +8,6 @@ from keyboards import BotCBData
 from lexicon import BotText 
 from config_data import SpamConfig
 from services import SonnikTypeArticle, SonnikTypeResponse
-from external_services.celery import run_sonnik_interpretation 
 from states import FSMSonnik
 from keyboards import sonnik_repeat_keyboard
 from errors import send_error_message

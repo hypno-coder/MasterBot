@@ -28,4 +28,5 @@ class BotCBData(Enum):
     BackMenu = 'Callback_Data_Back'
     BackToMainMenu = 'Callback_Data_BackToMainMenu'
     BackToPaidMenu = 'Callback_Data_BackToPaidMenu'
+    BackToFreeMenu = 'Callback_Data_BackToFreeMenu'
 

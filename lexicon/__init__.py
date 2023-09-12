@@ -5,3 +5,5 @@ from .errors import QueryErrText
 from .jantra_description import jantra_text
 from .code_description import code_text
 from .calendar_description import calendar_text
+from .horoscope import ZodiacButtons
+from .free_menu import FreeMenuButtons
