@@ -1,3 +1,6 @@
+from typing import Type
+from enum import Enum
+
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from lexicon import BotBtnText
@@ -29,4 +32,16 @@ def create_pagination_keyboard(
     for button in keyboard:  
         kb_builder.row(button)
     return kb_builder.as_markup()
+
+def create_inline_keyboard(width: int, buttons: Type[Enum]) -> InlineKeyboardMarkup:
+    kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
+    for button in buttons:
+        kb_builder.add(InlineKeyboardButton(text = button.value, callback_data=button.name))
+    kb_builder.adjust(width)
+    return kb_builder.as_markup()
+
+
+
+    
+
 

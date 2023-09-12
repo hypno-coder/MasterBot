@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from keyboards.keyboards_generator import create_inline_kb
 from lexicon import BotBtnText
+from .keyboards_generator import create_inline_kb
 from .callback_data import BotCBData
 
 MENU_ITEMS_PER_ROW = 1
