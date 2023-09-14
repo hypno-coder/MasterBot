@@ -26,5 +26,5 @@ class FSMJantra(StatesGroup):
     successful_payment = State()
 
 class FSMHoroscope(StatesGroup):
-    get_zodiac = State()
+    get = State()
 
