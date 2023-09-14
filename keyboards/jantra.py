@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from lexicon import BotBtnText
-from .callback_data import BotCBData
+from lexicon import BotBtnText, PaidMenuButtons
+from .callback_data import BotCBData 
 from keyboards.keyboards_generator import create_inline_kb
 
 MENU_ITEMS_PER_ROW = 1
@@ -16,8 +16,8 @@ jantra_menu_keyboard = [
             callback_data=BotCBData.JantraBtn2.value
             ),
         InlineKeyboardButton(
-            text=BotBtnText.BackToPaidMenu,
-            callback_data=BotCBData.BackToPaidMenu.value
+            text=PaidMenuButtons.BackToPaidMenu.value,
+            callback_data=PaidMenuButtons.BackToPaidMenu.name
             )
 
         ]

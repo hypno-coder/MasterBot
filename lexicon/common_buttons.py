@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from typing import Any
-from loader import payment
 
 @dataclass
 class BotButtonsText:
@@ -13,33 +12,18 @@ class BotButtonsText:
     Btn6: str = "Магический Бот"
     
     # Paid Menu
-    JantraBtn1: str = f"Янтра: {payment.price.jantra}₽"
-    MoneyCodeBtn1: str = f"ФинКод: {payment.price.money_code}₽"
-    MoneyCalendarBtn1: str = f"Денежный Календарь: {payment.price.money_calendar}₽"
-    BackToPaidMenu: str = "Назад"
 
     # Menu MoneyCode
     MoneyCodeBtn2: str = "Расчитать ФинKод"
     MoneyCodeBtn3: str = "Подтвердить данные"
     MoneyCodeBtn4: str = "Исправить данные"
 
-    # Menu MoneyCalendar
-    MoneyCalendarBtn2: str = "Расчитать Денежный Календарь"
-    MoneyCalendarBtn3: str = "Подтвердить данные"
-    MoneyCalendarBtn4: str = "Исправить данные"
-
-
     # Menu Jantra
     JantraBtn2: str = "Создать Янтру"
     JantraBtn3: str = "Подтвердить данные"
     JantraBtn4: str = "Исправить данные"
 
-    # Main Menu
-    Paid: str = "Платные 💰"
-    Free: str = "Бесплатные 🆓"
-
     # Common Buttons
-    BackMainMenu: str = "Главное Меню"
     PagiKeyboard: dict[str, str] = field(default_factory=dict)
     backward: str = "<<"
     borward: str = ">>"

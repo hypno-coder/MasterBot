@@ -13,12 +13,6 @@ class BotCBData(Enum):
     MoneyCodeBtn3 = 'Callback_Data_Confirm_Data_Code'
     MoneyCodeBtn4 = 'Callback_Data_Fix_Data_Code'
 
-    # MoneyCalendar
-    MoneyCalendarBtn1 = 'Callback_Data_Money_Calendar'
-    MoneyCalendarBtn2 = 'Callback_Data_Calculate_Money_Calendar'
-    MoneyCalendarBtn3 = 'Callback_Data_Confirm_Data_Calendar'
-    MoneyCalendarBtn4 = 'Callback_Data_Fix_Data_Calendar'
-
     # Common
     Btn2 = 'Callback_Data_Sonnik'
     Btn3 = 'Callback_Data_Taro'

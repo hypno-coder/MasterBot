@@ -9,7 +9,7 @@ from keyboards import code_action_menu_keyboard
 from loader import payment
 from staticfiles import FilePath
 from keyboards import BotCBData
-from lexicon import BotText 
+from lexicon import BotText, CommonLexicon 
 from filters import DayFilter
 from config_data import SpamConfig
 from states import FSMCode
@@ -32,7 +32,7 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.code_menu.name}
 async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     message = cast(CallbackQuery, callback.message)
     await message.answer(
-            text=BotText.enter_fio) 
+            text=CommonLexicon.enter_fio) 
     await state.set_state(FSMCode.enter_date)
 
 
@@ -54,7 +54,7 @@ async def enter_date(message: Message, state: FSMContext) -> None:
     fio: str = message.text 
     await state.set_data({'fio': fio})
 
-    await message.answer(text=BotText.enter_date)
+    await message.answer(text=CommonLexicon.enter_date)
     await state.set_state(FSMCode.check_data)
 
 
@@ -74,10 +74,10 @@ async def check_data(message: Message, state: FSMContext) -> None:
     data.update({'birthday': birthday})
     await state.update_data(data)
 
-    await message.answer(text=BotText.check_data)
-    await message.answer(text=f'{BotText.fio}{fio}')
-    await message.answer(text=f'{BotText.birthday}{birthday}')
-    await message.answer(text=BotText.selected_action, reply_markup=code_action_menu_keyboard)
+    await message.answer(text=CommonLexicon.check_data)
+    await message.answer(text=f'{CommonLexicon.fio}{fio}')
+    await message.answer(text=f'{CommonLexicon.birthday}{birthday}')
+    await message.answer(text=CommonLexicon.selected_action, reply_markup=code_action_menu_keyboard)
 
 
 @codeHandlerRouter.message(~Text(contains=['/']), FSMCode.check_data, DateFilter(is_date=True), flags=flags)
@@ -85,14 +85,14 @@ async def wrong_age(message: Message) -> None:
     if message.text == None:
         return
 
-    await message.reply(BotText.legal_age)
+    await message.reply(CommonLexicon.legal_age)
 
 
 @codeHandlerRouter.message(~Text(contains=['/']), FSMCode.check_data, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return
-    await message.reply(BotText.invalid_format_date)
+    await message.reply(CommonLexicon.invalid_format_date)
 
 
 @codeHandlerRouter.callback_query(

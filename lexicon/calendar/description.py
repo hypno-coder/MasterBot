@@ -1,4 +1,4 @@
-calendar_text: dict[int, str] = {
+calendar_description: dict[int, str] = {
     1: """
     <b>❓ Что такое денежный 
        календарь?</b> 

@@ -1,10 +1,9 @@
 import random
 from asyncio import sleep
-from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
 from aiogram.types.input_file import FSInputFile, BufferedInputFile
 
 from loader import bot
-from lexicon import BotText
+from lexicon import BotText, CommonLexicon
 from keyboards.keyboards_generator import create_inline_kb
 
 async def remove_message(chat_id: int, message_id: int, delay: int = 60) -> None:
@@ -61,4 +60,4 @@ async def send_message_with_delay(
 
     await bot.send_message(chat_id=chat_id, text='===========================')
 
-    await bot.send_message(chat_id, text=BotText.back_menu, reply_markup=get_keyboard()) 
+    await bot.send_message(chat_id, text=CommonLexicon.back_menu, reply_markup=get_keyboard()) 

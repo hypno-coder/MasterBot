@@ -1,28 +1,22 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from lexicon import BotBtnText
-from .keyboards_generator import create_inline_kb
-from .callback_data import BotCBData
+from lexicon import CalendarMenuButtons, CalendarActionMenuButtons, PaidMenuButtons
+from .keyboards_generator import create_inline_keyboard
 
 MENU_ITEMS_PER_ROW = 1
 
-CALENDAR_ACTION_MENU_BUTTONS = (
-        BotCBData.MoneyCalendarBtn3.name,
-        BotCBData.MoneyCalendarBtn4.name,
-    )
+calendar_action_menu_keyboard: InlineKeyboardMarkup = create_inline_keyboard(
+        MENU_ITEMS_PER_ROW, CalendarActionMenuButtons) 
 
 calendar_menu_keyboard = [
         InlineKeyboardButton(
-            text=BotBtnText.MoneyCalendarBtn2,
-            callback_data=BotCBData.MoneyCalendarBtn2.value
+            text=CalendarMenuButtons.CalculateMoneyCalendar.value,
+            callback_data=CalendarMenuButtons.CalculateMoneyCalendar.name
             ),
         InlineKeyboardButton(
-            text=BotBtnText.BackToPaidMenu,
-            callback_data=BotCBData.BackToPaidMenu.value
+            text=PaidMenuButtons.BackToPaidMenu.value,
+            callback_data=PaidMenuButtons.BackToPaidMenu.name
             )
         ]
-
-calendar_action_menu_keyboard: InlineKeyboardMarkup = create_inline_kb(MENU_ITEMS_PER_ROW, *CALENDAR_ACTION_MENU_BUTTONS)    
-
 
 
