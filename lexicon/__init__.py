@@ -10,3 +10,4 @@ from .main_menu import MainMenuButtons
 from .paid_menu import PaidMenuButtons
 from .calendar import CalendarMenuButtons, CalendarActionMenuButtons, CalendarLexicon, calendar_description
 from .common import CommonLexicon
+from .middlewares import MiddlewareButtons, MiddlewareLexicon

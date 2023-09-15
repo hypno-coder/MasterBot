@@ -28,11 +28,6 @@ class BotButtonsText:
     backward: str = "<<"
     borward: str = ">>"
 
-
-    # Subscriber Menu
-    CheckSub: str = "Проверить подписку 🧙🪄✨"
-    Sub: str = "Подписаться"
-
     def __init__(self):
         self.PagiKeyboard = {'backward': '<<', 'forward': '>>'}
 

@@ -1,8 +1,9 @@
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import Message
+
 from database import User 
-from lexicon import BotText
+from lexicon import MiddlewareLexicon 
 from loader import bot, config
 
 class UserSaverMiddleware(BaseMiddleware):
@@ -37,12 +38,5 @@ class UserSaverMiddleware(BaseMiddleware):
         for admin_id in config.tg_bot.admin_ids:
             await bot.send_message(
                     chat_id=admin_id, 
-                    text=f"""{BotText.user_saver['text1']} - {self.username} \n
-                    {BotText.user_saver['text2']} {count}""")
-
-
-
-
-
-        
-
+                    text=f"""{MiddlewareLexicon.new_user} - {self.username} \n
+                    {MiddlewareLexicon.total_users}{count}""")

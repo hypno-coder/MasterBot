@@ -1,9 +1,9 @@
 from aiogram import Router, F
-from aiogram.filters import CommandStart, Text
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
+from aiogram.filters import CommandStart
+from aiogram.types import Message, CallbackQuery 
 
 from keyboards import main_menu_keyboard 
-from lexicon import BotBtnText, CommonLexicon, MainMenuButtons
+from lexicon import CommonLexicon, MainMenuButtons, MiddlewareButtons 
 from config_data import SpamConfig
 
 mainMenuRouter: Router = Router()
@@ -27,14 +27,14 @@ async def start_main_menu(event: Message | CallbackQuery) -> None:
                          reply_markup=main_menu_keyboard)
 
 
-@mainMenuRouter.message(Text(text=BotBtnText.CheckSub), flags=flags)
-async def check_sub(message: Message) -> None:
-    await message.answer(text=CommonLexicon.successful_subscription, 
-                         reply_markup=ReplyKeyboardRemove(remove_keyboard=True, selective=True))
-    await message.answer(text=CommonLexicon.paid_menu,
+@mainMenuRouter.callback_query(F.data == MiddlewareButtons.check_sub.name, flags=flags)
+async def check_sub(callback: CallbackQuery) -> None:
+    if callback.message == None:
+        return
+    await callback.message.edit_text(text=CommonLexicon.successful_subscription,
                          reply_markup=main_menu_keyboard)
-    await message.delete()
 
+    
 
 
 

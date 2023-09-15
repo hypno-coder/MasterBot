@@ -2,10 +2,6 @@ from dataclasses import dataclass, field
 
 @dataclass
 class BotHandlerText:
-    # Common
-    user_saver: dict[str, str] = field(default_factory=dict)
-    subscriber: dict[str, str] = field(default_factory=dict)
-
     # Sonnik
     sonnik_conv: dict[str, str] = field(default_factory=dict)
     sonnik_download_message: str = 'Загрузка может занять до 5 минут ...'
@@ -34,13 +30,6 @@ class BotHandlerText:
     message_delay: str = 'результат отправлю в течении: '
 
     def __post_init__(self):
-        self.subscriber: dict[str, str] = {
-            'inline_text': 'Вы не подписанны на канал: Мастерская Желаний', 
-            'common_text': 'Для того, что бы продолжить пользоваться ботом, вы должны подписаться на канал.'}
-        self.user_saver: dict[str, str] ={
-                'text1': 'Новый Пользователь!',
-                'text2': 'Всего пользователей: '
-                }
         self.sonnik_conv: dict[str, str] = {
                 'start':'Опишите ОДНИМ словом образ вашего сна: '}
 
