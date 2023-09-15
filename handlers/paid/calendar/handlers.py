@@ -7,7 +7,6 @@ from aiogram.types.input_file import FSInputFile
 from keyboards import calendar_action_menu_keyboard
 from lexicon.calendar.buttons import CalendarActionMenuButtons
 from loader import payment
-from aiogram.filters import Text 
 from staticfiles import FilePath
 from lexicon import CalendarMenuButtons, CommonLexicon, CalendarLexicon, PaidMenuButtons 
 from config_data import SpamConfig
@@ -22,7 +21,7 @@ flags: dict[str, str] = {'throttling_key': SpamConfig.calendar_menu.name}
 
 
 @calendarHandlerRouter.callback_query(F.data.in_([
-    CalendarMenuButtons.CalculateMoneyCalendar.name,
+   CalendarMenuButtons.CalculateMoneyCalendar.name,
     CalendarActionMenuButtons.CalendarEditData.name]), flags=flags)
 async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     message = cast(CallbackQuery, callback.message)
@@ -31,7 +30,7 @@ async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(FSMCalendar.enter_date)
 
 
-@calendarHandlerRouter.message(~Text(contains=['/']), FSMCalendar.enter_date, flags=flags)
+@calendarHandlerRouter.message(~F.text.startswith('/'), FSMCalendar.enter_date, flags=flags)
 async def enter_date(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -44,7 +43,7 @@ async def enter_date(message: Message, state: FSMContext) -> None:
 
 
 @calendarHandlerRouter.message(
-        ~Text(contains=['/']), 
+        ~F.text.startswith('/'), 
         FSMCalendar.check_data, 
         DateFilter(is_date=True), 
         AgeFilter(is_age=True),
@@ -68,7 +67,7 @@ async def check_data(message: Message, state: FSMContext) -> None:
 
 
 @calendarHandlerRouter.message(
-        ~Text(contains=['/']), 
+        ~F.text.startswith('/'), 
         FSMCalendar.check_data, 
         DateFilter(is_date=True), 
         flags=flags)
@@ -79,7 +78,7 @@ async def wrong_age(message: Message) -> None:
     await message.reply(CommonLexicon.legal_age)
 
 
-@calendarHandlerRouter.message(~Text(contains=['/']), FSMCalendar.check_data, flags=flags)
+@calendarHandlerRouter.message(~F.text.startswith('/'), FSMCalendar.check_data, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return
@@ -119,7 +118,7 @@ async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, sta
 
 
 @calendarHandlerRouter.message(
-        ~Text(contains=['/']),
+        ~F.text.startswith('/'),
         F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT), 
         FSMCalendar.successful_payment, 
         flags=flags)
@@ -137,7 +136,7 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     await send_message_with_delay(
             chat_id, 
             name=CalendarLexicon.label,
-            back_button_callback=PaidMenuButtons.BackToPaidMenu.name,
+            back_button_callback=PaidMenuButtons.BackToPaidMenu,
             greeting=fio,
             document=document, 
             document_caption=CalendarLexicon.document,

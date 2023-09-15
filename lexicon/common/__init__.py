@@ -1,1 +1,1 @@
-from .lexicon import CommonLexicon
+from .lexicon import CommonLexicon, PagiLexicon

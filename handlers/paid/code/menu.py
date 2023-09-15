@@ -1,61 +1,59 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import CallbackQuery 
-from aiogram.filters import Text 
 from aiogram.fsm.context import FSMContext 
 
-from keyboards import create_pagination_keyboard, code_menu_keyboard, BotCBData
-from lexicon import code_text
+from keyboards import Keyboard, code_menu_buttons
+from lexicon import code_description, PaidMenuButtons, CodePagiBtnCallback 
 from config_data import SpamConfig
 
 codeMenuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.code_menu.name}
 
-@codeMenuRouter.callback_query(
-        lambda a: a.data == BotCBData.MoneyCodeBtn1.value, 
-        flags=flags)
+
+@codeMenuRouter.callback_query(F.data == PaidMenuButtons.MoneyCode.name, flags=flags)
 async def code_menu(callback: CallbackQuery, state: FSMContext) -> None:
     if callback.message == None:
         return
 
     page = 1
     await state.set_data(data={"page": page})
-    text = code_text[page]
+    text = code_description[page]
 
     await callback.message.edit_text(
         text=text,
-        reply_markup=create_pagination_keyboard(
-                    'code_backward',
-                    f'{page}/{len(code_text)}',
-                    'code_forward',
-                    keyboard=code_menu_keyboard ))
+        reply_markup=Keyboard.create_pagi(
+                    CodePagiBtnCallback.backward,
+                    f'{page}/{len(code_description)}',
+                    CodePagiBtnCallback.forward,
+                    keyboard=code_menu_buttons ))
         
     await callback.answer()
 
 
-@codeMenuRouter.callback_query(Text(text='code_forward'))
+@codeMenuRouter.callback_query(F.data == CodePagiBtnCallback.forward)
 async def process_forward_press(callback: CallbackQuery, state: FSMContext):
     if callback.message == None:
         return
 
     data = await state.get_data()
-    if data['page'] == len(code_text):
+    if data['page'] == len(code_description):
         await callback.answer()
         return
 
     page = data['page'] + 1
     await state.update_data(page=page)
-    text = code_text[page]
+    text = code_description[page]
 
     await callback.message.edit_text(
         text=text,
-        reply_markup=create_pagination_keyboard(
-                'code_backward',
-                f'{page}/{len(code_text)}',
-                'code_forward',
-                keyboard=code_menu_keyboard ))
+        reply_markup=Keyboard.create_pagi(
+                CodePagiBtnCallback.backward,
+                f'{page}/{len(code_description)}',
+                CodePagiBtnCallback.forward,
+                keyboard=code_menu_buttons))
     await callback.answer()
 
-@codeMenuRouter.callback_query(Text(text='code_backward'))
+@codeMenuRouter.callback_query(F.data == CodePagiBtnCallback.backward)
 async def process_backward_press(callback: CallbackQuery, state: FSMContext):
     if callback.message == None:
         return
@@ -67,13 +65,13 @@ async def process_backward_press(callback: CallbackQuery, state: FSMContext):
 
     page = data['page'] - 1
     await state.update_data(page=page)
-    text = code_text[page]
+    text = code_description[page]
 
     await callback.message.edit_text(
             text=text,
-            reply_markup=create_pagination_keyboard(
-                'code_backward',
-                f'{page}/{len(code_text)}',
-                'code_forward',
-                keyboard=code_menu_keyboard ))
+            reply_markup=Keyboard.create_pagi(
+                CodePagiBtnCallback.backward,
+                f'{page}/{len(code_description)}',
+                CodePagiBtnCallback.forward,
+                keyboard=code_menu_buttons ))
     await callback.answer()

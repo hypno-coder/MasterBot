@@ -2,8 +2,8 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery 
 from aiogram.fsm.context import FSMContext 
 
-from keyboards import create_pagination_keyboard, calendar_menu_keyboard 
-from lexicon import calendar_description, PaidMenuButtons 
+from keyboards import Keyboard, calendar_menu_buttons 
+from lexicon import calendar_description, PaidMenuButtons, CalendarPagiBtnCallback 
 from config_data import SpamConfig
 
 calendarMenuRouter: Router = Router()
@@ -21,16 +21,16 @@ async def calendar_menu(callback: CallbackQuery, state: FSMContext) -> None:
 
     await callback.message.edit_text(
         text=text,
-        reply_markup=create_pagination_keyboard(
-                    'calendar_backward',
+        reply_markup=Keyboard.create_pagi(
+                    CalendarPagiBtnCallback.backward,
                     f'{page}/{len(calendar_description)}',
-                    'calendar_forward',
-                    keyboard=calendar_menu_keyboard ))
+                    CalendarPagiBtnCallback.forward,
+                    keyboard=calendar_menu_buttons))
         
     await callback.answer()
 
 
-@calendarMenuRouter.callback_query(F.data == 'calendar_forward')
+@calendarMenuRouter.callback_query(F.data == CalendarPagiBtnCallback.forward)
 async def process_forward_press(callback: CallbackQuery, state: FSMContext):
     if callback.message == None:
         return
@@ -46,14 +46,14 @@ async def process_forward_press(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         text=text,
-        reply_markup=create_pagination_keyboard(
-                'calendar_backward',
+        reply_markup=Keyboard.create_pagi(
+                CalendarPagiBtnCallback.backward,
                 f'{page}/{len(calendar_description)}',
-                'calendar_forward',
-                keyboard=calendar_menu_keyboard ))
+                CalendarPagiBtnCallback.forward,
+                keyboard=calendar_menu_buttons))
     await callback.answer()
 
-@calendarMenuRouter.callback_query(F.data == 'calendar_backward')
+@calendarMenuRouter.callback_query(F.data == CalendarPagiBtnCallback.backward)
 async def process_backward_press(callback: CallbackQuery, state: FSMContext):
     if callback.message == None:
         return
@@ -68,9 +68,9 @@ async def process_backward_press(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
             text=text,
-            reply_markup=create_pagination_keyboard(
-                'calendar_backward',
+            reply_markup=Keyboard.create_pagi(
+                CalendarPagiBtnCallback.backward,
                 f'{page}/{len(calendar_description)}',
-                'calendar_forward',
-                keyboard=calendar_menu_keyboard ))
+                CalendarPagiBtnCallback.forward,
+                keyboard=calendar_menu_buttons))
     await callback.answer()

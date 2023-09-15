@@ -1,4 +1,5 @@
 from enum import StrEnum
+from typing import Any
 
 class CommonLexicon(StrEnum):    
     back_menu = 'Для возврата в меню:'
@@ -19,3 +20,10 @@ class CommonLexicon(StrEnum):
     selected_action = 'Выберите, дальнейшее действие: '
     enter_date = 'Укажите дату рождения в формате 06.08.1987'
     successful_subscription = 'Поздравляем! Вы успешно подписались на канал Мастерская Желаний, теперь вы можете пользоваться ботом. Выберете платные или бесплатные функции'
+    remove_message_error = 'Попытка удаления уже отредактированooго сooбщения:'
+    pay_success = 'Оплата прошла успешно, '
+    message_delay = 'результат отправлю в течении: '
+
+class PagiLexicon(StrEnum):
+    backward = '<<'
+    forward = '>>'

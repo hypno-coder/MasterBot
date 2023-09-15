@@ -1,13 +1,12 @@
 from .commands import COMMANDS
-from .common_buttons import BotBtnText
 from .lexicon import BotText 
 from .errors import QueryErrText
-from .jantra_description import jantra_text
-from .code_description import code_text
 from .horoscope import ZodiacButtons
 from .free_menu import FreeMenuButtons
 from .main_menu import MainMenuButtons
 from .paid_menu import PaidMenuButtons
-from .calendar import CalendarMenuButtons, CalendarActionMenuButtons, CalendarLexicon, calendar_description
-from .common import CommonLexicon
+from .calendar import CalendarMenuButtons, CalendarActionMenuButtons, CalendarLexicon, CalendarPagiBtnCallback, calendar_description 
+from .common import CommonLexicon, PagiLexicon 
 from .middlewares import MiddlewareButtons, MiddlewareLexicon
+from .code import CodeMenuButtons, CodePagiBtnCallback, CodeActionMenuButtons, CodeLexicon, code_description
+from .jantra import JantraMenuButtons, JantraPagiBtnCallback, JantraActionMenuButtons, JantraLexicon, jantra_description

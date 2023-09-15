@@ -4,7 +4,6 @@ from aiogram import Bot
 from aiogram.types import CallbackQuery, Message 
 from aiogram.fsm.context import FSMContext
 
-from keyboards import BotCBData 
 from lexicon import BotText 
 from config_data import SpamConfig
 from services import SonnikTypeArticle, SonnikTypeResponse, Sonnik
@@ -16,7 +15,7 @@ from utils import remove_message
 sonnikRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.sonnik_conv.name}
 
-@sonnikRouter.callback_query(lambda a: a.data == BotCBData.Btn2.value, flags=flags)
+@sonnikRouter.callback_query(lambda a: a.data == 'Sonnik', flags=flags)
 async def start_sonnik_conv(callback: CallbackQuery, bot: Bot, state: FSMContext) -> None:
     if callback.message == None:
         return

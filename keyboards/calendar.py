@@ -1,14 +1,14 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from lexicon import CalendarMenuButtons, CalendarActionMenuButtons, PaidMenuButtons
-from .keyboards_generator import create_inline_keyboard
+from .keyboards_generator import Keyboard
 
 MENU_ITEMS_PER_ROW = 1
 
-calendar_action_menu_keyboard: InlineKeyboardMarkup = create_inline_keyboard(
+calendar_action_menu_keyboard: InlineKeyboardMarkup = Keyboard.create_inline(
         MENU_ITEMS_PER_ROW, CalendarActionMenuButtons) 
 
-calendar_menu_keyboard = [
+calendar_menu_buttons = [
         InlineKeyboardButton(
             text=CalendarMenuButtons.CalculateMoneyCalendar.value,
             callback_data=CalendarMenuButtons.CalculateMoneyCalendar.name
