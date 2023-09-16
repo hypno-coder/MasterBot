@@ -3,7 +3,7 @@ import logging
 
 from handlers import mainRouter
 from commands import set_command_menu
-from middlewares import ThrottlingMiddleware, UserSaverMiddleware, SubscriberMiddleware 
+from middlewares import SubscriberMiddleware, UserSaverMiddleware, ThrottlingMiddleware 
 from loader import dp, bot 
 
 logger = logging.getLogger(__name__)
@@ -16,24 +16,21 @@ async def main() -> None:
 
     logger.info('Starting bot')
 
-    # registr  commands
     await set_command_menu(bot)
 
-    #register middleware
-    dp.message.middleware(ThrottlingMiddleware())
-    dp.message.middleware(UserSaverMiddleware())
     dp.message.middleware(SubscriberMiddleware())
+    dp.callback_query.middleware(SubscriberMiddleware())
+    dp.message.middleware(UserSaverMiddleware())
+    dp.message.middleware(ThrottlingMiddleware())
 
-    # register handlers
+
     dp.include_router(mainRouter)
 
     try:
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)
-
     except Exception as ex:
         logging.error(f"Ошибка: {ex}")
-
     finally:
         await bot.session.close()
         await dp.storage.close()

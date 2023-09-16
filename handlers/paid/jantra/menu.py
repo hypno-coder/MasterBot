@@ -1,57 +1,56 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import CallbackQuery 
-from aiogram.filters import Text 
 from aiogram.fsm.context import FSMContext 
 
-from keyboards import create_pagination_keyboard,jantra_menu_keyboard,  BotCBData
-from lexicon import jantra_text
+from keyboards import Keyboard,jantra_menu_buttons 
+from lexicon import jantra_description, PaidMenuButtons, JantraPagiBtnCallback
 from config_data import SpamConfig
 
 jantraMenuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.jantra_menu.name}
 
-@jantraMenuRouter.callback_query(lambda a: a.data == BotCBData.JantraBtn1.value, flags=flags)
+@jantraMenuRouter.callback_query(F.data == PaidMenuButtons.Jantra.name, flags=flags)
 async def jantra_menu(callback: CallbackQuery, state: FSMContext) -> None:
     if callback.message == None:
         return
     
     page = 1
     await state.set_data(data={'page': page})
-    text = jantra_text[page]
+    text = jantra_description[page]
     await callback.message.edit_text(
         text=text,
-        reply_markup=create_pagination_keyboard(
-                    'jantra_backward',
-                    f'{page}/{len(jantra_text)}',
-                    'jantra_forward',
-                    keyboard=jantra_menu_keyboard ))
+        reply_markup=Keyboard.create_pagi(
+                    JantraPagiBtnCallback.backward,
+                    f'{page}/{len(jantra_description)}',
+                    JantraPagiBtnCallback.forward,
+                    keyboard=jantra_menu_buttons ))
     await callback.answer()
 
 
-@jantraMenuRouter.callback_query(Text(text='jantra_forward'))
+@jantraMenuRouter.callback_query(F.data == JantraPagiBtnCallback.forward)
 async def process_forward_press(callback: CallbackQuery, state: FSMContext):
     if callback.message == None:
         return
 
     data = await state.get_data()
 
-    if data['page'] == len(jantra_text):
+    if data['page'] == len(jantra_description):
         await callback.answer()
         return
 
     page = data['page'] + 1
     await state.update_data(page=page)
-    text = jantra_text[page]
+    text = jantra_description[page]
 
     await callback.message.edit_text(
         text=text,
-        reply_markup=create_pagination_keyboard(
-                'jantra_backward',
-                f'{page}/{len(jantra_text)}',
-                'jantra_forward',
-                keyboard=jantra_menu_keyboard ))
+        reply_markup=Keyboard.create_pagi(
+                JantraPagiBtnCallback.backward,
+                f'{page}/{len(jantra_description)}',
+                JantraPagiBtnCallback.forward,
+                keyboard=jantra_menu_buttons ))
 
-@jantraMenuRouter.callback_query(Text(text='jantra_backward'))
+@jantraMenuRouter.callback_query(F.data == JantraPagiBtnCallback.backward)
 async def process_backward_press(callback: CallbackQuery, state: FSMContext):
     if callback.message == None:
         return
@@ -63,12 +62,12 @@ async def process_backward_press(callback: CallbackQuery, state: FSMContext):
 
     page = data['page'] - 1
     await state.update_data(page=page)
-    text = jantra_text[page]
+    text = jantra_description[page]
 
     await callback.message.edit_text(
             text=text,
-            reply_markup=create_pagination_keyboard(
-                'jantra_backward',
-                f'{page}/{len(jantra_text)}',
-                'jantra_forward',
-                keyboard=jantra_menu_keyboard ))
+            reply_markup=Keyboard.create_pagi(
+                JantraPagiBtnCallback.backward,
+                f'{page}/{len(jantra_description)}',
+                JantraPagiBtnCallback.forward,
+                keyboard=jantra_menu_buttons ))

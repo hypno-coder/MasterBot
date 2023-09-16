@@ -1,30 +1,30 @@
-from aiogram import Router
-from aiogram.filters import Text
+from aiogram import Router, F
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery 
 
-from keyboards import free_menu_keyboard, BotCBData
-from lexicon import BotText, BotBtnText
-from utils import remove_message
+from keyboards import free_menu_keyboard
+from lexicon import FreeMenuButtons, MainMenuButtons, FreeMenuLexicon
 from config_data import SpamConfig
 
 menuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.free_menu.name}
 
-@menuRouter.message(Text(text=BotBtnText.Free), flags=flags)
-async def start_free_menu(message: Message) -> None:
-    reply = await message.answer(text=BotText.free_menu,
+
+@menuRouter.callback_query(F.data.in_([MainMenuButtons.FreeServices.name,
+                                       FreeMenuButtons.BackToFreeMenu.name]), flags=flags)
+async def start_free_menu(event: Message | CallbackQuery, state: FSMContext) -> None:
+    await state.clear()
+
+    if isinstance(event, Message):
+        await event.answer(text=FreeMenuLexicon.services,
                          reply_markup=free_menu_keyboard)
-    await message.delete()
-    await remove_message(chat_id=message.chat.id, message_id=reply.message_id)
+        await event.delete()
 
+    elif isinstance(event, CallbackQuery):
+        if event.message == None:
+            return
 
-
-@menuRouter.callback_query(lambda a: a.data == BotCBData.BackToMainMenu.value, flags=flags)
-async def back_to_free_menu(callback: CallbackQuery) -> None:
-    if callback.message == None:
-        return
-    await callback.answer()
-    await callback.message.edit_text(text=BotText.free_menu, 
-                                           reply_markup=free_menu_keyboard)
-
-
+        await event.answer()
+        message = event.message
+        await message.edit_text(text=FreeMenuLexicon.services,
+                         reply_markup=free_menu_keyboard)

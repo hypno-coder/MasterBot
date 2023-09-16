@@ -4,11 +4,9 @@ from aiogram import Bot
 from aiogram.types import CallbackQuery, Message 
 from aiogram.fsm.context import FSMContext
 
-from keyboards import BotCBData 
 from lexicon import BotText 
 from config_data import SpamConfig
-from services import SonnikTypeArticle, SonnikTypeResponse
-from external_services.celery import run_sonnik_interpretation 
+from services import SonnikTypeArticle, SonnikTypeResponse, Sonnik
 from states import FSMSonnik
 from keyboards import sonnik_repeat_keyboard
 from errors import send_error_message
@@ -17,7 +15,7 @@ from utils import remove_message
 sonnikRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.sonnik_conv.name}
 
-@sonnikRouter.callback_query(lambda a: a.data == BotCBData.Btn2.value, flags=flags)
+@sonnikRouter.callback_query(lambda a: a.data == 'Sonnik', flags=flags)
 async def start_sonnik_conv(callback: CallbackQuery, bot: Bot, state: FSMContext) -> None:
     if callback.message == None:
         return
@@ -46,7 +44,8 @@ async def process_image(message: Message, bot: Bot, state: FSMContext) -> None:
         return
 
     text_image: str = message.text
-    response: SonnikTypeResponse = run_sonnik_interpretation(text_image.strip())
+    sonnik: Sonnik = Sonnik()
+    response: SonnikTypeResponse = sonnik.interpret(text_image.strip())
     error: str | None = response["error"]
     data: list[SonnikTypeArticle] = response["data"]
 

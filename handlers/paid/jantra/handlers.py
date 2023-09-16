@@ -1,13 +1,13 @@
 from typing import cast
 from aiogram import Router, Bot, F
-from aiogram.filters import Text
 from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
 from aiogram.fsm.context import FSMContext
-from aiogram.types.input_file import BufferedInputFile 
+from aiogram.types.input_file import BufferedInputFile
+from lexicon.paid_menu.buttons import PaidMenuButtons 
 
 from loader import payment
-from keyboards import BotCBData, jantra_action_menu_keyboard 
-from lexicon import BotText 
+from keyboards import jantra_action_menu_keyboard 
+from lexicon import CommonLexicon, JantraLexicon, JantraMenuButtons, JantraActionMenuButtons 
 from config_data import SpamConfig
 from states import FSMJantra
 from filters import DateFilter, AgeFilter
@@ -18,17 +18,16 @@ jantraHandlerRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.jantra_menu.name}
 
 
-@jantraHandlerRouter.callback_query(
-        lambda a: a.data == BotCBData.JantraBtn2.value, flags=flags)
-@jantraHandlerRouter.callback_query(lambda a: a.data == BotCBData.JantraBtn4.value, flags=flags)
+@jantraHandlerRouter.callback_query(F.data.in_([
+    JantraMenuButtons.CreateJantra.name, JantraActionMenuButtons.JantraEditData.name]), flags=flags)
 async def eter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     message = cast(CallbackQuery, callback.message)
     await message.answer(
-            text=BotText.enter_fio) 
+            text=CommonLexicon.enter_fio) 
     await state.set_state(FSMJantra.enter_date)
 
 
-@jantraHandlerRouter.message(~Text(contains=['/']), FSMJantra.enter_date, flags=flags)
+@jantraHandlerRouter.message(~F.text.startswith('/'), FSMJantra.enter_date, flags=flags)
 async def enter_date(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -36,12 +35,12 @@ async def enter_date(message: Message, state: FSMContext) -> None:
     fio: str = message.text 
     await state.set_data({'fio': fio})
 
-    await message.answer(text=BotText.enter_date)
+    await message.answer(text=CommonLexicon.enter_date)
     await state.set_state(FSMJantra.check_data)
 
 
 @jantraHandlerRouter.message(
-        ~Text(contains=['/']),
+        ~F.text.startswith('/'),
         FSMJantra.check_data, 
         DateFilter(is_date=True), 
         AgeFilter(is_age=True),
@@ -56,15 +55,14 @@ async def check_data(message: Message, state: FSMContext) -> None:
     data.update({'birthday': birthday})
     await state.update_data(data)
 
-    await message.answer(text=BotText.check_data)
-    await message.answer(text=f'{BotText.fio}{fio}')
-    await message.answer(text=f'{BotText.birthday}{birthday}')
-    await message.answer(text=BotText.selected_action, reply_markup=jantra_action_menu_keyboard)
-
+    await message.answer(text=CommonLexicon.check_data)
+    await message.answer(text=f'{CommonLexicon.fio}{fio}')
+    await message.answer(text=f'{CommonLexicon.birthday}{birthday}')
+    await message.answer(text=CommonLexicon.selected_action, reply_markup=jantra_action_menu_keyboard)
 
 
 @jantraHandlerRouter.message(
-        ~Text(contains=['/']), 
+        ~F.text.startswith('/'), 
         FSMJantra.check_data, 
         DateFilter(is_date=True), 
         flags=flags)
@@ -72,20 +70,18 @@ async def wrong_age(message: Message) -> None:
     if message.text == None:
         return
 
-    await message.reply(BotText.legal_age)
+    await message.reply(CommonLexicon.legal_age)
 
 
-@jantraHandlerRouter.message(~Text(contains=['/']), FSMJantra.check_data, flags=flags)
+@jantraHandlerRouter.message(~F.text.startswith('/'), FSMJantra.check_data, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return
 
-    await message.reply(BotText.invalid_format_date)
+    await message.reply(CommonLexicon.invalid_format_date)
 
 
-@jantraHandlerRouter.callback_query(
-        lambda a: a.data == BotCBData.JantraBtn3.value, 
-        flags=flags)
+@jantraHandlerRouter.callback_query(F.data == JantraActionMenuButtons.JantraConfirmData.name, flags=flags)
 async def order(callback: CallbackQuery, bot: Bot, state: FSMContext):
     callback.answer()
     message = callback.message
@@ -94,14 +90,14 @@ async def order(callback: CallbackQuery, bot: Bot, state: FSMContext):
 
     await bot.send_invoice( 
                            chat_id=message.chat.id,
-                           title=BotText.jantra_title,
-                           description=BotText.jantra_payment_description,
-                           payload=BotText.jantra_payload,
+                           title=JantraLexicon.label,
+                           description=JantraLexicon.payment_description,
+                           payload=JantraLexicon.payload,
                            provider_token=payment.yoomoney.token,
                            currency=payment.currency,
                            prices=[
                                LabeledPrice(
-                                   label=BotText.jantra_title,
+                                   label=JantraLexicon.label,
                                    amount=int(str(payment.price.jantra) + '00'),
                                    )])
                                
@@ -115,7 +111,7 @@ async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, sta
 
 
 @jantraHandlerRouter.message(
-        ~Text(contains=['/']),
+        ~F.text.startswith('/'),
         F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT), FSMJantra.successful_payment, flags=flags)
 async def successful_payment(message: Message, state: FSMContext) -> None:
     if message.from_user == None:
@@ -129,8 +125,8 @@ async def successful_payment(message: Message, state: FSMContext) -> None:
     input_image = BufferedInputFile(image, 'jantra.png')
     await send_message_with_delay(
             chat_id, 
-            name=BotText.jantra_title,
-            back_button_callback=BotCBData.BackToPaidMenu.name,
+            name=JantraLexicon.label,
+            back_button_callback=PaidMenuButtons.BackToPaidMenu,
             greeting=fio,
-            text=f'<b>{BotText.jantra_lucky_number+str(number)}</b>', 
+            text=f'<b>{JantraLexicon.lucky_number+str(number)}</b>', 
             image=input_image)

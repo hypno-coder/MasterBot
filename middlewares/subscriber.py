@@ -1,8 +1,9 @@
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message
-from keyboards import sub_inline_keyboard, sub_common_keyboard 
-from lexicon import BotText 
+
+from keyboards import subscribe_keyboard 
+from lexicon import MiddlewareLexicon 
 from loader import bot, config
 
 EventType = Message | CallbackQuery 
@@ -15,20 +16,14 @@ class SubscriberMiddleware(BaseMiddleware):
         event: EventType,
         data: Dict[str, Any]
     ) -> Any:
-        
         if event.from_user == None:
             return
         user = await bot.get_chat_member(
                 chat_id=config.tg_bot.subscribe_channel,
                 user_id=event.from_user.id)
-
-        if user.status != "left":
+        if user.status != MiddlewareLexicon.status:
             return await handler(event, data)
 
         await event.answer(
-                text= BotText.subscriber['inline_text'],
-                reply_markup=sub_inline_keyboard)
-        await bot.send_message(
-                chat_id=event.from_user.id, 
-                text=BotText.subscriber['common_text'], 
-                reply_markup=sub_common_keyboard)
+                text=MiddlewareLexicon.alert, 
+                reply_markup=subscribe_keyboard)

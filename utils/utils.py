@@ -1,23 +1,23 @@
 import random
+from enum import Enum
 from asyncio import sleep
-from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
 from aiogram.types.input_file import FSInputFile, BufferedInputFile
 
 from loader import bot
-from lexicon import BotText
-from keyboards.keyboards_generator import create_inline_kb
+from lexicon import CommonLexicon
+from keyboards.keyboards_generator import Keyboard 
 
 async def remove_message(chat_id: int, message_id: int, delay: int = 60) -> None:
     try:
         await sleep(delay)
         await bot.delete_message(chat_id=chat_id, message_id=message_id)
     except Exception as ex:
-        print(f'{BotText.remove_message_error} \n {ex}')
+        print(f'{CommonLexicon.remove_message_error} \n {ex}')
 
 async def send_message_with_delay(
         chat_id: int, 
         name: str,
-        back_button_callback: str | None = None,
+        back_button_callback: Enum | None = None,
         min_delay: int = 1800, 
         max_delay: int = 4800,
         greeting: str | None = None,
@@ -31,12 +31,12 @@ async def send_message_with_delay(
     def get_keyboard():
         ITEMS_PER_ROW = 1
         if back_button_callback != None:
-            return create_inline_kb(ITEMS_PER_ROW, back_button_callback) 
+            return Keyboard.create_inline(ITEMS_PER_ROW, backButton=back_button_callback) 
         return None
 
     reply = await bot.send_message(
             chat_id,
-            text=BotText.pay_success +' '+ BotText.message_delay + f'{round(min_delay/60)}-{round(max_delay/60)} минут', 
+            text=CommonLexicon.pay_success +' '+ CommonLexicon.message_delay + f'{round(min_delay/60)}-{round(max_delay/60)} минут', 
             reply_markup=get_keyboard())
 
     delay = random.randint(min_delay, max_delay)
@@ -61,4 +61,4 @@ async def send_message_with_delay(
 
     await bot.send_message(chat_id=chat_id, text='===========================')
 
-    await bot.send_message(chat_id, text=BotText.back_menu, reply_markup=get_keyboard()) 
+    await bot.send_message(chat_id, text=CommonLexicon.back_menu, reply_markup=get_keyboard()) 

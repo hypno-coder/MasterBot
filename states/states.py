@@ -25,4 +25,6 @@ class FSMJantra(StatesGroup):
     checkout_query = State()
     successful_payment = State()
 
+class FSMHoroscope(StatesGroup):
+    get = State()
 
