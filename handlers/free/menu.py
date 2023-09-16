@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery 
 
 from keyboards import free_menu_keyboard
-from lexicon import FreeMenuButtons, MainMenuButtons, CommonLexicon
+from lexicon import FreeMenuButtons, MainMenuButtons, FreeMenuLexicon
 from config_data import SpamConfig
 
 menuRouter: Router = Router()
@@ -16,7 +16,7 @@ async def start_free_menu(event: Message | CallbackQuery, state: FSMContext) -> 
     await state.clear()
 
     if isinstance(event, Message):
-        await event.answer(text=CommonLexicon.free_menu,
+        await event.answer(text=FreeMenuLexicon.services,
                          reply_markup=free_menu_keyboard)
         await event.delete()
 
@@ -26,5 +26,5 @@ async def start_free_menu(event: Message | CallbackQuery, state: FSMContext) -> 
 
         await event.answer()
         message = event.message
-        await message.edit_text(text=CommonLexicon.free_menu,
+        await message.edit_text(text=FreeMenuLexicon.services,
                          reply_markup=free_menu_keyboard)

@@ -3,7 +3,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery 
 
 from keyboards import main_menu_keyboard 
-from lexicon import CommonLexicon, MainMenuButtons, MiddlewareButtons 
+from lexicon import MainMenuLexicon, MainMenuButtons, MiddlewareButtons 
 from config_data import SpamConfig
 
 mainMenuRouter: Router = Router()
@@ -13,7 +13,7 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.main_menu.name}
 @mainMenuRouter.callback_query(F.data == MainMenuButtons.BackToMainMenu.name, flags=flags)
 async def start_main_menu(event: Message | CallbackQuery) -> None:
     if isinstance(event, Message):
-        await event.answer(text=CommonLexicon.main_menu,
+        await event.answer(text=MainMenuLexicon.select_features,
                          reply_markup=main_menu_keyboard)
         await event.delete()
 
@@ -23,7 +23,7 @@ async def start_main_menu(event: Message | CallbackQuery) -> None:
 
         await event.answer()
         event = event.message
-        await event.edit_text(text=CommonLexicon.main_menu,
+        await event.edit_text(text=MainMenuLexicon.select_features,
                          reply_markup=main_menu_keyboard)
 
 
@@ -31,10 +31,6 @@ async def start_main_menu(event: Message | CallbackQuery) -> None:
 async def check_sub(callback: CallbackQuery) -> None:
     if callback.message == None:
         return
-    await callback.message.edit_text(text=CommonLexicon.successful_subscription,
+    await callback.message.edit_text(text=MainMenuLexicon.successful_subscription,
                          reply_markup=main_menu_keyboard)
-
-    
-
-
-
+    await callback.answer(text=MainMenuLexicon.gratitude, show_alert=True)

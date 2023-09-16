@@ -1,6 +1,7 @@
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message
+
 from keyboards import subscribe_keyboard 
 from lexicon import MiddlewareLexicon 
 from loader import bot, config

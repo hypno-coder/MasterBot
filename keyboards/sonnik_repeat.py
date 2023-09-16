@@ -7,5 +7,4 @@ inline_button_1: InlineKeyboardButton = InlineKeyboardButton(
     callback_data=JantraMenuButtons.CreateJantra.name)
 
 sonnik_repeat_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[[inline_button_1]], 
-    )
+    inline_keyboard=[[inline_button_1]])
