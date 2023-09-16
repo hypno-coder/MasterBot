@@ -20,9 +20,8 @@ async def main() -> None:
 
     dp.message.middleware(SubscriberMiddleware())
     dp.callback_query.middleware(SubscriberMiddleware())
-    # dp.message.middleware(UserSaverMiddleware())
+    dp.message.middleware(UserSaverMiddleware())
     dp.message.middleware(ThrottlingMiddleware())
-    # dp.callback_query.middleware(ThrottlingMiddleware())
 
 
     dp.include_router(mainRouter)
