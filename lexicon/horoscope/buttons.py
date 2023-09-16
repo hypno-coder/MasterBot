@@ -13,3 +13,6 @@ class ZodiacButtons(Enum):
     capricorn = 'Козерог'
     aquarius = 'Водолей'
     pisces = 'Рыбы'
+
+    def __contains__(self, item):
+        return item in self.__class__.__members__

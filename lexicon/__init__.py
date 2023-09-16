@@ -1,7 +1,7 @@
 from .commands import COMMANDS
 from .lexicon import BotText 
 from .errors import QueryErrText
-from .horoscope import ZodiacButtons
+from .horoscope import ZodiacButtons, HoroscopeLexicon
 from .free_menu import FreeMenuButtons, FreeMenuLexicon
 from .main_menu import MainMenuButtons, MainMenuLexicon
 from .paid_menu import PaidMenuButtons, PaidMenuLexicon
