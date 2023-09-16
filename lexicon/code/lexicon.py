@@ -1,6 +1,4 @@
-from enum import StrEnum
-
-class CodeLexicon(StrEnum):    
+class CodeLexicon():    
     label = 'Денежный код'
     payment_description = 'Покупка услуги: "Денежный код"'
     payload = 'Payment money code'

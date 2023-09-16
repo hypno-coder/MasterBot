@@ -1,5 +1,3 @@
-from enum import StrEnum
-
-class FreeMenuLexicon(StrEnum):
+class FreeMenuLexicon():
     services = 'Меню бесплатных услуг:'        
 

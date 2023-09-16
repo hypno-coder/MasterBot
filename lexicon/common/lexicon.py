@@ -1,6 +1,4 @@
-from enum import StrEnum
-
-class CommonLexicon(StrEnum):    
+class CommonLexicon():    
     back_menu = 'Для возврата в меню:'
     help = 'Для того, что бы прервать диалог с ботом введите /cancel. \nДля того, что бы начать заново введите /start.'
     enter_fio = 'Укажите ФИО в формате: \'Фамилия Имя Очество\' (Фамилия которая дана при рождении)'
@@ -19,6 +17,6 @@ class CommonLexicon(StrEnum):
     pay_success = 'Оплата прошла успешно, '
     message_delay = 'результат отправлю в течении: '
 
-class PagiLexicon(StrEnum):
+class PagiLexicon():
     backward = '<<'
     forward = '>>'

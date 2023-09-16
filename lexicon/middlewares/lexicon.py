@@ -1,6 +1,4 @@
-from enum import StrEnum
-
-class MiddlewareLexicon(StrEnum):
+class MiddlewareLexicon():
     alert = 'Для того, что бы продолжить пользоваться ботом, вы должны подписаться на канал: "Мастерская Желаний"'
     status = 'left'
     stop_spam = 'нельзя часто  спамить =)'

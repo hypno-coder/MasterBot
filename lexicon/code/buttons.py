@@ -1,4 +1,4 @@
-from enum import Enum, StrEnum
+from enum import Enum 
 
 
 class CodeMenuButtons(Enum):
@@ -8,7 +8,7 @@ class CodeActionMenuButtons(Enum):
     CodeConfirmData = 'Подтвердить данные'
     CodeEditData = 'Исправить данные'
 
-class CodePagiBtnCallback(StrEnum):
+class CodePagiBtnCallback():
     backward = 'code_backward'
     forward = 'code_forward'
 

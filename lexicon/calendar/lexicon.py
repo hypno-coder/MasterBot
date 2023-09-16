@@ -1,6 +1,4 @@
-from enum import StrEnum 
-
-class CalendarLexicon(StrEnum):    
+class CalendarLexicon():    
     label = 'Денежный Календарь'
     payment_description = 'Покупка услуги: Денежный Календарь'
     payload = 'Payment money calendar'

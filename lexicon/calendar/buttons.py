@@ -1,4 +1,4 @@
-from enum import Enum, StrEnum
+from enum import Enum 
 
 
 class CalendarMenuButtons(Enum):
@@ -8,7 +8,7 @@ class CalendarActionMenuButtons(Enum):
     CalendarConfirmData = 'Подтвердить данные'
     CalendarEditData = 'Исправить данные'
 
-class CalendarPagiBtnCallback(StrEnum):
+class CalendarPagiBtnCallback():
     backward = 'calendar_backward'
     forward = 'calendar_forward'
 
