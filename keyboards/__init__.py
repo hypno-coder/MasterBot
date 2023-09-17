@@ -8,3 +8,4 @@ from .sonnik_repeat import sonnik_repeat_keyboard
 from .calendar import calendar_menu_buttons, calendar_action_menu_keyboard
 from .keyboards_generator import Keyboard 
 from .horoscope import zodiac_menu 
+from .advisor import advisor_menu_buttons, advisor_action_menu_keyboard

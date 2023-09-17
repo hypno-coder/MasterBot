@@ -9,8 +9,9 @@ class SpamConfig(Enum):
     free_menu = 2
     jantra_menu = 2
     code_menu = 2
-    calendar_menu = 4
+    calendar_menu = 2
     horoscope_menu = 2
+    advisor_menu = 2
 
     #conversations
     sonnik_conv = 2

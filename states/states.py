@@ -28,3 +28,7 @@ class FSMJantra(StatesGroup):
 class FSMHoroscope(StatesGroup):
     get = State()
 
+class FSMAdvisor(StatesGroup):
+    response = State()
+
+
