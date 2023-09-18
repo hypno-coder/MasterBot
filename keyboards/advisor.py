@@ -6,7 +6,9 @@ from .keyboards_generator import Keyboard
 MENU_ITEMS_PER_ROW = 1
 
 advisor_action_menu_keyboard: InlineKeyboardMarkup = Keyboard.create_inline(
-        MENU_ITEMS_PER_ROW, AdvisorActionMenuButtons) 
+        MENU_ITEMS_PER_ROW, 
+        AdvisorActionMenuButtons, 
+        FreeMenuButtons.BackToFreeMenu) 
 
 advisor_menu_buttons = [
         InlineKeyboardButton(

@@ -30,5 +30,7 @@ async def answer_to_question(message: Message) -> None:
         return
 
     response = choice(ANSWERS)
-    await message.answer(text=response)
+    await message.answer(text='===========================')
+    await message.answer(text=f'Ответ: {response}')
+    await message.answer(text='===========================')
     await message.answer(text=AdvisorLexicon.another_question, reply_markup=advisor_action_menu_keyboard)
