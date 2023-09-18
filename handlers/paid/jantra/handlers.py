@@ -3,11 +3,10 @@ from aiogram import Router, Bot, F
 from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
 from aiogram.fsm.context import FSMContext
 from aiogram.types.input_file import BufferedInputFile
-from lexicon.paid_menu.buttons import PaidMenuButtons 
 
 from loader import payment
 from keyboards import jantra_action_menu_keyboard 
-from lexicon import CommonLexicon, JantraLexicon, JantraMenuButtons, JantraActionMenuButtons 
+from lexicon import CommonLexicon, JantraLexicon, JantraMenuButtons, JantraActionMenuButtons, PaidMenuButtons 
 from config_data import SpamConfig
 from states import FSMJantra
 from filters import DateFilter, AgeFilter

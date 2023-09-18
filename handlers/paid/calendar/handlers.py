@@ -5,10 +5,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types.input_file import FSInputFile
 
 from keyboards import calendar_action_menu_keyboard
-from lexicon.calendar.buttons import CalendarActionMenuButtons
 from loader import payment
 from staticfiles import FilePath
-from lexicon import CalendarMenuButtons, CommonLexicon, CalendarLexicon, PaidMenuButtons 
+from lexicon import CalendarMenuButtons, CalendarActionMenuButtons, CommonLexicon, CalendarLexicon, PaidMenuButtons 
 from config_data import SpamConfig
 from states import FSMCalendar
 from filters import DateFilter, AgeFilter

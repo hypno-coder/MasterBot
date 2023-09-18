@@ -4,5 +4,5 @@ class FreeMenuButtons(Enum):
     BackToFreeMenu = 'Назад'
     Sonnik = 'Сонник'
     Horoscope = 'Гороскоп'
-    MagicAdvisor = 'Волшебный Советник'
+    Advisor = 'Волшебный Советник'
 
