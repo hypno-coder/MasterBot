@@ -1,19 +1,20 @@
 from typing import cast
-from aiogram import Router, Bot, F
-from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
-from aiogram.fsm.context import FSMContext
-from aiogram.types.input_file import FSInputFile
+import random
+from decimal import Decimal
 
-from keyboards import code_action_menu_keyboard
-from loader import payment
-from staticfiles import FilePath
+from aiogram import Router, F
+from aiogram.types import Message, CallbackQuery 
+from aiogram.fsm.context import FSMContext
+
+from keyboards import code_action_menu_keyboard, get_payment_keyboard
 from lexicon import CommonLexicon, CodeLexicon, CodeMenuButtons, CodeActionMenuButtons, PaidMenuButtons 
 from filters import DayFilter
 from config_data import SpamConfig
 from states import FSMCode
 from filters import DateFilter, AgeFilter
-from services import calculate_code
-from utils import send_message_with_delay
+from payment_services.user_data_type import user_data 
+from payment_services import generate_payment_link 
+from loader import payment as PaymentCredentials
 
 codeHandlerRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.code_menu.name}
@@ -53,11 +54,7 @@ async def enter_date(message: Message, state: FSMContext) -> None:
 
 
 @codeHandlerRouter.message(
-        ~F.text.startswith('/'),
-        FSMCode.check_data,
-        DateFilter(is_date=True), 
-        AgeFilter(is_age=True), 
-        flags=flags)
+        ~F.text.startswith('/'), FSMCode.check_data, DateFilter(is_date=True), AgeFilter(is_age=True), flags=flags)
 async def check_data(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -74,11 +71,11 @@ async def check_data(message: Message, state: FSMContext) -> None:
     await message.answer(text=CommonLexicon.selected_action, reply_markup=code_action_menu_keyboard)
 
 
-@codeHandlerRouter.message(~F.text.startswith('/'), FSMCode.check_data, DateFilter(is_date=True), flags=flags)
+@codeHandlerRouter.message(
+        ~F.text.startswith('/'), FSMCode.check_data, DateFilter(is_date=True), flags=flags)
 async def wrong_age(message: Message) -> None:
     if message.text == None:
         return
-
     await message.reply(CommonLexicon.legal_age)
 
 
@@ -89,56 +86,31 @@ async def wrong_input(message: Message) -> None:
     await message.reply(CommonLexicon.invalid_format_date)
 
 
-@codeHandlerRouter.callback_query(F.data == CodeActionMenuButtons.CodeConfirmData.name, flags=flags)
-async def order(callback: CallbackQuery, bot: Bot, state: FSMContext):
+@codeHandlerRouter.callback_query(
+        F.data == CodeActionMenuButtons.CodeConfirmData.name, 
+        flags=flags)
+async def order(callback: CallbackQuery, state: FSMContext):
     callback.answer()
     message = callback.message
-    if message == None: 
-        return
-
-    await bot.send_invoice( 
-                           chat_id=message.chat.id,
-                           title=CodeLexicon.label,
-                           description=CodeLexicon.payment_description,
-                           payload=CodeLexicon.payload,
-                           provider_token=payment.yoomoney.token,
-                           currency=payment.currency,
-                           prices=[
-                               LabeledPrice(
-                                   label=CodeLexicon.label,
-                                   amount=int(str(payment.price.money_code) + '00'),
-                                   )])
-                               
-    await state.set_state(FSMCode.checkout_query)
-
-
-@codeHandlerRouter.pre_checkout_query(FSMCode.checkout_query, flags=flags)
-async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, state: FSMContext):
-    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
-    await state.set_state(FSMCode.successful_payment)
-
-
-@codeHandlerRouter.message(
-        ~F.text.startswith('/'),
-        F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT), FSMCode.successful_payment, flags=flags)
-async def successful_payment(message: Message, state: FSMContext) -> None:
-    if message.from_user == None: 
-        return
-
-    chat_id: int = message.chat.id
     data: dict = await state.get_data() 
-    fio: str = data['fio'] 
-    birthday: str = data['birthday'] 
-    result: str = await calculate_code(birthday) 
-    document = FSInputFile(FilePath.money_code_pdf.value)
-    video = FSInputFile(FilePath.money_code_video.value)
+    
 
-    await send_message_with_delay(
-            chat_id, 
-            name=CodeLexicon.label,
-            back_button_callback=PaidMenuButtons.BackToPaidMenu,
-            text=f'<b>{CodeLexicon.for_you+result}</b>',
-            greeting=fio,
-            video=video, 
-            document=document, 
-            document_caption=CodeLexicon.document)
+    if message == None or message.from_user == None: 
+        return
+
+    user_data['chat_id'] = message.chat.id 
+    user_data['user_id'] = message.from_user.id 
+    user_data['service_species'] = PaidMenuButtons.MoneyCode.name 
+    user_data['fio'] = data['fio'] 
+    user_data['birthday'] = data['birthday'] 
+
+    link = generate_payment_link(
+            cost=Decimal(f'{PaymentCredentials.price.money_code}.00'),
+            number=random.randint(10**6, (10**7)-1),            
+            user_data=user_data,
+            description=f'Консультация: {PaidMenuButtons.MoneyCode.value}')
+
+    await message.answer(text=CommonLexicon.pay_message, reply_markup=get_payment_keyboard(
+        link=link, 
+        backbutton=PaidMenuButtons.BackToPaidMenu))
+    await state.clear()

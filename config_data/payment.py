@@ -8,26 +8,30 @@ class Price:
     money_calendar: int
 
 @dataclass
-class Yoomoney:
-    token: str
-    
+class Robokassa:
+    merchant_login: str
+    is_test: int
+    password_1: str
+    password_2: str
 
 @dataclass
-class Payment:
-    yoomoney: Yoomoney
+class PaymentCredentials:
+    robokassa: Robokassa
     currency: str
     price: Price
     
 
-def load_payment(path: str | None) -> Payment:
+def load_payment(path: str | None) -> PaymentCredentials:
 
     env: Env = Env()
     env.read_env(path)
 
-    return Payment(yoomoney=Yoomoney(token=env('PROVIDER_TOKEN')),
+    return PaymentCredentials(robokassa=Robokassa(merchant_login=env('MERCHANT_LOGIN'), 
+                                           is_test=env('IS_TEST'),
+                                           password_1=env('PASSWORD_1'),
+                                           password_2=env('PASSWORD_2')),
                    currency=env('CURRENCY'), 
                    price=Price(
                        money_code=env('MONEY_CODE'), 
                        jantra=env('JANTRA'),
-                       money_calendar=env('MONEY_CALENDAR'))
-                   )
+                       money_calendar=env('MONEY_CALENDAR')))

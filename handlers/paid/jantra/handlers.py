@@ -1,17 +1,20 @@
 from typing import cast
-from aiogram import Router, Bot, F
-from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
-from aiogram.fsm.context import FSMContext
-from aiogram.types.input_file import BufferedInputFile
+import random
+from decimal import Decimal
 
-from loader import payment
-from keyboards import jantra_action_menu_keyboard 
-from lexicon import CommonLexicon, JantraLexicon, JantraMenuButtons, JantraActionMenuButtons, PaidMenuButtons 
+
+from aiogram import Router, F
+from aiogram.types import Message, CallbackQuery
+from aiogram.fsm.context import FSMContext
+
+from keyboards import jantra_action_menu_keyboard, get_payment_keyboard 
+from lexicon import CommonLexicon, JantraMenuButtons, JantraActionMenuButtons, PaidMenuButtons 
 from config_data import SpamConfig
 from states import FSMJantra
 from filters import DateFilter, AgeFilter
-from services import Jantra 
-from utils import send_message_with_delay
+from payment_services.user_data_type import user_data 
+from payment_services import generate_payment_link 
+from loader import payment as PaymentCredentials
 
 jantraHandlerRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.jantra_menu.name}
@@ -80,52 +83,31 @@ async def wrong_input(message: Message) -> None:
     await message.reply(CommonLexicon.invalid_format_date)
 
 
-@jantraHandlerRouter.callback_query(F.data == JantraActionMenuButtons.JantraConfirmData.name, flags=flags)
-async def order(callback: CallbackQuery, bot: Bot, state: FSMContext):
+@jantraHandlerRouter.callback_query(
+        F.data == JantraActionMenuButtons.JantraConfirmData.name, 
+        flags=flags)
+async def order(callback: CallbackQuery, state: FSMContext):
     callback.answer()
     message = callback.message
-    if message == None: 
+    data: dict = await state.get_data() 
+    
+
+    if message == None or message.from_user == None: 
         return
 
-    await bot.send_invoice( 
-                           chat_id=message.chat.id,
-                           title=JantraLexicon.label,
-                           description=JantraLexicon.payment_description,
-                           payload=JantraLexicon.payload,
-                           provider_token=payment.yoomoney.token,
-                           currency=payment.currency,
-                           prices=[
-                               LabeledPrice(
-                                   label=JantraLexicon.label,
-                                   amount=int(str(payment.price.jantra) + '00'),
-                                   )])
-                               
-    await state.set_state(FSMJantra.checkout_query)
+    user_data['chat_id'] = message.chat.id 
+    user_data['user_id'] = message.from_user.id 
+    user_data['service_species'] = PaidMenuButtons.Jantra.name 
+    user_data['fio'] = data['fio'] 
+    user_data['birthday'] = data['birthday'] 
 
+    link = generate_payment_link(
+            cost=Decimal(f'{PaymentCredentials.price.jantra}.00'),
+            number=random.randint(10**6, (10**7)-1),            
+            user_data=user_data,
+            description=f'Консультация: {PaidMenuButtons.Jantra.value}')
 
-@jantraHandlerRouter.pre_checkout_query(FSMJantra.checkout_query, flags=flags)
-async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, state: FSMContext):
-    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
-    await state.set_state(FSMJantra.successful_payment)
-
-
-@jantraHandlerRouter.message(
-        ~F.text.startswith('/'),
-        F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT), FSMJantra.successful_payment, flags=flags)
-async def successful_payment(message: Message, state: FSMContext) -> None:
-    if message.from_user == None:
-        return
-
-    chat_id: int = message.chat.id
-    data = await state.get_data() 
-    fio: str = data['fio']
-    birthday: str = data['birthday'] 
-    image, number = Jantra.create(birthday)
-    input_image = BufferedInputFile(image, 'jantra.png')
-    await send_message_with_delay(
-            chat_id, 
-            name=JantraLexicon.label,
-            back_button_callback=PaidMenuButtons.BackToPaidMenu,
-            greeting=fio,
-            text=f'<b>{JantraLexicon.lucky_number+str(number)}</b>', 
-            image=input_image)
+    await message.answer(text=CommonLexicon.pay_message, reply_markup=get_payment_keyboard(
+        link=link, 
+        backbutton=PaidMenuButtons.BackToPaidMenu))
+    await state.clear()

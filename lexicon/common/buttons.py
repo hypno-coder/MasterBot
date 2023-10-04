@@ -1,0 +1,2 @@
+class CommonMenuButtons():
+    payment = 'Оплата'
