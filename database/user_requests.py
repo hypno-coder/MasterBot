@@ -3,6 +3,7 @@ from database.connector import users_db
 from errors import send_error_message
 from lexicon import QueryErrText
 from states import UserStatus
+from payment_services.user_data_type import UserDataType
 
 
 class User:
@@ -17,26 +18,29 @@ class User:
 
     @staticmethod
     async def get(user_id):
-        result = await users_db.find_one({"_id": user_id})
+        result = await users_db.find_one({'_id': user_id})
         return result
 
     @staticmethod
     async def update(user_id, field, data):
         try:
             await users_db.update_one(
-                    {"_id": user_id}, 
-                    {"$set": {field: data}})
+                    {'_id': user_id}, 
+                    {'$set': {field: data}})
         except Exception:
             await send_error_message(QueryErrText.UPDATE_USER.value)
             raise Exception(QueryErrText.UPDATE_USER.value)
 
     async def add(self):
         data = {
-                "_id": self.user_id,
-                "username": self.username,
-                "reg_date": str(self.now),
-                "last_visit_date": str(self.now),
-                "status": self.status
+                '_id': self.user_id,
+                'username': self.username,
+                'reg_date': str(self.now),
+                'last_visit_date': str(self.now),
+                'status': self.status,
+                'fio': None,
+                'birthday': None,
+                'purchases': [],
              }
         try:
             await users_db.insert_one(data)
@@ -62,10 +66,10 @@ class User:
 
     async def date_update(self):
         try:
-            if self.now > datetime.strptime(self.last_visit_date, "%Y-%m-%d").date():
+            if self.now > datetime.strptime(self.last_visit_date, '%Y-%m-%d').date():
                 await users_db.update_one(
-                        {"_id": self.user_id}, 
-                        {"$set": {"last_visit_date": str(self.now)}})
+                        {'_id': self.user_id}, 
+                        {'$set': {'last_visit_date': str(self.now)}})
         except Exception:
             await send_error_message(QueryErrText.UPDATE_USER.value)
             raise Exception(QueryErrText.UPDATE_USER.value)

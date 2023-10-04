@@ -2,7 +2,7 @@ from enum import Enum
 
 class FreeMenuButtons(Enum):
     BackToFreeMenu = 'Назад'
-    Sonnik = 'Сонник'
+    # Sonnik = 'Сонник'
     Horoscope = 'Гороскоп'
     Advisor = 'Волшебный Советник'
 

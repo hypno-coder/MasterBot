@@ -19,6 +19,7 @@ class TgBot:
     channel_link: str
     admin_ids: list[int] 
     chat_log: int
+    base_url: str
 
 @dataclass
 class Config:
@@ -38,6 +39,7 @@ def load_config(path: str | None) -> Config:
     env.read_env(path)
 
     return Config(tg_bot=TgBot(token=env('BOT_TOKEN'),
+                               base_url=env('BASE_URL'),
                                subscribe_channel=int(env('SUBSCRIBE_CHANNEL')),
                                channel_link=env('CHANNEL_LINK'),
                                admin_ids=list(map(int, env.list('ADMIN_IDS'))),

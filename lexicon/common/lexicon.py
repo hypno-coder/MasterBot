@@ -15,6 +15,7 @@ class CommonLexicon():
     enter_date = 'Укажите дату рождения в формате 06.08.1987'
     remove_message_error = 'Попытка удаления уже отредактированooго сooбщения:'
     pay_success = 'Оплата прошла успешно, '
+    pay_message = 'Тут вы можете оплатить желаемую услугу'
     message_delay = 'результат отправлю в течении: '
 
 class PagiLexicon():

@@ -1,18 +1,24 @@
-from typing import cast
-from aiogram import Router, Bot, F
-from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
-from aiogram.fsm.context import FSMContext
-from aiogram.types.input_file import FSInputFile
+from typing import cast 
+import random
+from decimal import Decimal
 
-from keyboards import calendar_action_menu_keyboard
-from loader import payment
-from staticfiles import FilePath
-from lexicon import CalendarMenuButtons, CalendarActionMenuButtons, CommonLexicon, CalendarLexicon, PaidMenuButtons 
+from aiogram import Router, F
+from aiogram.types import Message, CallbackQuery
+from aiogram.fsm.context import FSMContext
+
+from keyboards import calendar_action_menu_keyboard, get_payment_keyboard
 from config_data import SpamConfig
 from states import FSMCalendar
 from filters import DateFilter, AgeFilter
-from services import get_calendar_dates 
-from utils import send_message_with_delay
+from payment_services import generate_payment_link 
+from payment_services.user_data_type import user_data 
+from loader import payment as PaymentCredentials
+from lexicon import (
+        CalendarMenuButtons, 
+        CalendarActionMenuButtons, 
+        CommonLexicon, 
+        PaidMenuButtons)
+
 
 
 calendarHandlerRouter: Router = Router()
@@ -88,55 +94,28 @@ async def wrong_input(message: Message) -> None:
 @calendarHandlerRouter.callback_query(
         F.data == CalendarActionMenuButtons.CalendarConfirmData.name, 
         flags=flags)
-async def order(callback: CallbackQuery, bot: Bot, state: FSMContext):
+async def order(callback: CallbackQuery, state: FSMContext):
     callback.answer()
     message = callback.message
-    if message == None: 
-        return
-
-    await bot.send_invoice( 
-                           chat_id=message.chat.id,
-                           title=CalendarLexicon.label,
-                           description=CalendarLexicon.description,
-                           payload=CalendarLexicon.payload,
-                           provider_token=payment.yoomoney.token,
-                           currency=payment.currency,
-                           prices=[
-                               LabeledPrice(
-                                   label=CalendarLexicon.label,
-                                   amount=int(str(payment.price.money_calendar) + '00'),
-                                   )])
-                               
-    await state.set_state(FSMCalendar.checkout_query)
-
-
-@calendarHandlerRouter.pre_checkout_query(FSMCalendar.checkout_query, flags=flags)
-async def pre_chechout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot, state: FSMContext):
-    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
-    await state.set_state(FSMCalendar.successful_payment)
-
-
-@calendarHandlerRouter.message(
-        ~F.text.startswith('/'),
-        F.content_type.in_(ContentType.SUCCESSFUL_PAYMENT), 
-        FSMCalendar.successful_payment, 
-        flags=flags)
-async def successful_payment(message: Message, state: FSMContext) -> None:
-    if message.from_user == None: 
-        return
-
-    chat_id: int = message.chat.id
-    numbers: str = get_calendar_dates()
-    result = ''.join(str(num) for num in numbers)
     data: dict = await state.get_data() 
-    fio: str = data['fio'] 
-    document = FSInputFile(FilePath.money_calendar_pdf.value)
+    
 
-    await send_message_with_delay(
-            chat_id, 
-            name=CalendarLexicon.label,
-            back_button_callback=PaidMenuButtons.BackToPaidMenu,
-            greeting=fio,
-            document=document, 
-            document_caption=CalendarLexicon.document,
-            text=f'<b>{CalendarLexicon.for_you}</b> {result}')
+    if message == None or message.from_user == None: 
+        return
+
+    user_data['chat_id'] = message.chat.id 
+    user_data['user_id'] = message.from_user.id 
+    user_data['service_species'] = PaidMenuButtons.MoneyCalendar.name 
+    user_data['fio'] = data['fio'] 
+    user_data['birthday'] = data['birthday'] 
+
+    link = generate_payment_link(
+            cost=Decimal(f'{PaymentCredentials.price.money_calendar}.00'),
+            number=random.randint(10**6, (10**7)-1),            
+            user_data=user_data,
+            description=f'Консультация: {PaidMenuButtons.MoneyCalendar.value}')
+
+    await message.answer(text=CommonLexicon.pay_message, reply_markup=get_payment_keyboard(
+        link=link, 
+        backbutton=PaidMenuButtons.BackToPaidMenu))
+    await state.clear()
