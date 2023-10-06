@@ -3,7 +3,7 @@ from decimal import Decimal
 import hashlib
 from urllib import parse
 
-from loader import payment
+from loader import payment as p
 from database.connector import redis_db
 from ..user_data_type import UserDataType
 
@@ -18,7 +18,7 @@ def check_signature_result(
     order_number: int,  # invoice number
     received_sum: Decimal,  # cost of goods, RU
     received_signature: str,  # SignatureValue
-    password: str = payment.robokassa.password_1,  # Merchant password
+    password: str = p.robokassa.password_1,
 ) -> bool:
     signature = calculate_signature(received_sum, order_number, password)
 
@@ -33,9 +33,9 @@ def generate_payment_link(
     number: int,  # Invoice number
     description: str,  # Description of the purchase
     user_data: UserDataType,
-    merchant_password_1: str = payment.robokassa.password_1,  # Merchant password
-    merchant_login: str = payment.robokassa.merchant_login,  # Merchant login
-    is_test = payment.robokassa.is_test,
+    merchant_password_1: str = p.robokassa.password_1,
+    merchant_login: str = p.robokassa.merchant_login,  # Merchant login
+    is_test = p.robokassa.is_test,
     robokassa_payment_url = 'https://auth.robokassa.ru/Merchant/Index.aspx',
 ) -> str:
     '''URL for redirection of the customer to the service.

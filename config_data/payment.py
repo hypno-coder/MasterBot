@@ -26,10 +26,10 @@ def load_payment(path: str | None) -> PaymentCredentials:
     env: Env = Env()
     env.read_env(path)
 
-    return PaymentCredentials(robokassa=Robokassa(merchant_login=env('MERCHANT_LOGIN'), 
-                                           is_test=env('IS_TEST'),
-                                           password_1=env('PASSWORD_1'),
-                                           password_2=env('PASSWORD_2')),
+    return PaymentCredentials(robokassa=Robokassa(merchant_login=env('MERCHANT_LOGIN'),
+                                                  is_test=env('IS_TEST'),
+                                                  password_1=env('PASSWORD_1'),
+                                                  password_2=env('PASSWORD_2')),
                    currency=env('CURRENCY'), 
                    price=Price(
                        money_code=env('MONEY_CODE'), 

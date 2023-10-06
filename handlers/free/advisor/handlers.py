@@ -1,6 +1,8 @@
-from random import choice
+from asyncio import sleep
+from random import choice, randint
 from typing import cast
-from aiogram import Router, F
+
+from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
@@ -8,6 +10,7 @@ from keyboards import advisor_action_menu_keyboard
 from lexicon import AdvisorMenuButtons, AdvisorActionMenuButtons, AdvisorLexicon, ANSWERS 
 from config_data import SpamConfig
 from states import FSMAdvisor
+from utils import remove_message
 
 
 advisorHandlerRouter: Router = Router()
@@ -25,9 +28,17 @@ async def ask_question(callback: CallbackQuery, state: FSMContext) -> None:
 
 
 @advisorHandlerRouter.message(~F.text.startswith('/'), FSMAdvisor.response, flags=flags)
-async def answer_to_question(message: Message) -> None:
+async def answer_to_question(message: Message, bot: Bot) -> None:
     if message.text == None or message.from_user == None:
         return
+    data = await bot.send_message(
+            chat_id=message.chat.id,
+            text='Ожидайте, скоро будет ответ...')
+
+    delay = randint(30, 60)
+    await sleep(delay)
+
+    await remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=0)
 
     response = choice(ANSWERS)
     await message.answer(text='===========================')

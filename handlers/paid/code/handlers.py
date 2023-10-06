@@ -2,7 +2,7 @@ from typing import cast
 import random
 from decimal import Decimal
 
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.types import Message, CallbackQuery 
 from aiogram.fsm.context import FSMContext
 
@@ -15,6 +15,7 @@ from filters import DateFilter, AgeFilter
 from payment_services.user_data_type import user_data 
 from payment_services import generate_payment_link 
 from loader import payment as PaymentCredentials
+from utils import remove_message
 
 codeHandlerRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.code_menu.name}
@@ -33,11 +34,15 @@ async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
 
 @codeHandlerRouter.callback_query(F.data.in_([
     CodeMenuButtons.CalculateMoneyCode.name, CodeActionMenuButtons.CodeEditData.name]), flags=flags)
-async def day_except(callback: CallbackQuery, state: FSMContext) -> None:
+async def day_except(callback: CallbackQuery, bot: Bot, state: FSMContext) -> None:
+    if callback.message == None: 
+        return
+
     callback.answer()
-    message = cast(CallbackQuery, callback.message)
-    await message.answer(
+    data = await bot.send_message(
+            chat_id=callback.message.chat.id,
             text=CodeLexicon.only_thursday)
+    await remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=10)
     await state.clear()
 
 

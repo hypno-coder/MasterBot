@@ -3,7 +3,6 @@ from database.connector import users_db
 from errors import send_error_message
 from lexicon import QueryErrText
 from states import UserStatus
-from payment_services.user_data_type import UserDataType
 
 
 class User:
