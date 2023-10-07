@@ -1,6 +1,8 @@
 import logging
 import json
 import uvicorn
+import asyncio
+
 
 from aiogram import types
 
@@ -69,7 +71,7 @@ async def bot_webhook_payment(
         ):
     user_data = redis_db.get(str(InvId))
     if user_data:
-        await send_response(json.loads(user_data))
+        asyncio.create_task(send_response(json.loads(user_data)))
         return f'OK{InvId}'
     return 'bad sign'
 
