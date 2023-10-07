@@ -35,7 +35,7 @@ async def answer_to_question(message: Message, bot: Bot) -> None:
             chat_id=message.chat.id,
             text=AdvisorLexicon.wait)
 
-    delay = randint(10, 20)
+    delay = randint(7, 10)
     await sleep(delay)
 
     await remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=0)
