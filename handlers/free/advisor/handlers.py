@@ -33,9 +33,9 @@ async def answer_to_question(message: Message, bot: Bot) -> None:
         return
     data = await bot.send_message(
             chat_id=message.chat.id,
-            text='Ожидайте, скоро будет ответ...')
+            text=AdvisorLexicon.wait)
 
-    delay = randint(30, 60)
+    delay = randint(10, 20)
     await sleep(delay)
 
     await remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=0)

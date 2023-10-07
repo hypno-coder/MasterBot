@@ -8,6 +8,7 @@ from loader import config, bot, dp, app
 from handlers import mainRouter
 from middlewares import SubscriberMiddleware, UserSaverMiddleware, ThrottlingMiddleware 
 from database.connector import redis_db
+from commands import set_command_menu
 from utils import send_response
 
 
@@ -28,6 +29,7 @@ async def on_startup():
     if webhook_info != WEBHOOK_URL:
         try:
             await bot.set_webhook(url=WEBHOOK_URL)
+            await set_command_menu(bot)
         except Exception as ex:
             print(f'Отвалил сервер телеги - \n{ex}')
     logger.info("Bot started")
