@@ -17,6 +17,8 @@ class CommonLexicon():
     pay_success = 'Оплата прошла успешно, '
     pay_message = 'Тут вы можете оплатить желаемую услугу'
     message_delay = 'результат отправлю в течении: '
+    wait_result = 'Ожидайте, ваша заявка в прцессе обработки...'
+
 
 class PagiLexicon():
     backward = '<<'

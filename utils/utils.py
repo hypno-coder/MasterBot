@@ -28,17 +28,25 @@ async def send_response(
     fio = user_data['fio']
     birthday = user_data['birthday']
 
-    reply = await bot.send_message(
+    reply_1 = await bot.send_message(
             chat_id,
             text=CommonLexicon.pay_success +' '+ CommonLexicon.message_delay + f'{round(min_delay/60)}-{round(max_delay/60)} минут', 
             reply_markup=Keyboard.create_inline(
                 ITEMS_PER_ROW, backButton=PaidMenuButtons.BackToPaidMenu))
-
     delay = random.randint(min_delay, max_delay)
-    await sleep(delay)
-
+    await sleep(delay/2)
     try:
-        await bot.delete_message(chat_id=reply.chat.id, message_id=reply.message_id)
+        await bot.delete_message(chat_id=reply_1.chat.id, message_id=reply_1.message_id)
+    except Exception as ex:
+        print(ex)
+    reply_2 = await bot.send_message(
+            chat_id,
+            text=CommonLexicon.wait_result, 
+            reply_markup=Keyboard.create_inline(
+                ITEMS_PER_ROW, backButton=PaidMenuButtons.BackToPaidMenu))
+    await sleep(delay/2)
+    try:
+        await bot.delete_message(chat_id=reply_2.chat.id, message_id=reply_2.message_id)
     except Exception as ex:
         print(ex)
 
