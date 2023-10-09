@@ -1,5 +1,6 @@
-from typing import cast
+import asyncio
 import random
+from typing import cast
 from decimal import Decimal
 
 from aiogram import Router, F, Bot
@@ -43,7 +44,7 @@ async def day_except(callback: CallbackQuery, bot: Bot, state: FSMContext) -> No
     data = await bot.send_message(
             chat_id=callback.message.chat.id,
             text=CodeLexicon.only_thursday)
-    await remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=5)
+    asyncio.create_task(remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=5))
 
 
 @codeHandlerRouter.message(~F.text.startswith('/'), FSMCode.enter_date, flags=flags)
