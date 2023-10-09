@@ -52,11 +52,14 @@ def generate_payment_link(
               'tax': 'vat0'
             }]}
             
+    receipt_json = json.dumps(receipt)
+    receipt_encoded = parse.quote(receipt_json)
+
     signature = calculate_signature(
         merchant_login,
         cost,
         number,
-        receipt,
+        receipt_encoded,
         merchant_password_1
     )
 
@@ -66,7 +69,7 @@ def generate_payment_link(
         'InvId': number,
         'Description': description,
         'SignatureValue': signature,
-        'Receipt': receipt,
+        'Receipt': receipt_encoded,
         'IsTest': is_test
     }
 
