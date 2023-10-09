@@ -1,9 +1,9 @@
 from enum import Enum
-from loader import PaymentCredentials
+from loader import payment 
 
 class PaidMenuButtons(Enum):
-    Jantra = f'Янтра: {PaymentCredentials.price.jantra}₽'
-    MoneyCode = f'ФинКод: {PaymentCredentials.price.money_code}₽'
-    MoneyCalendar = f'Денежный Календарь: {PaymentCredentials.price.money_calendar}₽'
+    Jantra = f'Янтра: {payment.price.jantra}₽'
+    MoneyCode = f'ФинКод: {payment.price.money_code}₽'
+    MoneyCalendar = f'Денежный Календарь: {payment.price.money_calendar}₽'
     BackToPaidMenu = 'Назад'
 
