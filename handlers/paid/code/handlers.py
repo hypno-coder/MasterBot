@@ -37,13 +37,13 @@ async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
 async def day_except(callback: CallbackQuery, bot: Bot, state: FSMContext) -> None:
     if callback.message == None: 
         return
-
     callback.answer()
+    await state.clear()
+
     data = await bot.send_message(
             chat_id=callback.message.chat.id,
             text=CodeLexicon.only_thursday)
-    await remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=10)
-    await state.clear()
+    await remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=5)
 
 
 @codeHandlerRouter.message(~F.text.startswith('/'), FSMCode.enter_date, flags=flags)
