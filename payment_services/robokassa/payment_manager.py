@@ -46,7 +46,7 @@ def generate_payment_link(
             {
               'name': description,
               'quantity': 1,
-              'sum': cost,
+              'sum': str(cost),
               'payment_method': 'full_payment',
               'payment_object': 'service',
               'tax': 'vat0'
