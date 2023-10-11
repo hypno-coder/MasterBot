@@ -54,5 +54,5 @@ class Horoscope:
     def reset_cache(self):
         current_date = datetime.now(timezone(timedelta(hours=3))).strftime("%d.%m.%Y")
         if datetime.strptime(current_date, "%d.%m.%Y") > datetime.strptime(self.__last_reset_time, "%d.%m.%Y"):
-            self.cache = {}
+            self.__cache = {}
             self.__last_reset_time = current_date 
