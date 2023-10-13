@@ -39,7 +39,6 @@ async def day_except(callback: CallbackQuery, bot: Bot, state: FSMContext) -> No
     if callback.message == None: 
         return
     callback.answer()
-    await state.clear()
 
     data = await bot.send_message(
             chat_id=callback.message.chat.id,
