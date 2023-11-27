@@ -10,3 +10,5 @@ from .keyboards_generator import Keyboard
 from .horoscope import zodiac_menu 
 from .advisor import advisor_menu_buttons, advisor_action_menu_keyboard
 from .payment import get_payment_keyboard
+from .admin import admin_menu_keyboard
+from .mailing import mailing_action_menu_keyboard, mailing_button_menu_keyboard, get_mailing_button

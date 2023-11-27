@@ -12,8 +12,8 @@ class FinCode:
             return f"{day}{month}{year}{code}"
         except Exception as ex:
             print(f'Ошибка {ex}')
-            await send_error_message("Ошибка подсчета денежного кода")
-            return ("Ошибка подсчета денежного кода")
+            await send_error_message('Ошибка подсчета денежного кода')
+            return ('Ошибка подсчета денежного кода')
 
     def __calc(self, data) -> int:
         data_sum = sum(map(int, str(data))) 

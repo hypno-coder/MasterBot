@@ -1,1 +1,1 @@
-from .settings import SpamConfig, genTrotCash
+from .settings import SpamConfig, genTrotCash 
