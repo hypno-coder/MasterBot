@@ -12,6 +12,8 @@ class SpamConfig(Enum):
     calendar_menu = 2
     horoscope_menu = 2
     advisor_menu = 2
+    admin_menu = 2
+    mailing_menu = 2
 
     #conversations
     sonnik_conv = 2
@@ -24,4 +26,3 @@ def genTrotCash():
         caches.update({item.name: TTLCache(maxsize=10_000, ttl=item.value)})
 
     return caches
-

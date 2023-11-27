@@ -21,6 +21,12 @@ class User:
         return result
 
     @staticmethod
+    async def get_all() -> list:
+        cursor = users_db.find()
+        result = await cursor.to_list(length=None)
+        return result
+
+    @staticmethod
     async def update(user_id, field, data):
         try:
             await users_db.update_one(

@@ -1,5 +1,4 @@
 import random
-from enum import Enum
 from asyncio import sleep
 from aiogram.types.input_file import FSInputFile, BufferedInputFile
 

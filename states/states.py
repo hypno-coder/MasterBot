@@ -31,4 +31,11 @@ class FSMHoroscope(StatesGroup):
 class FSMAdvisor(StatesGroup):
     response = State()
 
+class FSMMailing(StatesGroup):
+    enter_message = State()
+    enter_image = State()
+    add_button = State()
+    button_link = State()
+    check_data = State()
+
 
