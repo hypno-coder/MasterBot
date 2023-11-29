@@ -1,130 +1,76 @@
-from typing import TypedDict
-from multiprocessing import Pool
-from selenium import webdriver
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.common.by import By
-
-
-class SonnikTypeArticle(TypedDict):
-    title: str
-    text : str
-
-
-class SonnikTypeResponse(TypedDict):
-    data: list[SonnikTypeArticle]
-    error: str | None
+import httpx
+from fake_useragent import UserAgent
+from bs4 import BeautifulSoup
 
 
 class Sonnik:
-    __response_data: list[SonnikTypeArticle] = []
-    __time_to_wait: int = 2
-    __count_result: int = 2
-    __max_length: int = 4000
-    __url: str = 'https://horo.mail.ru/sonnik/'
-    __xpath_button: str = "//button[contains(@class, 'button') and contains(@class, 'button_nowrap') and contains(@class, 'button_color_project')]"
-    __xpath_search_by_urls: str = "//div[contains(@class, 'newsitem') and contains(@class, 'newsitem_vertical') and contains(@class, 'newsitem_special') and contains(@class, 'newsitem_border_bottom') and contains(@class, 'js-pgng_item')]"
-    __xpath_text: str = "//div[contains(@class, 'article__item') and contains(@class, 'article__item_alignment_left') and contains(@class, 'article__item_html')]" 
+    __max_length = 4000
 
-    def interpret(self, dream_text_image: str) -> SonnikTypeResponse:
-        self.__dream_text_image: str = dream_text_image
-        return self.__parsing_page()
-        
-    def __parsing_page(self) -> SonnikTypeResponse:
+    def __init__(self, key_word):
+        self.__base_link = f'https://horo.mail.ru/sonnik/search/?q={key_word}&b=0&clb11934144='
+        self.__ua = UserAgent()
+        self.__headers = {
+                "User-Agent": self.__ua.random, 
+                "Accept-Language": "en-US,en;q=0.9",
+                "Accept-Encoding": "gzip, deflate",
+                "Connection": "keep-alive",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"}
 
-        try:            
-            urls: list[dict[str, str]] | None = self.__get_article_urls()
-            pool = Pool(processes=len(urls))
-            pool.map(self.__get_data, urls)
-        except Exception as ex:
-            print(f'Упал класс Sonnik, ошибка: {ex}')
-            return {"data": self.__response_data, "error": f'Упал класс Sonnik, ошибка: {ex}'}
-
-        else:
-            return {"data": self.__response_data, "error": None}
-
-    def __page_load(self, url, browser) -> None:
-        browser.get(url)
-
-    def __enter_text_image(self, browser) -> None:
-        browser.implicitly_wait(self.__time_to_wait)
-        text_box: WebElement = browser.find_element(By.CLASS_NAME, value="input__field")
-        text_box.send_keys(self.__dream_text_image)
-
-    def __push_button(self, browser) -> None:
-        browser.implicitly_wait(self.__time_to_wait)
-        button: WebElement = browser.find_element(By.XPATH, self.__xpath_button) 
-        button.click()
-
-    def __get_data(self, url) -> None:
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        browser = webdriver.Chrome(options=options) 
-
-        if url == None:
-            result: SonnikTypeArticle = self.__parsing_article(browser)
-            self.__response_data.append(result)
+    async def get(self) -> list[dict[str, str]] | None:
+        downloaded_page = await self.__download_page(self.__base_link)
+        if downloaded_page == None:
             return
+        links = self.__create_link_list(downloaded_page)
+        articles = await self.__get_article_list(links[:3])
+        return articles 
 
-        self.__page_load(url, browser)
-        result: SonnikTypeArticle = self.__parsing_article(browser)
-        self.__response_data.append(result)
+    async def __download_page(self, link, timeout=10, max_retries=3) -> bytes | None:
+        for _ in range(max_retries):
+            try:
+                async with httpx.AsyncClient(headers=self.__headers, follow_redirects=True, timeout=timeout) as htx:
+                    result: httpx.Response = await htx.get(url=link)
+                    result.raise_for_status()
+                    return await result.aread()
+            except httpx.ReadTimeout:
+                continue
+            except httpx.HTTPStatusError as exc:
+                print(f"HTTP error occurred: {exc}")
+                break
+        return None 
 
-        browser.quit()
-    
-    def __parsing_article(self, browser) -> SonnikTypeArticle:
-        title: str = browser.find_element(By.TAG_NAME, "h1").text
-        article_text: str = browser.find_element(By.XPATH, self.__xpath_text).text
+    def __create_link_list(self, page) -> list[str]:
+        soup: BeautifulSoup = BeautifulSoup(markup=page, features='lxml')
+        elements = soup.find_all(name='a', class_='link-holder')
+        links = [item.get('href') for item in elements if item.get('href') is not None]
+        return links
 
-        article: SonnikTypeArticle = {
-                "title": title,
-                "text" : self.__truncate_text(article_text),
-                }
-        return article
+    async def __get_article_list(self, links) -> list[dict[str, str]] | None:
+        articles: list[dict[str, str]] = []
+        for link in links:
+            page = await self.__download_page(f'https://horo.mail.ru{link}')
+            article = self.__get_article(page)
+            if article == None:
+                return
+            articles.append(article)
+
+        return None if len(articles) == 0 else articles
+
+    def __get_article(self, page) -> dict[str, str] | None:
+        soup: BeautifulSoup = BeautifulSoup(markup=page, features='lxml')
+        header = soup.find(name='h1', class_='hdr__inner')
+        paragraph = soup.find(name='div', class_='article__item')
+        if header == None or paragraph == None:
+            return
+        return {'header': header.text, 'paragraph': self.__truncate_text(paragraph.text) }
 
     def __truncate_text(self, text) -> str:
         if len(text) <= self.__max_length:
             return text
-    
         sentences: str = text.split('.')
         truncated_text: str = ''
-
         for sentence in sentences:
-            if len(truncated_text) + len(sentence) + 1 <= self.__max_length:
+            if len(truncated_text) + len(sentence) +1 <= self.__max_length:
                 truncated_text += sentence + '.'
             else:
                 break
-        
         return truncated_text
-
-
-    def __get_article_urls(self) -> list:
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-
-        browser = webdriver.Chrome(options=options) 
-        self.__page_load(self.__url, browser)
-        self.__enter_text_image(browser)
-        self.__push_button(browser)
-
-        links: list = []
-        browser.implicitly_wait(self.__time_to_wait)
-        elements: list[WebElement] = browser.find_elements(By.XPATH, self.__xpath_search_by_urls )
-
-        if elements != []:
-            for element in elements[:self.__count_result]:
-                result: str | None = self.__parsing_urls(element)
-                if result == None:
-                    continue
-                links.append(result)
-        
-        browser.quit()
-        return [None] * self.__count_result if links == [] else links
-
-    def __parsing_urls(self, webElement) -> str | None:
-        url: str | None =  webElement.find_element(By.TAG_NAME, "a").get_attribute('href')
-        return url
-
-if __name__ == "__main__":
-    sonnik = Sonnik()
-    result = sonnik.interpret('лошадь')
-    print(result)

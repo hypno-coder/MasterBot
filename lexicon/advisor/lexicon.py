@@ -1,4 +1,4 @@
-class AdvisorLexicon():    
+class AdvisorLexicon:    
     ask_question = 'Задайте свой вопрос!'
     another_question = 'Нажмите, что бы задать другой вопрос!'
     wait = 'Ожидайте, скоро будет ответ...'

@@ -14,6 +14,7 @@ class SpamConfig(Enum):
     advisor_menu = 2
     admin_menu = 2
     mailing_menu = 2
+    sonnik_menu = 2
 
     #conversations
     sonnik_conv = 2
