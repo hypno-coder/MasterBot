@@ -41,7 +41,7 @@ async def send_response(
     except Exception as ex:
         print(ex)
 
-    await bot.send_message(chat_id=chat_id, text='===========================')
+    await bot.send_message(chat_id=chat_id, text=CommonLexicon.divider)
     await bot.send_message(chat_id=chat_id, text=f'<i>{fio}</i>')
 
     match user_data['service_species']:
@@ -73,7 +73,7 @@ async def send_response(
         case _:
             pass
 
-    await bot.send_message(chat_id=chat_id, text='===========================')
+    await bot.send_message(chat_id=chat_id, text=CommonLexicon.divider)
     await bot.send_message(
             chat_id, 
             text=CommonLexicon.back_menu, 

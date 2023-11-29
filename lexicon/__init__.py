@@ -1,5 +1,4 @@
 from .commands import COMMANDS
-from .lexicon import BotText 
 from .errors import QueryErrText
 from .horoscope import ZodiacButtons, HoroscopeLexicon
 from .free_menu import FreeMenuButtons, FreeMenuLexicon
@@ -13,3 +12,4 @@ from .code import CodeMenuButtons, CodePagiBtnCallback, CodeActionMenuButtons, C
 from .jantra import JantraMenuButtons, JantraPagiBtnCallback, JantraActionMenuButtons, JantraLexicon, jantra_description
 from .admin_menu import AdminMenuLexicon, AdminMenuButtons
 from .mailing import MailingActionMenuButtons, MailingLexicon, MailingButtonMenu
+from .sonnik import SonnikLexicon, SonnikActionMenuButtons
