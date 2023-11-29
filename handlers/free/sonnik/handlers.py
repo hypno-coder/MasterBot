@@ -4,7 +4,7 @@ from aiogram import Router, Bot, F
 from aiogram.types import CallbackQuery, Message 
 from aiogram.fsm.context import FSMContext
 
-from lexicon import FreeMenuButtons, CommonLexicon, SonnikActionMenuButtons, SonnikLexicon 
+from lexicon import SonnikMenuButtons, CommonLexicon, SonnikActionMenuButtons, SonnikLexicon 
 from config_data import SpamConfig
 from services import Sonnik
 from states import FSMSonnik
@@ -14,7 +14,7 @@ from utils import remove_message
 sonnikHandlerRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.sonnik_conv.name}
 
-@sonnikHandlerRouter.callback_query(F.data == FreeMenuButtons.Sonnik.name, flags=flags)
+@sonnikHandlerRouter.callback_query(F.data == SonnikMenuButtons.GetSonnik.name, flags=flags)
 @sonnikHandlerRouter.callback_query(F.data == SonnikActionMenuButtons.Repeat.name, flags=flags)
 async def start_sonnik_conv(callback: CallbackQuery, bot: Bot, state: FSMContext) -> None:
     if callback.message == None:

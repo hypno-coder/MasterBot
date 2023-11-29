@@ -4,7 +4,7 @@ from .main import main_menu_keyboard
 from .paid import paid_menu_keyboard
 from .subscriber import subscribe_keyboard 
 from .code  import code_menu_buttons, code_action_menu_keyboard
-from .sonnik import sonnik_repeat_keyboard
+from .sonnik import sonnik_repeat_keyboard, sonnik_menu_keyboard
 from .calendar import calendar_menu_buttons, calendar_action_menu_keyboard 
 from .keyboards_generator import Keyboard 
 from .horoscope import zodiac_menu 
