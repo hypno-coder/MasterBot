@@ -29,7 +29,7 @@ async def start_sonnik_conv(callback: CallbackQuery, bot: Bot, state: FSMContext
              'sonnik_chat_id': f'{sent_message.chat.id}'})
 
 
-@sonnikHandlerRouter.message(lambda a: bool(re.match(r'^[А-Яа-я]+$', a.text)) ,FSMSonnik.sleeping_pattern)
+@sonnikHandlerRouter.message(lambda a: a.text and bool(re.match(r'^[А-Яа-я]+$', a.text)), FSMSonnik.sleeping_pattern)
 async def process_image(message: Message, bot: Bot, state: FSMContext) -> None:
 
     chat_id = message.chat.id
