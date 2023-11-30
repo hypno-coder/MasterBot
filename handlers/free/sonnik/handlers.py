@@ -20,7 +20,7 @@ async def start_sonnik_conv(callback: CallbackQuery, bot: Bot, state: FSMContext
     if callback.message == None:
         return
     await callback.message.delete()
-    await state.set_state(FSMSonnik.enter_image)
+    await state.set_state(FSMSonnik.sleeping_pattern)
     user_id = callback.from_user.id
     await callback.answer()
     sent_message = await bot.send_message(chat_id=user_id, text=SonnikLexicon.conv)
@@ -29,7 +29,7 @@ async def start_sonnik_conv(callback: CallbackQuery, bot: Bot, state: FSMContext
              'sonnik_chat_id': f'{sent_message.chat.id}'})
 
 
-@sonnikHandlerRouter.message(lambda a: bool(re.match(r'^[А-Яа-я]+$', a.text)) ,FSMSonnik.enter_image)
+@sonnikHandlerRouter.message(lambda a: bool(re.match(r'^[А-Яа-я]+$', a.text)) ,FSMSonnik.sleeping_pattern)
 async def process_image(message: Message, bot: Bot, state: FSMContext) -> None:
 
     chat_id = message.chat.id
@@ -72,7 +72,7 @@ async def process_image(message: Message, bot: Bot, state: FSMContext) -> None:
             reply_markup=sonnik_repeat_keyboard)
 
 
-@sonnikHandlerRouter.message(FSMSonnik.enter_image)
+@sonnikHandlerRouter.message(FSMSonnik.sleeping_pattern)
 async def text_filter(message: Message, bot: Bot):
     id = message.chat.id
     await message.delete()
