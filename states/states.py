@@ -13,6 +13,7 @@ class FSMCode(StatesGroup):
 
 class FSMCalendar(StatesGroup):
     enter_date = State()
+    select_month = State()
     check_data = State()
     calculate = State()
     checkout_query = State()

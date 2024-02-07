@@ -1,15 +1,22 @@
+from .admin_menu import AdminMenuButtons, AdminMenuLexicon
+from .advisor import (ANSWERS, AdvisorActionMenuButtons, AdvisorLexicon,
+                      AdvisorMenuButtons, AdvisorPagiBtnCallback,
+                      advisor_description)
+from .calendar import (CalendarActionMenuButtons, CalendarLexicon,
+                       CalendarMenuButtons, CalendarPagiBtnCallback,
+                       calendar_description, CalendarSelectMonthMenuButtons, months_rus)
+from .code import (CodeActionMenuButtons, CodeLexicon, CodeMenuButtons,
+                   CodePagiBtnCallback, code_description)
 from .commands import COMMANDS
+from .common import CommonLexicon, CommonMenuButtons, PagiLexicon
 from .errors import QueryErrText
-from .horoscope import ZodiacButtons, HoroscopeLexicon
 from .free_menu import FreeMenuButtons, FreeMenuLexicon
+from .horoscope import HoroscopeLexicon, ZodiacButtons
+from .jantra import (JantraActionMenuButtons, JantraLexicon, JantraMenuButtons,
+                     JantraPagiBtnCallback, jantra_description)
+from .mailing import (MailingActionMenuButtons, MailingButtonMenu,
+                      MailingLexicon)
 from .main_menu import MainMenuButtons, MainMenuLexicon
-from .paid_menu import PaidMenuButtons, PaidMenuLexicon
-from .advisor import AdvisorMenuButtons, AdvisorPagiBtnCallback, AdvisorActionMenuButtons, AdvisorLexicon, advisor_description, ANSWERS
-from .calendar import CalendarMenuButtons, CalendarActionMenuButtons, CalendarLexicon, CalendarPagiBtnCallback, calendar_description
-from .common import CommonLexicon, PagiLexicon, CommonMenuButtons 
 from .middlewares import MiddlewareButtons, MiddlewareLexicon
-from .code import CodeMenuButtons, CodePagiBtnCallback, CodeActionMenuButtons, CodeLexicon, code_description
-from .jantra import JantraMenuButtons, JantraPagiBtnCallback, JantraActionMenuButtons, JantraLexicon, jantra_description
-from .admin_menu import AdminMenuLexicon, AdminMenuButtons
-from .mailing import MailingActionMenuButtons, MailingLexicon, MailingButtonMenu
-from .sonnik import SonnikLexicon, SonnikActionMenuButtons, SonnikMenuButtons
+from .paid_menu import PaidMenuButtons, PaidMenuLexicon
+from .sonnik import SonnikActionMenuButtons, SonnikLexicon, SonnikMenuButtons
