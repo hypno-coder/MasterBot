@@ -1,4 +1,4 @@
-from .admin_menu import AdminMenuButtons, AdminMenuLexicon
+from .admin_menu import AdminMenuButtons, AdminMenuLexicon, LockControlMenuButtons, LockMenuLexicon
 from .advisor import (ANSWERS, AdvisorActionMenuButtons, AdvisorLexicon,
                       AdvisorMenuButtons, AdvisorPagiBtnCallback,
                       advisor_description)

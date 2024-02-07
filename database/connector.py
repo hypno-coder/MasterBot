@@ -1,5 +1,5 @@
-from motor.motor_asyncio import AsyncIOMotorClient 
 import redis
+from motor.motor_asyncio import AsyncIOMotorClient 
 from loader import config
 
 

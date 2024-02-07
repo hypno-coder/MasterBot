@@ -6,6 +6,7 @@ from .paid import paidRouter
 from .free import freeRouter
 from .main_menu import mainMenuRouter
 
+
 # folder root router
 mainRouter: Router = Router()
 

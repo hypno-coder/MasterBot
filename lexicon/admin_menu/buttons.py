@@ -1,5 +1,12 @@
-from enum import Enum 
+from enum import Enum
+
 
 class AdminMenuButtons(Enum):
-    Mailing = 'Рассылка'
+    BackToAdminMenu = "Назад"
+    Mailing = "Рассылка"
+    LockControl = "Контроль доступа"
 
+
+class LockControlMenuButtons(Enum):
+    BotBlocking = "Блокировать Бота"
+    BotUnlocking = "Разблокировать Бота"

@@ -1,2 +1,2 @@
-from .buttons import AdminMenuButtons
-from .lexicon import AdminMenuLexicon
+from .buttons import AdminMenuButtons, LockControlMenuButtons
+from .lexicon import AdminMenuLexicon, LockMenuLexicon
