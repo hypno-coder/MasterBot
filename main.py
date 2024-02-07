@@ -6,12 +6,13 @@ import asyncio
 
 from aiogram import types
 
-from loader import config, bot, dp, app
+from loader import bot, dp, app
 from handlers import mainRouter
 from middlewares import SubscriberMiddleware, UserSaverMiddleware, ThrottlingMiddleware 
 from database.connector import redis_db
 from commands import set_command_menu
 from utils import send_response
+from url_const import WEBHOOK_URL, WEBHOOK_PATH 
 
 
 logger = logging.getLogger(__name__)
@@ -21,8 +22,6 @@ logging.basicConfig(
 )
 
 
-WEBHOOK_PATH = f'/bot/{config.tg_bot.token}'
-WEBHOOK_URL = f'{config.tg_bot.base_url}{WEBHOOK_PATH}'
 
 
 @app.on_event("startup")

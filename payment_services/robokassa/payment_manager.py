@@ -1,10 +1,12 @@
-import json
-from decimal import Decimal
 import hashlib
+import json
+
+from decimal import Decimal
 from urllib import parse
 
-from loader import payment as p
 from database.connector import redis_db
+from loader import payment as p
+
 from ..user_data_type import UserDataType
 
 
@@ -40,6 +42,7 @@ def generate_payment_link(
 ) -> str:
     '''URL for redirection of the customer to the service.
     '''
+    
     receipt = {
           'sno':'usn_income',
           'items': [
@@ -72,7 +75,5 @@ def generate_payment_link(
         'Receipt': receipt_encoded,
         'IsTest': is_test
     }
-
     redis_db.setex(str(number), 6000, json.dumps(user_data))
     return f'{robokassa_payment_url}?{parse.urlencode(data)}'
-

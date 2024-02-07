@@ -63,10 +63,10 @@ class Sonnik:
             return
         return {'header': header.text, 'paragraph': self.__truncate_text(paragraph.text) }
 
-    def __truncate_text(self, text) -> str:
+    def __truncate_text(self, text: str) -> str:
         if len(text) <= self.__max_length:
             return text
-        sentences: str = text.split('.')
+        sentences: list[str] = text.split('.')
         truncated_text: str = ''
         for sentence in sentences:
             if len(truncated_text) + len(sentence) +1 <= self.__max_length:

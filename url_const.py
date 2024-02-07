@@ -1,0 +1,11 @@
+from loader import config
+# Prod
+WEBHOOK_PATH = f'/bot/{config.tg_bot.token}'
+WEBHOOK_URL = f'{config.tg_bot.base_url}{WEBHOOK_PATH}'
+
+# Dev
+WEBHOOK_PATH_DEV = f"/bot/6698538164:AAHKmaLNV_IHegbLu5o_y8HDkEpq77xfhu0"
+WEBHOOK_NGROK = "https://935b-89-31-122-25.ngrok-free.app"
+WEBHOOK_URL_DEV = f"{WEBHOOK_NGROK}{WEBHOOK_PATH_DEV}"
+
+
