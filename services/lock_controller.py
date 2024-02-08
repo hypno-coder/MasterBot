@@ -2,6 +2,7 @@ import redis
 
 from database.connector import redis_db
 from errors import send_error_message
+from lexicon import LockControllerLexicon
 
 
 class BotAccessController:
@@ -13,7 +14,7 @@ class BotAccessController:
             if result != None:
                 return result
         except redis.RedisError as e:
-            await self.__handle_redis_error("Ошибка блокировки бота", e)
+            await self.__handle_redis_error(LockControllerLexicon.blocking_err, e)
 
     async def unlock(self):
         try:
@@ -21,13 +22,13 @@ class BotAccessController:
             if result != None:
                 return result
         except redis.RedisError as e:
-            await self.__handle_redis_error("Ошибка разблокировки бота", e)
+            await self.__handle_redis_error(LockControllerLexicon.unblocking_err, e)
 
     async def is_locked(self):
         try:
             return redis_db.get(self.BOT_LOCK_KEY) == b"locked"
         except redis.RedisError as e:
-            await self.__handle_redis_error(f"Ошибка проверки статуса бота", e)
+            await self.__handle_redis_error(LockControllerLexicon.check_status_err, e)
 
     async def __handle_redis_error(self, message, exception):
         await send_error_message(message)

@@ -4,7 +4,7 @@ from aiogram import Bot, F, Router
 from aiogram.types import CallbackQuery
 
 from config_data import SpamConfig
-from lexicon import LockControlMenuButtons
+from lexicon import LockControlMenuButtons, LockMenuLexicon
 from loader import config
 from services import BotAccessController
 from utils import remove_message
@@ -26,8 +26,8 @@ async def block_bot(callback: CallbackQuery, bot: Bot) -> None:
     result = await controller.lock()
     text: str = ""
     if not result:
-        text = "Блокировка бота не удалась"
-    text = "Бот Заблокирован"
+        text = LockMenuLexicon.block_fail
+    text = LockMenuLexicon.block_success
     data = await bot.send_message(chat_id=callback.message.chat.id, text=text)
     asyncio.create_task(
         remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=5)
@@ -47,8 +47,8 @@ async def unblock_bot(callback: CallbackQuery, bot: Bot) -> None:
     result = await controller.unlock()
     text: str = ""
     if not result:
-        text = "Разлокировка бота не удалась"
-    text = "Бот разблокирован"
+        text = LockMenuLexicon.unblock_fail
+    text = LockMenuLexicon.unblock_success
     data = await bot.send_message(chat_id=callback.message.chat.id, text=text)
     asyncio.create_task(
         remove_message(chat_id=data.chat.id, message_id=data.message_id, delay=5)

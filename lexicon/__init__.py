@@ -1,10 +1,13 @@
-from .admin_menu import AdminMenuButtons, AdminMenuLexicon, LockControlMenuButtons, LockMenuLexicon
+from .admin_menu import (AdminMenuButtons, AdminMenuLexicon,
+                         LockControllerLexicon, LockControlMenuButtons,
+                         LockMenuLexicon)
 from .advisor import (ANSWERS, AdvisorActionMenuButtons, AdvisorLexicon,
                       AdvisorMenuButtons, AdvisorPagiBtnCallback,
                       advisor_description)
 from .calendar import (CalendarActionMenuButtons, CalendarLexicon,
                        CalendarMenuButtons, CalendarPagiBtnCallback,
-                       calendar_description, CalendarSelectMonthMenuButtons, months_rus)
+                       CalendarSelectMonthMenuButtons, calendar_description,
+                       months_rus)
 from .code import (CodeActionMenuButtons, CodeLexicon, CodeMenuButtons,
                    CodePagiBtnCallback, code_description)
 from .commands import COMMANDS

@@ -4,6 +4,7 @@ from typing import Any, Awaitable, Callable, Dict
 from aiogram import BaseMiddleware, F
 from aiogram.types import CallbackQuery, Message, TelegramObject
 
+from lexicon import MiddlewareLexicon
 from loader import bot, config
 from services import BotAccessController
 from utils import remove_message
@@ -35,7 +36,7 @@ class BotLockCheckerMiddleware(BaseMiddleware):
         result = await controller.is_locked()
         if result:
             reply = await bot.send_message(
-                chat_id=chat_id, text="В данный момент ведутся технические работы."
+                chat_id=chat_id, text=MiddlewareLexicon.technical_works
             )
             asyncio.create_task(
                 remove_message(chat_id=chat_id, message_id=reply.message_id, delay=20)
