@@ -10,8 +10,8 @@ from config_data import SpamConfig
 from filters import AgeFilter, DateFilter
 from keyboards import (calendar_action_menu_keyboard,
                        get_data_by_month_for_a_calendar, get_payment_keyboard)
-from lexicon import (CalendarActionMenuButtons, CalendarMenuButtons,
-                     CommonLexicon, PaidMenuButtons, CalendarLexicon)
+from lexicon import (CalendarActionMenuButtons, CalendarLexicon,
+                     CalendarMenuButtons, CommonLexicon, PaidMenuButtons)
 from lexicon.calendar.buttons import CalendarSelectMonthMenuButtons
 from loader import payment as PaymentCredentials
 from payment_services import generate_payment_link
