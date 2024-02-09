@@ -1,6 +1,6 @@
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
-from aiogram.types import Message
+from aiogram.types import Message, TelegramObject
 
 from database import User 
 from lexicon import MiddlewareLexicon 
@@ -10,9 +10,11 @@ class UserSaverMiddleware(BaseMiddleware):
     async def __call__(
         self,
         handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
-        event: Message,
+        event: TelegramObject,
         data: Dict[str, Any]
     ) -> Any:
+        if not isinstance(event, Message):
+            return
         
         if event.from_user == None or event.text != '/start':
             return await handler(event, data)

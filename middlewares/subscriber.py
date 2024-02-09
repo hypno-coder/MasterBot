@@ -1,21 +1,22 @@
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, TelegramObject
 
 from keyboards import subscribe_keyboard 
 from lexicon import MiddlewareLexicon 
 from loader import bot, config
 
-EventType = Message | CallbackQuery 
 
 
 class SubscriberMiddleware(BaseMiddleware):
     async def __call__(
         self,
-        handler: Callable[[EventType, Dict[str, Any]], Awaitable[Any]],
-        event: EventType,
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
         data: Dict[str, Any]
-    ) -> Any:
+    ) -> Any:        
+        if not isinstance(event, (Message, CallbackQuery)):
+            return
         if event.from_user == None:
             return
         user = await bot.get_chat_member(

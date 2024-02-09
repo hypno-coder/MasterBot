@@ -2,24 +2,25 @@ from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
 from aiogram.dispatcher.flags import get_flag
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, TelegramObject
 
 from loader import bot 
 from config_data import genTrotCash
 from lexicon import MiddlewareLexicon 
 from utils import remove_message
 
-EventType = Message | CallbackQuery 
-
 
 class ThrottlingMiddleware(BaseMiddleware):
     caches = genTrotCash()
     async def __call__(
             self,
-            handler: Callable[[EventType, Dict[str, Any]], Awaitable[Any]],
-            event: Message | CallbackQuery,
+            handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+            event: TelegramObject,
             data: Dict[str, Any],
     ) -> Any:
+        if not isinstance(event, (Message, CallbackQuery)):
+            return
+
         chat_id: int = 0
         if isinstance(event, Message):
             chat_id: int = event.chat.id
@@ -36,4 +37,5 @@ class ThrottlingMiddleware(BaseMiddleware):
                 return
             else:
                 self.caches[throttling_key][chat_id] = None
+
         return await handler(event, data)
