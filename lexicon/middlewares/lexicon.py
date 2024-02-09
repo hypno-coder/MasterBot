@@ -4,4 +4,4 @@ class MiddlewareLexicon():
     stop_spam = 'нельзя часто  спамить =)'
     new_user = 'Новый Пользователь!'
     total_users = 'Всего пользователей: '
-
+    technical_works = "В данный момент ведутся технические работы."

@@ -1,73 +1,80 @@
-from typing import cast
 import random
 from decimal import Decimal
+from typing import cast
 
-
-from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery, Message
 
-from keyboards import jantra_action_menu_keyboard, get_payment_keyboard 
-from lexicon import CommonLexicon, JantraMenuButtons, JantraActionMenuButtons, PaidMenuButtons 
 from config_data import SpamConfig
-from states import FSMJantra
-from filters import DateFilter, AgeFilter
-from payment_services.user_data_type import user_data 
-from payment_services import generate_payment_link 
+from filters import AgeFilter, DateFilter
+from keyboards import get_payment_keyboard, jantra_action_menu_keyboard
+from lexicon import (CommonLexicon, JantraActionMenuButtons, JantraMenuButtons,
+                     PaidMenuButtons)
 from loader import payment as PaymentCredentials
+from payment_services import generate_payment_link
+from payment_services.user_data_type import user_data
+from states import FSMJantra
 
 jantraHandlerRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.jantra_menu.name}
 
 
-@jantraHandlerRouter.callback_query(F.data.in_([
-    JantraMenuButtons.CreateJantra.name, JantraActionMenuButtons.JantraEditData.name]), flags=flags)
+@jantraHandlerRouter.callback_query(
+    F.data.in_(
+        [
+            JantraMenuButtons.CreateJantra.name,
+            JantraActionMenuButtons.JantraEditData.name,
+        ]
+    ),
+    flags=flags,
+)
 async def eter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     message = cast(CallbackQuery, callback.message)
-    await message.answer(
-            text=CommonLexicon.enter_fio) 
+    await message.answer(text=CommonLexicon.enter_fio)
     await state.set_state(FSMJantra.enter_date)
 
 
-@jantraHandlerRouter.message(~F.text.startswith('/'), FSMJantra.enter_date, flags=flags)
+@jantraHandlerRouter.message(~F.text.startswith("/"), FSMJantra.enter_date, flags=flags)
 async def enter_date(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
 
-    fio: str = message.text 
-    await state.set_data({'fio': fio})
+    fio: str = message.text
+    await state.set_data({"fio": fio})
 
     await message.answer(text=CommonLexicon.enter_date)
     await state.set_state(FSMJantra.check_data)
 
 
 @jantraHandlerRouter.message(
-        ~F.text.startswith('/'),
-        FSMJantra.check_data, 
-        DateFilter(is_date=True), 
-        AgeFilter(is_age=True),
-        flags=flags)
+    ~F.text.startswith("/"),
+    FSMJantra.check_data,
+    DateFilter(is_date=True),
+    AgeFilter(is_age=True),
+    flags=flags,
+)
 async def check_data(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
 
-    data = await state.get_data() 
-    fio: str = data['fio']
-    birthday: str = message.text 
-    data.update({'birthday': birthday})
+    data = await state.get_data()
+    fio: str = data["fio"]
+    birthday: str = message.text
+    data.update({"birthday": birthday})
     await state.update_data(data)
 
     await message.answer(text=CommonLexicon.check_data)
-    await message.answer(text=f'{CommonLexicon.fio}{fio}')
-    await message.answer(text=f'{CommonLexicon.birthday}{birthday}')
-    await message.answer(text=CommonLexicon.selected_action, reply_markup=jantra_action_menu_keyboard)
+    await message.answer(text=f"{CommonLexicon.fio}{fio}")
+    await message.answer(text=f"{CommonLexicon.birthday}{birthday}")
+    await message.answer(
+        text=CommonLexicon.selected_action, reply_markup=jantra_action_menu_keyboard
+    )
 
 
 @jantraHandlerRouter.message(
-        ~F.text.startswith('/'), 
-        FSMJantra.check_data, 
-        DateFilter(is_date=True), 
-        flags=flags)
+    ~F.text.startswith("/"), FSMJantra.check_data, DateFilter(is_date=True), flags=flags
+)
 async def wrong_age(message: Message) -> None:
     if message.text == None:
         return
@@ -75,7 +82,7 @@ async def wrong_age(message: Message) -> None:
     await message.reply(CommonLexicon.legal_age)
 
 
-@jantraHandlerRouter.message(~F.text.startswith('/'), FSMJantra.check_data, flags=flags)
+@jantraHandlerRouter.message(~F.text.startswith("/"), FSMJantra.check_data, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return
@@ -84,30 +91,33 @@ async def wrong_input(message: Message) -> None:
 
 
 @jantraHandlerRouter.callback_query(
-        F.data == JantraActionMenuButtons.JantraConfirmData.name, 
-        flags=flags)
+    F.data == JantraActionMenuButtons.JantraConfirmData.name, flags=flags
+)
 async def order(callback: CallbackQuery, state: FSMContext):
     callback.answer()
     message = callback.message
-    data: dict = await state.get_data() 
-    
+    data: dict = await state.get_data()
 
-    if message == None or message.from_user == None: 
+    if message == None or message.from_user == None:
         return
 
-    user_data['chat_id'] = message.chat.id 
-    user_data['user_id'] = message.from_user.id 
-    user_data['service_species'] = PaidMenuButtons.Jantra.name 
-    user_data['fio'] = data['fio'] 
-    user_data['birthday'] = data['birthday'] 
+    user_data["chat_id"] = message.chat.id
+    user_data["user_id"] = message.from_user.id
+    user_data["service_species"] = PaidMenuButtons.Jantra.name
+    user_data["fio"] = data["fio"]
+    user_data["birthday"] = data["birthday"]
 
     link = generate_payment_link(
-            cost=Decimal(f'{PaymentCredentials.price.jantra}.00'),
-            number=random.randint(10**6, (10**7)-1),            
-            user_data=user_data,
-            description=f'Консультация: {PaidMenuButtons.Jantra.value}')
+        cost=Decimal(f"{PaymentCredentials.price.jantra}.00"),
+        number=random.randint(10**6, (10**7) - 1),
+        user_data=user_data,
+        description=f"Консультация: {PaidMenuButtons.Jantra.value}",
+    )
 
-    await message.answer(text=CommonLexicon.pay_message, reply_markup=get_payment_keyboard(
-        link=link, 
-        backbutton=PaidMenuButtons.BackToPaidMenu))
+    await message.answer(
+        text=CommonLexicon.pay_message,
+        reply_markup=get_payment_keyboard(
+            link=link, backbutton=PaidMenuButtons.BackToPaidMenu
+        ),
+    )
     await state.clear()

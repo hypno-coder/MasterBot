@@ -4,3 +4,5 @@ from .money_code import FinCode
 from .jantra import Jantra
 from .horoscope import Horoscope 
 from .sender import Sender
+from .lock_controller import BotAccessController
+

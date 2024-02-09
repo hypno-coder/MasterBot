@@ -10,8 +10,8 @@ from config_data import SpamConfig
 from filters import AgeFilter, DateFilter
 from keyboards import (calendar_action_menu_keyboard,
                        get_data_by_month_for_a_calendar, get_payment_keyboard)
-from lexicon import (CalendarActionMenuButtons, CalendarMenuButtons,
-                     CommonLexicon, PaidMenuButtons)
+from lexicon import (CalendarActionMenuButtons, CalendarLexicon,
+                     CalendarMenuButtons, CommonLexicon, PaidMenuButtons)
 from lexicon.calendar.buttons import CalendarSelectMonthMenuButtons
 from loader import payment as PaymentCredentials
 from payment_services import generate_payment_link
@@ -70,7 +70,7 @@ async def select_month(message: Message, state: FSMContext) -> None:
 
     if not isinstance(keyboard, InlineKeyboardMarkup):
         return
-    await message.answer(text=CommonLexicon.select_month, reply_markup=keyboard)
+    await message.answer(text=CalendarLexicon.select_month, reply_markup=keyboard)
     await state.set_state(FSMCalendar.check_data)
 
 
