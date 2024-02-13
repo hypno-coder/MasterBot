@@ -11,8 +11,8 @@ from filters import AgeFilter, DateFilter
 from keyboards import (calendar_action_menu_keyboard,
                        get_data_by_month_for_a_calendar, get_payment_keyboard)
 from lexicon import (CalendarActionMenuButtons, CalendarLexicon,
-                     CalendarMenuButtons, CommonLexicon, PaidMenuButtons)
-from lexicon.calendar.buttons import CalendarSelectMonthMenuButtons
+                     CalendarMenuButtons, CalendarSelectMonthMenuButtons,
+                     CommonLexicon, PaidMenuButtons)
 from loader import payment as PaymentCredentials
 from payment_services import generate_payment_link
 from payment_services.user_data_type import user_data
@@ -41,7 +41,7 @@ async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     ~F.text.startswith("/"), FSMCalendar.enter_date, flags=flags
 )
 async def enter_birthday(message: Message, state: FSMContext) -> None:
-    if message.text == None or message.from_user == None:
+    if message.text is None:
         return
 
     fio: str = message.text
