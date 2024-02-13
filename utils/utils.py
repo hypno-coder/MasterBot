@@ -33,7 +33,7 @@ async def send_response(
     birthday = user_data["birthday"]
     date = (
         datetime.fromisoformat(user_data["month"])
-        if isinstance(user_data["month"], str)
+        if user_data["month"] != None
         else datetime.now()
     )
 

@@ -5,7 +5,7 @@ class UserDataType(TypedDict):
     user_id: int
     service_species: str
     fio: str
-    month: str 
+    month: str | None
     birthday: str
 
 user_data: UserDataType = UserDataType(
@@ -13,6 +13,6 @@ user_data: UserDataType = UserDataType(
     user_id=0,
     service_species='',
     fio='',
-    month = '',
+    month = None,
     birthday='',
 )
