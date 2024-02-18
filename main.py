@@ -11,8 +11,8 @@ from handlers import mainRouter
 from loader import app, bot, dp
 from middlewares import (BotLockCheckerMiddleware, SubscriberMiddleware,
                          ThrottlingMiddleware, UserSaverMiddleware)
+from services import ResponseController
 from url_const import WEBHOOK_PATH, WEBHOOK_URL
-from utils import send_response
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -68,10 +68,12 @@ async def bot_webhook_payment(
     Fee,
 ):
     user_data = redis_db.get(str(InvId))
-    if user_data:
-        asyncio.create_task(send_response(json.loads(user_data)))
-        return f"OK{InvId}"
-    return "bad sign"
+    if user_data is None:
+        return "bad sign"
+
+    response = ResponseController(user_data=json.loads(user_data))
+    asyncio.create_task(response.launch())
+    return f"OK{InvId}"
 
 
 @app.on_event("shutdown")

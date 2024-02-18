@@ -89,6 +89,7 @@ async def send_response(
             await bot.send_video(chat_id, code_video)
 
         case PaidMenuButtons.Jantra.name:
+            jantra_doc = FSInputFile(FilePath.jantra_pdf.value)
             image, number = Jantra.create(birthday)
             input_image = BufferedInputFile(image, "jantra.png")
             await bot.send_message(
@@ -98,6 +99,7 @@ async def send_response(
             await bot.send_message(
                 chat_id, f"<b>{JantraLexicon.lucky_number+str(number)}</b>"
             )
+            await bot.send_document(chat_id, jantra_doc, caption=JantraLexicon.document)
 
         case _:
             pass
