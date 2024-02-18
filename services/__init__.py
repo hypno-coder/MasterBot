@@ -5,4 +5,5 @@ from .jantra import Jantra
 from .horoscope import Horoscope 
 from .sender import Sender
 from .lock_controller import BotAccessController
+from .responseController import ResponseController
 

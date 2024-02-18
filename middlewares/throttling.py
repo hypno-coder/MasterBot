@@ -11,6 +11,7 @@ from utils import remove_message
 
 
 class ThrottlingMiddleware(BaseMiddleware):
+    # TODO: genThrotCash
     caches = genTrotCash()
     async def __call__(
             self,

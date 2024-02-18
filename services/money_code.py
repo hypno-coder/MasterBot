@@ -21,12 +21,14 @@ class FinCode:
             data_sum =  self.__calc(data_sum)
         return data_sum
 
+    # TODO: use just self.__calc() ?
     def __calc_day(self, day) -> int:
         return self.__calc(day) 
 
     def __calc_month(self, month) -> int:
         return self.__calc(month) 
 
+    # TODO: combine with __calc_code ?
     def __calc_year(self, year) -> int:
         year_sum = sum(map(int, str(sum(map(int, str(year))))))
         if year_sum > 9:
