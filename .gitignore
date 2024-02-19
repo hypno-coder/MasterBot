@@ -63,3 +63,4 @@ venv.bak/
 .idea/*
 .env
 main_dev.py
+dump.rdb
