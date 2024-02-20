@@ -5,6 +5,6 @@ WEBHOOK_PATH = f"/bot/{config.tg_bot.token}"
 WEBHOOK_URL = f"{config.tg_bot.base_url}{WEBHOOK_PATH}"
 
 # Dev
-WEBHOOK_NGROK = "https://ef61-85-174-198-37.ngrok-free.app"
+WEBHOOK_NGROK = "https://ca04-85-174-198-37.ngrok-free.app"
 WEBHOOK_PATH_DEV = f"/bot/6698538164:AAHKmaLNV_IHegbLu5o_y8HDkEpq77xfhu0"
 WEBHOOK_URL_DEV = f"{WEBHOOK_NGROK}{WEBHOOK_PATH_DEV}"

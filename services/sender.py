@@ -1,77 +1,72 @@
-import asyncio
-from aiogram import Bot
-
-from database import User
-from database.connector import redis_db
+from database.connector import get_async_redis, users_db
 from keyboards import get_mailing_button
-from errors import send_error_message
-from loader import config
+from loader import bot, config
 
-class Sender: 
-    __error_count = 0
-    __loop_count = 0
-    __mailing_count = 0
-    __number_of_attempts = 0
 
-    def __init__(self, bot: Bot, data):
+class MessageBuilder:
+    def __init__(self, data):
         self.bot = bot
-        self.mailing_data = data
+        self.mailing_name = data["mailing_name"]
+        self.mailing_message = data["mailing_message"]
+        self.button = {"name": data["button_name"], "link": data["button_link"]}
 
-    async def start(self):
-        users = await User.get_all()
-        try:
-            await self.__mailing_loop(users)
-        except Exception:
-            print(f'Ошибка рассылки (попытка {self.__error_count})')
-            await self.__error_action(users)
-        else:
-            await self.__mailing_complete_action(users)
-            
+    @classmethod
+    def get_settings(cls, data):
+        return cls(data).__setup_settings()
 
-    async def __mailing_complete_action(self, users):
-        count = self.__get_mailing_count()
-        for admin_id in config.tg_bot.admin_ids:
-            await self.bot.send_message(
-                chat_id=admin_id, 
-                text=f'Рассылка завершена! Разослали {count} / {len(users)+1}')
-
-
-    async def __error_action(self, users):
-        DELAY_BEFORE_REPEATING = 3
-        self.__error_count += 1
-        count = self.__get_mailing_count()
-        if count is not None:
-            self.__mailing_count = int(count)
-        
-        if self.__error_count < self.__number_of_attempts:
-            await asyncio.sleep(DELAY_BEFORE_REPEATING)
-            return await self.start()
-        else:
-            await send_error_message(f'Ошибка рассылки! Разослали {self.__mailing_count} / {len(users)+1}')
+    def __setup_settings(self):
+        return {
+            "text": (
+                f"<code>{self.mailing_message}</code>"
+                if self.mailing_name == "0"
+                else f"<b>{self.mailing_name}</b>\n<code>{self.mailing_message}</code>"
+            ),
+            "reply_markup": (
+                None
+                if self.button["name"] == None
+                else get_mailing_button(self.button["name"], self.button["link"])
+            ),
+        }
 
 
-    async def __mailing_loop(self, users):
-        for user in users[self.__mailing_count:]:
-            self.__loop_count += 1
-            await self.__mailing(user)
-            redis_db.setex('mailing_count', 86400, self.__loop_count)
+class Mailing:
+    DATA_EXPIRATION_TIME = 21600
+    admin_list = config.tg_bot.admin_ids
 
+    def __init__(self, data):
+        self.bot = bot
+        self.__data = data
+        self.message_settings = MessageBuilder.get_settings(self.__data)
 
-    async def __mailing(self, user):
-        await self.bot.send_message(chat_id=user['_id'], text=f'Приветствую {user["username"]}!')
-        if self.mailing_data['photo_id'] != '0':
-            await self.bot.send_photo(user['_id'], self.mailing_data['photo_id'])
-        if self.mailing_data['button_name'] is None:
-            await self.bot.send_message(chat_id=user['_id'], text=self.mailing_data['mailing_message'])
-        if self.mailing_data['button_name'] is not None:
-            await self.bot.send_message(
-                    chat_id=user['_id'], 
-                    text=self.mailing_data['mailing_message'],
-                    reply_markup=get_mailing_button(
-                        self.mailing_data['button_name'], 
-                        self.mailing_data['button_link']))
+    async def launch(self):
+        self.redis = await get_async_redis()
+        result = await self.__send_messages()
+        await self.redis.close()
+        return result
 
+    async def __send_messages(self):
+        users = await self.__get_users()
+        new_users = users[:4]
 
-    def __get_mailing_count(self):
-        count_bytes = redis_db.get('mailing_count')
-        return int(count_bytes.decode('utf-8')) if count_bytes else 0
+        for user_id in new_users:
+            sent_key = f"sent:{user_id}"
+            already_sent = await self.redis.get(sent_key)
+            if already_sent:
+                continue
+            try:
+                await bot.send_message(user_id, **self.message_settings)
+                await self.redis.set(sent_key, "true", self.DATA_EXPIRATION_TIME)
+            except Exception as e:
+                for admin_id in config.tg_bot.admin_ids:
+                    await bot.send_message(
+                        admin_id,
+                        f"Ошибка при отправке сообщения пользователю {user_id}: {e} \n"
+                        f"Отправленно {new_users.index(user_id)} сообщений",
+                    )
+                return "fail"
+
+        return "complete"
+
+    async def __get_users(self):
+        users = await users_db.find({}).to_list(length=None)
+        return [user["_id"] for user in users]
