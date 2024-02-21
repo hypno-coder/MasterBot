@@ -1,3 +1,5 @@
+from aiogram.exceptions import TelegramBadRequest
+
 from database.connector import get_async_redis, users_db
 from keyboards import get_mailing_button
 from loader import bot, config
@@ -46,9 +48,8 @@ class Mailing:
 
     async def __send_messages(self):
         users = await self.__get_users()
-        new_users = users[:4]
 
-        for user_id in new_users:
+        for user_id in users:
             sent_key = f"sent:{user_id}"
             already_sent = await self.redis.get(sent_key)
             if already_sent:
@@ -56,15 +57,19 @@ class Mailing:
             try:
                 await bot.send_message(user_id, **self.message_settings)
                 await self.redis.set(sent_key, "true", self.DATA_EXPIRATION_TIME)
-            except Exception as e:
-                for admin_id in config.tg_bot.admin_ids:
-                    await bot.send_message(
-                        admin_id,
-                        f"Ошибка при отправке сообщения пользователю {user_id}: {e} \n"
-                        f"Отправленно {new_users.index(user_id)} сообщений",
-                    )
-                return "fail"
-
+            except TelegramBadRequest as e:
+                if "chat not found" in str(e):
+                    for admin_id in config.tg_bot.admin_ids:
+                        await bot.send_message(
+                            admin_id,
+                            f"Ошибка при отправке сообщения пользователю {user_id}: {e} \n"
+                            f"Отправленно {users.index(user_id)} сообщений",
+                        )
+                        continue
+                else:
+                    return e
+            except Exception as ex:
+                return ex
         return "complete"
 
     async def __get_users(self):

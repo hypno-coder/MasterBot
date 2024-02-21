@@ -126,19 +126,18 @@ async def check_data(
         data.update({"button_link": None})
         await state.update_data(data)
         event.answer()
-        
+
     if photo_id != "0":
         await bot.send_photo(chat_id, photo_id)
     message_settings = MessageBuilder.get_settings(data)
     await bot.send_message(chat_id, **message_settings)
     await bot.send_message(
-            chat_id,
-            text=f'{CommonLexicon.check_data}{CommonLexicon.selected_action}',
-            reply_markup=mailing_action_menu_keyboard,
-        )
+        chat_id,
+        text=f"{CommonLexicon.check_data}{CommonLexicon.selected_action}",
+        reply_markup=mailing_action_menu_keyboard,
+    )
 
 
-    
 @mailingHandlerRouter.callback_query(
     F.data == MailingActionMenuButtons.StartMailing.name, flags=flags
 )
@@ -150,6 +149,8 @@ async def start_mailing(callback: CallbackQuery, bot: Bot, state: FSMContext) ->
     mailing = Mailing(data)
     result = await mailing.launch()
     if result != "complete":
-        callback.answer(text="все пропало")
+        await bot.send_message(
+            chat_id, text=f"рассылка завершилась с ошибкой... \n {result}"
+        )
         return
     await bot.send_message(chat_id, MailingLexicon.mailing_is_complete)
