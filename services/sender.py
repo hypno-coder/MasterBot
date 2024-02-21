@@ -1,77 +1,96 @@
-import asyncio
-from aiogram import Bot
+from asyncio import create_task
 
-from database import User
-from database.connector import redis_db
+from aiogram.exceptions import TelegramBadRequest
+
+from database.connector import get_async_redis, users_db
 from keyboards import get_mailing_button
-from errors import send_error_message
-from loader import config
+from loader import bot, config
+from utils import remove_message
 
-class Sender: 
-    __error_count = 0
-    __loop_count = 0
-    __mailing_count = 0
-    __number_of_attempts = 0
 
-    def __init__(self, bot: Bot, data):
+class MessageBuilder:
+    def __init__(self, data):
         self.bot = bot
-        self.mailing_data = data
+        self.mailing_name = data["mailing_name"]
+        self.mailing_message = data["mailing_message"]
+        self.button = {"name": data["button_name"], "link": data["button_link"]}
 
-    async def start(self):
-        users = await User.get_all()
-        try:
-            await self.__mailing_loop(users)
-        except Exception:
-            print(f'Ошибка рассылки (попытка {self.__error_count})')
-            await self.__error_action(users)
-        else:
-            await self.__mailing_complete_action(users)
-            
+    @classmethod
+    def get_settings(cls, data):
+        return cls(data).__setup_settings()
 
-    async def __mailing_complete_action(self, users):
-        count = self.__get_mailing_count()
-        for admin_id in config.tg_bot.admin_ids:
-            await self.bot.send_message(
-                chat_id=admin_id, 
-                text=f'Рассылка завершена! Разослали {count} / {len(users)+1}')
-
-
-    async def __error_action(self, users):
-        DELAY_BEFORE_REPEATING = 3
-        self.__error_count += 1
-        count = self.__get_mailing_count()
-        if count is not None:
-            self.__mailing_count = int(count)
-        
-        if self.__error_count < self.__number_of_attempts:
-            await asyncio.sleep(DELAY_BEFORE_REPEATING)
-            return await self.start()
-        else:
-            await send_error_message(f'Ошибка рассылки! Разослали {self.__mailing_count} / {len(users)+1}')
+    def __setup_settings(self):
+        return {
+            "text": (
+                f"<code>{self.mailing_message}</code>"
+                if self.mailing_name == "0"
+                else f"<b>{self.mailing_name}</b>\n<code>{self.mailing_message}</code>"
+            ),
+            "reply_markup": (
+                None
+                if self.button["name"] == None
+                else get_mailing_button(self.button["name"], self.button["link"])
+            ),
+        }
 
 
-    async def __mailing_loop(self, users):
-        for user in users[self.__mailing_count:]:
-            self.__loop_count += 1
-            await self.__mailing(user)
-            redis_db.setex('mailing_count', 86400, self.__loop_count)
+class Mailing:
+    DATA_EXPIRATION_TIME = 21600
+    admin_list = config.tg_bot.admin_ids
 
+    def __init__(self, data):
+        self.bot = bot
+        self.message_settings = MessageBuilder.get_settings(data)
+        self.__photo_id = data["photo_id"]
+        self.__delay = int(data["delay"]) * 60
 
-    async def __mailing(self, user):
-        await self.bot.send_message(chat_id=user['_id'], text=f'Приветствую {user["username"]}!')
-        if self.mailing_data['photo_id'] != '0':
-            await self.bot.send_photo(user['_id'], self.mailing_data['photo_id'])
-        if self.mailing_data['button_name'] is None:
-            await self.bot.send_message(chat_id=user['_id'], text=self.mailing_data['mailing_message'])
-        if self.mailing_data['button_name'] is not None:
-            await self.bot.send_message(
-                    chat_id=user['_id'], 
-                    text=self.mailing_data['mailing_message'],
-                    reply_markup=get_mailing_button(
-                        self.mailing_data['button_name'], 
-                        self.mailing_data['button_link']))
+    async def launch(self):
+        self.redis = await get_async_redis()
+        result = await self.__send_messages()
+        await self.redis.close()
+        return result
 
+    async def __send_messages(self):
+        users = await self.__get_users()
+        for user_id in users:
+            sent_key = f"sent:{user_id}"
+            already_sent = await self.redis.get(sent_key)
+            if already_sent:
+                continue
+            try:
+                if self.__photo_id != "0":
+                    resp_photo = await bot.send_photo(user_id, self.__photo_id)
+                    create_task(
+                        remove_message(
+                            chat_id=resp_photo.chat.id,
+                            message_id=resp_photo.message_id,
+                            delay=self.__delay,
+                        )
+                    )
+                resp_message = await bot.send_message(user_id, **self.message_settings)
+                create_task(
+                    remove_message(
+                        chat_id=resp_message.chat.id,
+                        message_id=resp_message.message_id,
+                        delay=self.__delay,
+                    )
+                )
+                await self.redis.set(sent_key, "true", self.DATA_EXPIRATION_TIME)
+            except TelegramBadRequest as e:
+                if "chat not found" in str(e):
+                    for admin_id in config.tg_bot.admin_ids:
+                        await bot.send_message(
+                            admin_id,
+                            f"Ошибка при отправке сообщения пользователю {user_id}: {e} \n"
+                            f"Отправленно {users.index(user_id)} сообщений",
+                        )
+                        continue
+                else:
+                    return e
+            except Exception as e:
+                return e
+        return "complete"
 
-    def __get_mailing_count(self):
-        count_bytes = redis_db.get('mailing_count')
-        return int(count_bytes.decode('utf-8')) if count_bytes else 0
+    async def __get_users(self):
+        users = await users_db.find({}).to_list(length=None)
+        return [user["_id"] for user in users]
