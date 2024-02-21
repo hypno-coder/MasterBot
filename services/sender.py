@@ -1,8 +1,11 @@
+from asyncio import create_task
+
 from aiogram.exceptions import TelegramBadRequest
 
 from database.connector import get_async_redis, users_db
 from keyboards import get_mailing_button
 from loader import bot, config
+from utils import remove_message
 
 
 class MessageBuilder:
@@ -37,8 +40,9 @@ class Mailing:
 
     def __init__(self, data):
         self.bot = bot
-        self.__data = data
-        self.message_settings = MessageBuilder.get_settings(self.__data)
+        self.message_settings = MessageBuilder.get_settings(data)
+        self.__photo_id = data["photo_id"]
+        self.__delay = int(data["delay"]) * 60
 
     async def launch(self):
         self.redis = await get_async_redis()
@@ -48,14 +52,29 @@ class Mailing:
 
     async def __send_messages(self):
         users = await self.__get_users()
-
         for user_id in users:
             sent_key = f"sent:{user_id}"
             already_sent = await self.redis.get(sent_key)
             if already_sent:
                 continue
             try:
-                await bot.send_message(user_id, **self.message_settings)
+                if self.__photo_id != "0":
+                    resp_photo = await bot.send_photo(user_id, self.__photo_id)
+                    create_task(
+                        remove_message(
+                            chat_id=resp_photo.chat.id,
+                            message_id=resp_photo.message_id,
+                            delay=self.__delay,
+                        )
+                    )
+                resp_message = await bot.send_message(user_id, **self.message_settings)
+                create_task(
+                    remove_message(
+                        chat_id=resp_message.chat.id,
+                        message_id=resp_message.message_id,
+                        delay=self.__delay,
+                    )
+                )
                 await self.redis.set(sent_key, "true", self.DATA_EXPIRATION_TIME)
             except TelegramBadRequest as e:
                 if "chat not found" in str(e):
@@ -68,8 +87,8 @@ class Mailing:
                         continue
                 else:
                     return e
-            except Exception as ex:
-                return ex
+            except Exception as e:
+                return e
         return "complete"
 
     async def __get_users(self):

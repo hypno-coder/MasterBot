@@ -34,6 +34,7 @@ class FSMAdvisor(StatesGroup):
 
 class FSMMailing(StatesGroup):
     enter_message = State()
+    enter_delay = State()
     enter_image = State()
     add_button = State()
     button_link = State()

@@ -40,6 +40,22 @@ async def enter_message(message: Message, state: FSMContext) -> None:
     await state.set_data({"mailing_name": mailing_name})
 
     await message.answer(text=MailingLexicon.enter_message)
+    await state.set_state(FSMMailing.enter_delay)
+
+
+@mailingHandlerRouter.message(
+    ~F.text.startswith("/"), FSMMailing.enter_delay, flags=flags
+)
+async def enter_delay(message: Message, state: FSMContext) -> None:
+    if message.text == None or message.from_user == None:
+        return
+
+    mailing_message: str = message.text
+    data = await state.get_data()
+    data.update({"mailing_message": mailing_message})
+    await state.update_data(data)
+
+    await message.answer(text=MailingLexicon.enter_delay)
     await state.set_state(FSMMailing.enter_image)
 
 
@@ -50,9 +66,9 @@ async def enter_image(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
 
-    mailing_message: str = message.text
+    delay: str = message.text
     data = await state.get_data()
-    data.update({"mailing_message": mailing_message})
+    data.update({"delay": delay})
     await state.update_data(data)
 
     await message.answer(text=MailingLexicon.enter_image)
@@ -132,6 +148,9 @@ async def check_data(
     message_settings = MessageBuilder.get_settings(data)
     await bot.send_message(chat_id, **message_settings)
     await bot.send_message(
+        chat_id, text=f"{MailingLexicon.delay} {data['delay']} минута"
+    )
+    await bot.send_message(
         chat_id,
         text=f"{CommonLexicon.check_data}{CommonLexicon.selected_action}",
         reply_markup=mailing_action_menu_keyboard,
@@ -150,7 +169,7 @@ async def start_mailing(callback: CallbackQuery, bot: Bot, state: FSMContext) ->
     result = await mailing.launch()
     if result != "complete":
         await bot.send_message(
-            chat_id, text=f"рассылка завершилась с ошибкой... \n {result}"
+            chat_id, text=f"{MailingLexicon.mailing_error} \n {result}"
         )
         return
     await bot.send_message(chat_id, MailingLexicon.mailing_is_complete)
