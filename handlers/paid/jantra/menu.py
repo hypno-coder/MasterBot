@@ -37,9 +37,12 @@ async def process_forward_press(callback: CallbackQuery, state: FSMContext):
 
     data = await state.get_data()
 
-    if data["page"] == len(jantra_description):
-        await callback.answer()
-        return
+    try:
+        if data["page"] == len(jantra_description):
+            await callback.answer()
+            return
+    except Exception:
+        data.update({"page": 1})
 
     page = data["page"] + 1
     await state.update_data(page=page)

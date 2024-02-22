@@ -17,11 +17,14 @@ class Sonnik:
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"}
 
     async def get(self) -> list[dict[str, str]] | None:
-        downloaded_page = await self.__download_page(self.__base_link)
-        if downloaded_page == None:
+        try:
+            downloaded_page = await self.__download_page(self.__base_link)
+            if downloaded_page == None:
+                return
+            links = self.__create_link_list(downloaded_page)
+            articles = await self.__get_article_list(links[:3])
+        except Exception:
             return
-        links = self.__create_link_list(downloaded_page)
-        articles = await self.__get_article_list(links[:3])
         return articles 
 
     async def __download_page(self, link, timeout=10, max_retries=3) -> bytes | None:

@@ -1,5 +1,6 @@
 from aiogram import F, Router
 from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from config_data import SpamConfig
@@ -14,7 +15,8 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.main_menu.name}
 @mainMenuRouter.callback_query(
     F.data == MainMenuButtons.BackToMainMenu.name, flags=flags
 )
-async def start_main_menu(event: Message | CallbackQuery) -> None:
+async def start_main_menu(event: Message | CallbackQuery, state: FSMContext) -> None:
+    await state.clear()
     if isinstance(event, Message):
         await event.answer(
             text=MainMenuLexicon.select_features, reply_markup=main_menu_keyboard
