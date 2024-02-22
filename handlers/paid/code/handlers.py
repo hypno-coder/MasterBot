@@ -23,13 +23,13 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.code_menu.name}
 
 
 @codeHandlerRouter.callback_query(
-    DayFilter(is_day=True),
     F.data.in_(
         [
             CodeMenuButtons.CalculateMoneyCode.name,
             CodeActionMenuButtons.CodeEditData.name,
         ]
     ),
+    DayFilter(is_day=True),
     flags=flags,
 )
 async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
@@ -47,7 +47,7 @@ async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     ),
     flags=flags,
 )
-async def day_except(callback: CallbackQuery, bot: Bot, state: FSMContext) -> None:
+async def day_except(callback: CallbackQuery, bot: Bot) -> None:
     if callback.message == None:
         return
     callback.answer()
@@ -60,7 +60,7 @@ async def day_except(callback: CallbackQuery, bot: Bot, state: FSMContext) -> No
     )
 
 
-@codeHandlerRouter.message(~F.text.startswith("/"), FSMCode.enter_date, flags=flags)
+@codeHandlerRouter.message(FSMCode.enter_date, flags=flags)
 async def enter_date(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -73,7 +73,6 @@ async def enter_date(message: Message, state: FSMContext) -> None:
 
 
 @codeHandlerRouter.message(
-    ~F.text.startswith("/"),
     FSMCode.check_data,
     DateFilter(is_date=True),
     AgeFilter(is_age=True),
@@ -97,16 +96,14 @@ async def check_data(message: Message, state: FSMContext) -> None:
     )
 
 
-@codeHandlerRouter.message(
-    ~F.text.startswith("/"), FSMCode.check_data, DateFilter(is_date=True), flags=flags
-)
+@codeHandlerRouter.message(FSMCode.check_data, DateFilter(is_date=True), flags=flags)
 async def wrong_age(message: Message) -> None:
     if message.text == None:
         return
     await message.reply(CommonLexicon.legal_age)
 
 
-@codeHandlerRouter.message(~F.text.startswith("/"), FSMCode.check_data, flags=flags)
+@codeHandlerRouter.message(FSMCode.check_data, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return

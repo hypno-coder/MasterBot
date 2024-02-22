@@ -1,10 +1,10 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery 
-from aiogram.fsm.context import FSMContext 
+from aiogram import F, Router
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery
 
-from keyboards import sonnik_menu_keyboard 
-from lexicon import FreeMenuButtons, SonnikLexicon
 from config_data import SpamConfig
+from keyboards import sonnik_menu_keyboard
+from lexicon import FreeMenuButtons, SonnikLexicon
 
 sonnikMenuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.sonnik_menu.name}
@@ -15,5 +15,6 @@ async def sonnik_menu(callback: CallbackQuery) -> None:
     if callback.message == None:
         return
 
-    await callback.message.edit_text(text=SonnikLexicon.description, reply_markup=sonnik_menu_keyboard)
- 
+    await callback.message.edit_text(
+        text=SonnikLexicon.description, reply_markup=sonnik_menu_keyboard
+    )

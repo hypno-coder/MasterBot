@@ -32,7 +32,7 @@ async def ask_question(callback: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(FSMAdvisor.response)
 
 
-@advisorHandlerRouter.message(~F.text.startswith("/"), FSMAdvisor.response, flags=flags)
+@advisorHandlerRouter.message(FSMAdvisor.response, flags=flags)
 async def answer_to_question(message: Message, bot: Bot) -> None:
     if message.text == None or message.from_user == None:
         return
