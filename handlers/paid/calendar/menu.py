@@ -1,16 +1,19 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery 
-from aiogram.fsm.context import FSMContext 
+from aiogram import F, Router
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery
 
-from keyboards import Keyboard, calendar_menu_buttons 
-from lexicon import calendar_description, PaidMenuButtons, CalendarPagiBtnCallback 
 from config_data import SpamConfig
+from keyboards import Keyboard, calendar_menu_buttons
+from lexicon import (CalendarPagiBtnCallback, PaidMenuButtons,
+                     calendar_description)
 
 calendarMenuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.calendar_menu.name}
 
 
-@calendarMenuRouter.callback_query(F.data == PaidMenuButtons.MoneyCalendar.name, flags=flags)
+@calendarMenuRouter.callback_query(
+    F.data == PaidMenuButtons.MoneyCalendar.name, flags=flags
+)
 async def calendar_menu(callback: CallbackQuery, state: FSMContext) -> None:
     if callback.message == None:
         return
@@ -22,11 +25,13 @@ async def calendar_menu(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.message.edit_text(
         text=text,
         reply_markup=Keyboard.create_pagi(
-                    CalendarPagiBtnCallback.backward,
-                    f'{page}/{len(calendar_description)}',
-                    CalendarPagiBtnCallback.forward,
-                    keyboard=calendar_menu_buttons))
-        
+            CalendarPagiBtnCallback.backward,
+            f"{page}/{len(calendar_description)}",
+            CalendarPagiBtnCallback.forward,
+            keyboard=calendar_menu_buttons,
+        ),
+    )
+
     await callback.answer()
 
 
@@ -36,41 +41,49 @@ async def process_forward_press(callback: CallbackQuery, state: FSMContext):
         return
 
     data = await state.get_data()
-    if data['page'] == len(calendar_description):
-        await callback.answer()
-        return
+    try:
+        if data["page"] == len(calendar_description):
+            await callback.answer()
+            return
+    except Exception:
+        data.update({"page": 1})
 
-    page = data['page'] + 1
+    page = data["page"] + 1
     await state.update_data(page=page)
     text = calendar_description[page]
 
     await callback.message.edit_text(
         text=text,
         reply_markup=Keyboard.create_pagi(
-                CalendarPagiBtnCallback.backward,
-                f'{page}/{len(calendar_description)}',
-                CalendarPagiBtnCallback.forward,
-                keyboard=calendar_menu_buttons))
+            CalendarPagiBtnCallback.backward,
+            f"{page}/{len(calendar_description)}",
+            CalendarPagiBtnCallback.forward,
+            keyboard=calendar_menu_buttons,
+        ),
+    )
     await callback.answer()
+
 
 @calendarMenuRouter.callback_query(F.data == CalendarPagiBtnCallback.backward)
 async def process_backward_press(callback: CallbackQuery, state: FSMContext):
     if callback.message == None:
         return
     data = await state.get_data()
-    if data['page'] == 1:
+    if data["page"] == 1:
         await callback.answer()
         return
 
-    page = data['page'] - 1
+    page = data["page"] - 1
     await state.update_data(page=page)
     text = calendar_description[page]
 
     await callback.message.edit_text(
-            text=text,
-            reply_markup=Keyboard.create_pagi(
-                CalendarPagiBtnCallback.backward,
-                f'{page}/{len(calendar_description)}',
-                CalendarPagiBtnCallback.forward,
-                keyboard=calendar_menu_buttons))
+        text=text,
+        reply_markup=Keyboard.create_pagi(
+            CalendarPagiBtnCallback.backward,
+            f"{page}/{len(calendar_description)}",
+            CalendarPagiBtnCallback.forward,
+            keyboard=calendar_menu_buttons,
+        ),
+    )
     await callback.answer()

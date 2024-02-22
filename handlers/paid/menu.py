@@ -23,7 +23,7 @@ async def start_paid_menu(event: Message | CallbackQuery, state: FSMContext) -> 
             text=PaidMenuLexicon.services, reply_markup=paid_menu_keyboard
         )
         await event.delete()
-        
+
     elif isinstance(event, CallbackQuery):
         if event.message == None:
             return

@@ -38,7 +38,8 @@ async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
 
 
 @calendarHandlerRouter.message(
-    ~F.text.startswith("/"), FSMCalendar.enter_date, flags=flags
+    FSMCalendar.enter_date, 
+    flags=flags
 )
 async def enter_birthday(message: Message, state: FSMContext) -> None:
     if message.text is None:
@@ -52,10 +53,9 @@ async def enter_birthday(message: Message, state: FSMContext) -> None:
 
 
 @calendarHandlerRouter.message(
+    FSMCalendar.select_month,
     DateFilter(is_date=True),
     AgeFilter(is_age=True),
-    ~F.text.startswith("/"),
-    FSMCalendar.select_month,
     flags=flags,
 )
 async def select_month(message: Message, state: FSMContext) -> None:
@@ -75,13 +75,13 @@ async def select_month(message: Message, state: FSMContext) -> None:
 
 
 @calendarHandlerRouter.callback_query(
+    FSMCalendar.check_data,
     F.data.in_(
         [
             CalendarSelectMonthMenuButtons.CurrentMonth.name,
             CalendarSelectMonthMenuButtons.NextMonth.name,
         ]
     ),
-    FSMCalendar.check_data,
     flags=flags,
 )
 async def check_data(callback: CallbackQuery, state: FSMContext) -> None:
@@ -108,7 +108,6 @@ async def check_data(callback: CallbackQuery, state: FSMContext) -> None:
 
 
 @calendarHandlerRouter.message(
-    ~F.text.startswith("/"),
     FSMCalendar.check_data,
     DateFilter(is_date=True),
     flags=flags,
@@ -121,7 +120,8 @@ async def wrong_age(message: Message) -> None:
 
 
 @calendarHandlerRouter.message(
-    ~F.text.startswith("/"), FSMCalendar.check_data, flags=flags
+    FSMCalendar.check_data, 
+    flags=flags
 )
 async def wrong_input(message: Message) -> None:
     if message.text == None:

@@ -14,6 +14,5 @@ class DateFilter(BaseFilter):
         try:
             datetime.strptime(message.text, "%d.%m.%Y")
             return True
-        except Exception as ex:
-            print(ex)
+        except Exception:
             return False

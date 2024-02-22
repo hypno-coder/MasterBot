@@ -35,7 +35,7 @@ async def eter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(FSMJantra.enter_date)
 
 
-@jantraHandlerRouter.message(~F.text.startswith("/"), FSMJantra.enter_date, flags=flags)
+@jantraHandlerRouter.message(FSMJantra.enter_date, flags=flags)
 async def enter_date(message: Message, state: FSMContext) -> None:
     if message.text == None or message.from_user == None:
         return
@@ -48,7 +48,6 @@ async def enter_date(message: Message, state: FSMContext) -> None:
 
 
 @jantraHandlerRouter.message(
-    ~F.text.startswith("/"),
     FSMJantra.check_data,
     DateFilter(is_date=True),
     AgeFilter(is_age=True),
@@ -73,7 +72,7 @@ async def check_data(message: Message, state: FSMContext) -> None:
 
 
 @jantraHandlerRouter.message(
-    ~F.text.startswith("/"), FSMJantra.check_data, DateFilter(is_date=True), flags=flags
+    FSMJantra.check_data, DateFilter(is_date=True), flags=flags
 )
 async def wrong_age(message: Message) -> None:
     if message.text == None:
@@ -82,7 +81,7 @@ async def wrong_age(message: Message) -> None:
     await message.reply(CommonLexicon.legal_age)
 
 
-@jantraHandlerRouter.message(~F.text.startswith("/"), FSMJantra.check_data, flags=flags)
+@jantraHandlerRouter.message(FSMJantra.check_data, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return
