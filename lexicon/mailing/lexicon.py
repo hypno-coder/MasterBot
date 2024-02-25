@@ -21,3 +21,8 @@ class MailingLexicon:
     mailing_is_complete = "Рассылка законченна"
     mailing_error = "рассылка завершилась с ошибкой..."
     delay = "Задержка удаления: "
+
+class MailingErrorMessages:
+    chat_not_found = "chat not found"
+    user_blocked = "bot was blocked by the user"
+    user_is_deactivated = "user is deactivated"

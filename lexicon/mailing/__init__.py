@@ -1,2 +1,2 @@
 from .buttons import MailingActionMenuButtons, MailingButtonMenu
-from .lexicon import MailingLexicon
+from .lexicon import MailingLexicon, MailingErrorMessages

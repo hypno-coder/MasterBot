@@ -83,6 +83,7 @@ class Mailing:
                 if (
                     MailingErrorMessages.chat_not_found in error_message
                     or MailingErrorMessages.user_blocked in error_message
+                    or MailingErrorMessages.user_is_deactivated in error_message
                 ):
                     await self.__notify_admin(e, user_id, users)
                 else:

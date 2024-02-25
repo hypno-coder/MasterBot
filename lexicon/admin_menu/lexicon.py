@@ -16,6 +16,4 @@ class LockControllerLexicon:
     check_status_err = "Ошибка проверки статуса бота"
 
 
-class MailingErrorMessages:
-    chat_not_found = "chat not found"
-    user_blocked = "bot was blocked by the user"
+

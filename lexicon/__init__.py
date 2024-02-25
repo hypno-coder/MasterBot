@@ -1,6 +1,6 @@
 from .admin_menu import (AdminMenuButtons, AdminMenuLexicon,
                          LockControllerLexicon, LockControlMenuButtons,
-                         LockMenuLexicon, MailingErrorMessages)
+                         LockMenuLexicon)
 from .advisor import (ANSWERS, AdvisorActionMenuButtons, AdvisorLexicon,
                       AdvisorMenuButtons, AdvisorPagiBtnCallback,
                       advisor_description)
@@ -18,7 +18,7 @@ from .horoscope import HoroscopeLexicon, ZodiacButtons
 from .jantra import (JantraActionMenuButtons, JantraLexicon, JantraMenuButtons,
                      JantraPagiBtnCallback, jantra_description)
 from .mailing import (MailingActionMenuButtons, MailingButtonMenu,
-                      MailingLexicon)
+                      MailingLexicon, MailingErrorMessages)
 from .main_menu import MainMenuButtons, MainMenuLexicon
 from .middlewares import MiddlewareButtons, MiddlewareLexicon
 from .paid_menu import PaidMenuButtons, PaidMenuLexicon
