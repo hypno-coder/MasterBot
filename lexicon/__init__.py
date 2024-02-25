@@ -1,6 +1,6 @@
 from .admin_menu import (AdminMenuButtons, AdminMenuLexicon,
                          LockControllerLexicon, LockControlMenuButtons,
-                         LockMenuLexicon, error_messages)
+                         LockMenuLexicon, MailingErrorMessages)
 from .advisor import (ANSWERS, AdvisorActionMenuButtons, AdvisorLexicon,
                       AdvisorMenuButtons, AdvisorPagiBtnCallback,
                       advisor_description)

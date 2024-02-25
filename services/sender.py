@@ -1,12 +1,12 @@
 from asyncio import create_task
 
-from aiogram.exceptions import TelegramBadRequest
+from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 
 from database.connector import get_async_redis, users_db
 from keyboards import get_mailing_button
+from lexicon import MailingErrorMessages
 from loader import bot, config
 from utils import remove_message
-from lexicon import error_messages
 
 
 class MessageBuilder:
@@ -77,21 +77,30 @@ class Mailing:
                     )
                 )
                 await self.redis.set(sent_key, "true", self.DATA_EXPIRATION_TIME)
-            except TelegramBadRequest as e:
+
+            except (TelegramBadRequest, TelegramForbiddenError) as e:
                 error_message = str(e)
-                if any(error in error_message for error in error_messages):
-                    for admin_id in config.tg_bot.admin_ids:
-                        await bot.send_message(
-                            admin_id,
-                            f"Ошибка при отправке сообщения пользователю {user_id}: {e} \n"
-                            f"Отправленно {users.index(user_id)} сообщений",
-                        )
+                if (
+                    MailingErrorMessages.chat_not_found in error_message
+                    or MailingErrorMessages.user_blocked in error_message
+                ):
+                    await self.__notify_admin(e, user_id, users)
                 else:
                     return e
+
             except Exception as e:
                 return e
+
         return "complete"
 
     async def __get_users(self):
         users = await users_db.find({}).to_list(length=None)
         return [user["_id"] for user in users]
+
+    async def __notify_admin(self, e, user_id, users):
+        for admin_id in config.tg_bot.admin_ids:
+            await bot.send_message(
+                admin_id,
+                f"Ошибка при отправке сообщения пользователю {user_id}: {e} \n"
+                f"Отправленно {users.index(user_id)} сообщений",
+            )
