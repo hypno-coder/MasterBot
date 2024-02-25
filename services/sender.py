@@ -6,6 +6,7 @@ from database.connector import get_async_redis, users_db
 from keyboards import get_mailing_button
 from loader import bot, config
 from utils import remove_message
+from lexicon import error_messages
 
 
 class MessageBuilder:
@@ -77,14 +78,14 @@ class Mailing:
                 )
                 await self.redis.set(sent_key, "true", self.DATA_EXPIRATION_TIME)
             except TelegramBadRequest as e:
-                if "chat not found" in str(e):
+                error_message = str(e)
+                if any(error in error_message for error in error_messages):
                     for admin_id in config.tg_bot.admin_ids:
                         await bot.send_message(
                             admin_id,
                             f"Ошибка при отправке сообщения пользователю {user_id}: {e} \n"
                             f"Отправленно {users.index(user_id)} сообщений",
                         )
-                        continue
                 else:
                     return e
             except Exception as e:
