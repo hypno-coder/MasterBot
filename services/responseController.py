@@ -2,12 +2,13 @@ import random
 from asyncio import sleep
 from datetime import datetime
 
+import pdfkit
 from aiogram.types import Message
 from aiogram.types.input_file import BufferedInputFile, FSInputFile
 
 from keyboards.keyboards_generator import Keyboard
 from lexicon import (CalendarLexicon, CodeLexicon, CommonLexicon,
-                     JantraLexicon, PaidMenuButtons)
+                     DestinyCardLexicon, JantraLexicon, PaidMenuButtons)
 from loader import bot
 from payment_services.user_data_type import UserDataType
 from services import FinCode, Jantra, get_calendar_dates
@@ -24,18 +25,24 @@ class ResponseController:
         self.max_delay = max_delay
         self.chat_id = user_data["chat_id"]
         self.fio = user_data["fio"]
+        self.gender = self.date = (
+            user_data["gender"] if user_data["gender"] != None else "female"
+        )
+
         self.birthday = user_data["birthday"]
         self.service_species = user_data["service_species"]
         self.deliver_for = {
             PaidMenuButtons.MoneyCalendar.name: self.__send_money_calendar_response,
             PaidMenuButtons.MoneyCode.name: self.__send_money_code_response,
             PaidMenuButtons.Jantra.name: self.__send_jantra_response,
+            PaidMenuButtons.DestinyCard.name: self.__send_destiny_card_response,
         }
         self.date = (
             datetime.fromisoformat(user_data["month"])
             if user_data["month"] != None
             else datetime.now()
         )
+        self.destiny_card = user_data["destiny_card"]
 
     async def launch(self) -> None:
         await self.__send_greeting()
@@ -67,10 +74,13 @@ class ResponseController:
             await bot.delete_message(
                 chat_id=message.chat.id, message_id=message.message_id
             )
+
         except Exception as ex:
             print(ex)
 
     async def __send_money_calendar_response(self) -> None:
+        if isinstance(self.date, str):
+            return
         calendar_doc = FSInputFile(FilePath.money_calendar_pdf.value)
         calendar_nubers: str = get_calendar_dates(self.date)
         calendar_result = "".join(str(num) for num in calendar_nubers)
@@ -111,6 +121,22 @@ class ResponseController:
         )
         await bot.send_document(
             self.chat_id, jantra_doc, caption=JantraLexicon.document
+        )
+
+    async def __send_destiny_card_response(self) -> None:
+        destiny_card_byte = pdfkit.from_string(
+            input=self.destiny_card, options={"encoding": "utf-8"}
+        )
+        if not isinstance(destiny_card_byte, bytes):
+            return
+        destiny_card_pdf = BufferedInputFile(
+            file=destiny_card_byte, filename=f"{self.fio}.pdf"
+        )
+        await bot.send_message(
+            chat_id=self.chat_id, text=f"<i>{PaidMenuButtons.DestinyCard.value}</i>"
+        )
+        await bot.send_document(
+            self.chat_id, destiny_card_pdf, caption=DestinyCardLexicon.document
         )
 
     async def __send_keyboard(self) -> None:

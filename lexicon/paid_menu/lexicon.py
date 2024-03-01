@@ -1,2 +1,2 @@
-class PaidMenuLexicon():
-    services = 'Меню платных услуг:'        
+class PaidMenuLexicon:
+    services = "Меню платных услуг:"

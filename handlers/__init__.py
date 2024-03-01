@@ -2,11 +2,10 @@ from aiogram import Router
 
 from .adminPanel import adminRouter
 from .common import commonRouter
-from .paid import paidRouter
 from .free import freeRouter
 from .main_menu import mainMenuRouter
 from .message_hunter import messageHunterRouter
-
+from .paid import paidRouter
 
 # folder root router
 mainRouter: Router = Router()

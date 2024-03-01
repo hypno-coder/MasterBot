@@ -1,8 +1,7 @@
 from aiogram import Router
-from .handlers import handlersRouter 
 
-# folder root router
+from .handlers import handlersRouter
+
 commonRouter: Router = Router()
 
-# connected routers
 commonRouter.include_router(handlersRouter)

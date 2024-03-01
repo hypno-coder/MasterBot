@@ -16,6 +16,7 @@ class SpamConfig(Enum):
     mailing_menu = 2
     sonnik_menu = 2
     lock_control_menu = 2
+    destiny_card_menu = 2
 
     #conversations
     sonnik_conv = 2
