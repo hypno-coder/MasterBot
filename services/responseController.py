@@ -1,3 +1,4 @@
+import base64
 import random
 from asyncio import sleep
 from datetime import datetime
@@ -28,7 +29,7 @@ class ResponseController:
         self.gender = self.date = (
             user_data["gender"] if user_data["gender"] != None else "female"
         )
-
+        self.jantra = user_data["jantra"]
         self.birthday = user_data["birthday"]
         self.service_species = user_data["service_species"]
         self.deliver_for = {
@@ -98,6 +99,8 @@ class ResponseController:
         code_doc = FSInputFile(FilePath.money_code_pdf.value)
         code_video = FSInputFile(FilePath.money_code_video.value)
         fincode = FinCode()
+        if self.birthday == None:
+            return
         code_result: str = await fincode.calculate(self.birthday)
         await bot.send_message(
             chat_id=self.chat_id, text=f"<i>{PaidMenuButtons.MoneyCode.value}</i>"
@@ -110,7 +113,10 @@ class ResponseController:
 
     async def __send_jantra_response(self) -> None:
         jantra_doc = FSInputFile(FilePath.jantra_pdf.value)
-        image, number = Jantra.create(self.birthday)
+        if self.jantra == None:
+            return
+        image = base64.b64decode(self.jantra["image"].encode("ascii"))
+        number = self.jantra["number"]
         input_image = BufferedInputFile(image, "jantra.png")
         await bot.send_message(
             chat_id=self.chat_id, text=f"<i>{PaidMenuButtons.Jantra.value}</i>"

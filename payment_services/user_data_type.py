@@ -9,7 +9,8 @@ class UserDataType(TypedDict):
     gender: str | None
     month: str | None
     destiny_card: str | None
-    birthday: str
+    birthday: str | None
+    jantra: dict[str, str] | None
 
 
 user_data: UserDataType = UserDataType(
@@ -20,5 +21,6 @@ user_data: UserDataType = UserDataType(
     gender=None,
     month=None,
     destiny_card=None,
-    birthday="",
+    birthday=None,
+    jantra=None
 )
