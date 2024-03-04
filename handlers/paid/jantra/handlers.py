@@ -1,5 +1,5 @@
-import random
 import base64
+import random
 from decimal import Decimal
 from typing import cast
 
@@ -62,21 +62,32 @@ async def check_data(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     fio: str = data["fio"]
     birthday: str = message.text
-    image, number = Jantra.create(birthday)
-    data.update({"jantra": {
-        "image": base64.b64encode(image).decode('ascii'),
-        "number": number
-    }})
-    await state.update_data(data)
 
+    try:
+        await message.answer(text=CommonLexicon.check_data)
+        await message.answer(text=f"{CommonLexicon.fio}{fio}")
+        await message.answer(text=f"{CommonLexicon.birthday}{birthday}")
+        image, number = Jantra.create(birthday)
 
+    except:
+        await message.answer(
+            text="Что то пошло не так попробуйте позже, для этого введите /start"
+        )
 
-    await message.answer(text=CommonLexicon.check_data)
-    await message.answer(text=f"{CommonLexicon.fio}{fio}")
-    await message.answer(text=f"{CommonLexicon.birthday}{birthday}")
-    await message.answer(
-        text=CommonLexicon.selected_action, reply_markup=jantra_action_menu_keyboard
-    )
+    else:
+        data.update(
+            {
+                "jantra": {
+                    "image": base64.b64encode(image).decode("ascii"),
+                    "number": number,
+                }
+            }
+        )
+
+        await state.update_data(data)
+        await message.answer(
+            text=CommonLexicon.selected_action, reply_markup=jantra_action_menu_keyboard
+        )
 
 
 @jantraHandlerRouter.message(
