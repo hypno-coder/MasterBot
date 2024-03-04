@@ -1,3 +1,4 @@
+import base64
 import random
 from decimal import Decimal
 from typing import cast
@@ -14,6 +15,7 @@ from lexicon import (CommonLexicon, JantraActionMenuButtons, JantraMenuButtons,
 from loader import payment as PaymentCredentials
 from payment_services import generate_payment_link
 from payment_services.user_data_type import user_data
+from services import Jantra
 from states import FSMJantra
 
 jantraHandlerRouter: Router = Router()
@@ -60,15 +62,32 @@ async def check_data(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     fio: str = data["fio"]
     birthday: str = message.text
-    data.update({"birthday": birthday})
-    await state.update_data(data)
 
-    await message.answer(text=CommonLexicon.check_data)
-    await message.answer(text=f"{CommonLexicon.fio}{fio}")
-    await message.answer(text=f"{CommonLexicon.birthday}{birthday}")
-    await message.answer(
-        text=CommonLexicon.selected_action, reply_markup=jantra_action_menu_keyboard
-    )
+    try:
+        await message.answer(text=CommonLexicon.check_data)
+        await message.answer(text=f"{CommonLexicon.fio}{fio}")
+        await message.answer(text=f"{CommonLexicon.birthday}{birthday}")
+        image, number = Jantra.create(birthday)
+
+    except:
+        await message.answer(
+            text="Что то пошло не так попробуйте позже, для этого введите /start"
+        )
+
+    else:
+        data.update(
+            {
+                "jantra": {
+                    "image": base64.b64encode(image).decode("ascii"),
+                    "number": number,
+                }
+            }
+        )
+
+        await state.update_data(data)
+        await message.answer(
+            text=CommonLexicon.selected_action, reply_markup=jantra_action_menu_keyboard
+        )
 
 
 @jantraHandlerRouter.message(
@@ -104,7 +123,7 @@ async def order(callback: CallbackQuery, state: FSMContext):
     user_data["user_id"] = message.from_user.id
     user_data["service_species"] = PaidMenuButtons.Jantra.name
     user_data["fio"] = data["fio"]
-    user_data["birthday"] = data["birthday"]
+    user_data["jantra"] = data["jantra"]
 
     link = generate_payment_link(
         cost=Decimal(f"{PaymentCredentials.price.jantra}.00"),

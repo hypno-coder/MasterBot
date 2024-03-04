@@ -1,4 +1,5 @@
 from .sonnik import Sonnik
+from .destiny_card import DestinyCard, DestinyCardClientType
 from .money_calendar import get_calendar_dates 
 from .money_code import FinCode 
 from .jantra import Jantra

@@ -1,0 +1,169 @@
+import random
+from datetime import datetime
+from decimal import Decimal
+from typing import cast
+
+from aiogram import F, Router
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery, Message
+
+from config_data import SpamConfig
+from filters import AgeFilter, DateFilter
+from keyboards import (choose_gender_keyboard,
+                       destiny_card_action_menu_keyboard, get_payment_keyboard)
+from lexicon import (ActionChooseGenderButtons, CommonLexicon,
+                     DestinyCardActionMenuButtons, DestinyCardMenuButtons,
+                     PaidMenuButtons)
+from loader import payment as PaymentCredentials
+from payment_services import generate_payment_link
+from payment_services.user_data_type import user_data
+from services import DestinyCard, DestinyCardClientType
+from states import FSMDestinyCard
+
+destinyCardHandlerRouter: Router = Router()
+flags: dict[str, str] = {"throttling_key": SpamConfig.destiny_card_menu.name}
+
+
+@destinyCardHandlerRouter.callback_query(
+    F.data.in_(
+        [
+            DestinyCardMenuButtons.CalculateDestinyCard.name,
+            DestinyCardActionMenuButtons.DestinyCardEditData.name,
+        ]
+    ),
+    flags=flags,
+)
+async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
+    message = cast(CallbackQuery, callback.message)
+    await message.answer(text=CommonLexicon.enter_fio)
+    await state.set_state(FSMDestinyCard.enter_date)
+
+
+@destinyCardHandlerRouter.message(FSMDestinyCard.enter_date, flags=flags)
+async def enter_birthday(message: Message, state: FSMContext) -> None:
+    if message.text is None:
+        return
+
+    fio: str = message.text
+    await state.set_data({"fio": fio})
+
+    await message.answer(text=CommonLexicon.enter_date)
+    await state.set_state(FSMDestinyCard.enter_gender)
+
+
+@destinyCardHandlerRouter.message(
+    FSMDestinyCard.enter_gender,
+    DateFilter(is_date=True),
+    AgeFilter(is_age=True),
+    flags=flags,
+)
+async def enter_gender(message: Message, state: FSMContext) -> None:
+    if message.text is None:
+        return
+
+    data = await state.get_data()
+    birthday: str = message.text
+    data.update({"birthday": birthday})
+    await state.update_data(data)
+
+    await message.answer(text=CommonLexicon.gender, reply_markup=choose_gender_keyboard)
+    await state.set_state(FSMDestinyCard.check_data)
+
+
+@destinyCardHandlerRouter.callback_query(
+    F.data.in_(
+        [
+            ActionChooseGenderButtons.Female.name,
+            ActionChooseGenderButtons.Male.name,
+        ]
+    ),
+    FSMDestinyCard.check_data,
+    flags=flags,
+)
+async def check_data(callback: CallbackQuery, state: FSMContext) -> None:
+    if callback.data == None or callback.message == None:
+        return
+    data = await state.get_data()
+    gender = callback.data
+    fio: str = data["fio"]
+    birthday: str = data["birthday"]
+
+    await callback.message.answer(text=CommonLexicon.check_data)
+    await callback.message.answer(text=f"{CommonLexicon.fio}{fio}")
+    await callback.message.answer(text=f"{CommonLexicon.birthday}{birthday}")
+    await callback.message.answer(
+        text=f"{CommonLexicon.gender}{ActionChooseGenderButtons[gender].value}"
+    )
+
+    client_data = DestinyCardClientType(
+        name=fio,
+        gender=gender.lower(),
+        date=datetime.strptime(birthday, "%d.%m.%Y").strftime("%Y-%m-%d"),
+    )
+
+    try:
+        destiny_card = await DestinyCard.get(client_data)
+    except:
+        await callback.message.answer(
+            text="Что то пошло не так попробуйте позже, для этого введите /start"
+        )
+    else:
+        data.update({"destiny_card": destiny_card})
+        await state.update_data(data)
+        await callback.message.answer(
+            text=CommonLexicon.selected_action,
+            reply_markup=destiny_card_action_menu_keyboard,
+        )
+
+
+@destinyCardHandlerRouter.message(
+    FSMDestinyCard.check_data,
+    DateFilter(is_date=True),
+    flags=flags,
+)
+async def wrong_age(message: Message) -> None:
+    if message.text == None:
+        return
+
+    await message.reply(CommonLexicon.legal_age)
+
+
+@destinyCardHandlerRouter.message(FSMDestinyCard.check_data, flags=flags)
+async def wrong_input(message: Message) -> None:
+    if message.text == None:
+        return
+
+    await message.reply(CommonLexicon.invalid_format_date)
+
+
+@destinyCardHandlerRouter.callback_query(
+    F.data == DestinyCardActionMenuButtons.DestinyCardConfirmData.name, flags=flags
+)
+async def order(callback: CallbackQuery, state: FSMContext):
+    callback.answer()
+    message = callback.message
+    data: dict = await state.get_data()
+    if message == None or message.from_user == None:
+        return
+
+    user_data["chat_id"] = message.chat.id
+    user_data["user_id"] = message.from_user.id
+    user_data["service_species"] = PaidMenuButtons.DestinyCard.name
+    user_data["fio"] = data["fio"]
+    user_data["birthday"] = data["birthday"]
+    user_data["destiny_card"] = data["destiny_card"]
+
+    link = generate_payment_link(
+        cost=Decimal(f"{PaymentCredentials.price.destiny_card}.00"),
+        number=random.randint(10**6, (10**7) - 1),
+        user_data=user_data,
+        description=f"Консультация: {PaidMenuButtons.DestinyCard.value}",
+    )
+
+    await message.answer(
+        text=CommonLexicon.pay_message,
+        reply_markup=get_payment_keyboard(
+            link=link, backbutton=PaidMenuButtons.BackToPaidMenu
+        ),
+    )
+    await state.clear()
