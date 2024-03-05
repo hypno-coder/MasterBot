@@ -146,6 +146,9 @@ async def order(callback: CallbackQuery, state: FSMContext):
     user_data["fio"] = data["fio"]
     user_data["month"] = data["month"].isoformat()
     user_data["birthday"] = data["birthday"]
+    user_data["min_delay"] = "900"
+    user_data["max_delay"] = "1800"
+    
     link = generate_payment_link(
         cost=Decimal(f"{PaymentCredentials.price.money_calendar}.00"),
         number=random.randint(10**6, (10**7) - 1),

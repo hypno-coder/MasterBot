@@ -11,6 +11,8 @@ class UserDataType(TypedDict):
     destiny_card: str | None
     birthday: str | None
     jantra: dict[str, str] | None
+    min_delay: str
+    max_delay: str
 
 
 user_data: UserDataType = UserDataType(
@@ -22,5 +24,7 @@ user_data: UserDataType = UserDataType(
     month=None,
     destiny_card=None,
     birthday=None,
-    jantra=None
+    jantra=None,
+    min_delay="",
+    max_delay="",
 )

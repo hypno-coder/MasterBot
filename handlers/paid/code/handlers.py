@@ -126,6 +126,9 @@ async def order(callback: CallbackQuery, state: FSMContext):
     user_data["service_species"] = PaidMenuButtons.MoneyCode.name
     user_data["fio"] = data["fio"]
     user_data["birthday"] = data["birthday"]
+    user_data["min_delay"] = "900"
+    user_data["max_delay"] = "1800"
+
 
     link = generate_payment_link(
         cost=Decimal(f"{PaymentCredentials.price.money_code}.00"),

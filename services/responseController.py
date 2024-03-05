@@ -19,11 +19,9 @@ from staticfiles import FilePath
 class ResponseController:
     ITEMS_PER_ROW = 1
 
-    def __init__(
-        self, user_data: UserDataType, min_delay: int = 1800, max_delay: int = 4800
-    ) -> None:
-        self.min_delay = min_delay
-        self.max_delay = max_delay
+    def __init__(self, user_data: UserDataType) -> None:
+        self.min_delay = int(user_data["min_delay"])
+        self.max_delay = int(user_data["max_delay"])
         self.chat_id = user_data["chat_id"]
         self.fio = user_data["fio"]
         self.gender = self.date = (

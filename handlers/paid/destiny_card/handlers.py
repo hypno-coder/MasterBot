@@ -152,6 +152,9 @@ async def order(callback: CallbackQuery, state: FSMContext):
     user_data["fio"] = data["fio"]
     user_data["birthday"] = data["birthday"]
     user_data["destiny_card"] = data["destiny_card"]
+    user_data["min_delay"] = "3600"
+    user_data["max_delay"] = "5400"
+
 
     link = generate_payment_link(
         cost=Decimal(f"{PaymentCredentials.price.destiny_card}.00"),
