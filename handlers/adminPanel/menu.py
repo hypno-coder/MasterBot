@@ -1,7 +1,7 @@
 from aiogram import F, Router
 from aiogram.filters import Command
-from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery, Message
 
 from config_data import SpamConfig
 from keyboards import admin_menu_keyboard
@@ -22,7 +22,7 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.admin_menu.name}
 )
 async def admin_menu(event: Message | CallbackQuery, state: FSMContext) -> None:
     await state.clear()
-    
+
     if isinstance(event, Message):
         await event.answer(
             text=AdminMenuLexicon.services, reply_markup=admin_menu_keyboard

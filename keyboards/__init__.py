@@ -1,4 +1,4 @@
-from .admin import admin_menu_keyboard, lock_control_menu_keyboard
+from .admin import admin_menu_keyboard, lock_control_menu_keyboard, admin_calculate_menu_keyboard
 from .advisor import advisor_action_menu_keyboard, advisor_menu_buttons
 from .calendar import (calendar_action_menu_keyboard, calendar_menu_buttons,
                        get_data_by_month_for_a_calendar)
