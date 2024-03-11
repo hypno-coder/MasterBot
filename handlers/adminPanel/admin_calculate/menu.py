@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery, Message
 
 from config_data import SpamConfig
 from keyboards import admin_calculate_menu_keyboard
-from lexicon import AdminMenuButtons, AdminMenuLexicon, AdminPaidMenuButtons
+from lexicon import AdminMenuButtons, AdminMenuLexicon, AdminPaidButtons
 from loader import config
 
 adminCalcMenuRouter: Router = Router()
@@ -19,7 +19,7 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.paid_menu.name}
     F.data.in_(
         [
             AdminMenuButtons.AdminCalculation.name,
-            AdminPaidMenuButtons.BackToAdminPaidMenu.name,
+            AdminPaidButtons.BackToAdminPaidMenu.name,
         ]
     ),
     F.from_user.id.in_(config.tg_bot.admin_ids),

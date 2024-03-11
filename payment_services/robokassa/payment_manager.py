@@ -70,6 +70,5 @@ def generate_payment_link(
         "Receipt": receipt_encoded,
         "IsTest": is_test,
     }
-    # print(f"InvId: {number}")
     redis_db.setex(str(number), 6000, json.dumps(user_data))
     return f"{robokassa_payment_url}?{parse.urlencode(data)}"

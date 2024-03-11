@@ -12,9 +12,10 @@ class LockControlMenuButtons(Enum):
     BotBlocking = "Блокировать Бота"
     BotUnlocking = "Разблокировать Бота"
 
-class AdminPaidMenuButtons(Enum):
-    AdminJantra = f"Янтра"
-    AdminMoneyCode = f"ФинКод"
-    AdminMoneyCalendar = f"Денежный Календарь"
-    AdminDestinyCard = f"Карта Судьбы"
+
+class AdminPaidButtons(Enum):
+    AdminJantra = "Янтра"
+    AdminMoneyCode = "ФинКод"
+    AdminMoneyCalendar = "Денежный Календарь"
+    AdminDestinyCard = "Карта Судьбы"
     BackToAdminPaidMenu = "Назад"

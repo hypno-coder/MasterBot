@@ -10,12 +10,12 @@ from aiogram.types import CallbackQuery, Message
 from config_data import SpamConfig
 from filters import AgeFilter, DateFilter
 from keyboards import get_payment_keyboard, jantra_action_menu_keyboard
-from lexicon import (CommonLexicon, JantraActionMenuButtons, JantraMenuButtons,
-                     PaidMenuButtons)
-from loader import payment as PaymentCredentials
+from lexicon import (AdminPaidButtons, CommonLexicon, JantraActionMenuButtons,
+                     JantraMenuButtons, PaidMenuButtons)
+from loader import config, payment as PaymentCredentials
 from payment_services import generate_payment_link
 from payment_services.user_data_type import user_data
-from services import Jantra
+from services import Jantra, ResponseController
 from states import FSMJantra
 
 jantraHandlerRouter: Router = Router()
@@ -25,6 +25,7 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.jantra_menu.name}
 @jantraHandlerRouter.callback_query(
     F.data.in_(
         [
+            AdminPaidButtons.AdminJantra.name,
             JantraMenuButtons.CreateJantra.name,
             JantraActionMenuButtons.JantraEditData.name,
         ]
@@ -32,7 +33,15 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.jantra_menu.name}
     flags=flags,
 )
 async def eter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
+    admin_access = None
     message = cast(CallbackQuery, callback.message)
+
+    if callback.data == AdminPaidButtons.AdminJantra.name:
+        admin_access = AdminPaidButtons.AdminJantra.name
+        await message.answer(text="Доступ Администратора")
+
+    await state.set_data({"adminCallback": admin_access})
+
     await message.answer(text=CommonLexicon.enter_fio)
     await state.set_state(FSMJantra.enter_date)
 
@@ -43,7 +52,9 @@ async def enter_date(message: Message, state: FSMContext) -> None:
         return
 
     fio: str = message.text
-    await state.set_data({"fio": fio})
+    data = await state.get_data()
+    data.update({"fio": fio})
+    await state.update_data(data)
 
     await message.answer(text=CommonLexicon.enter_date)
     await state.set_state(FSMJantra.check_data)
@@ -124,21 +135,29 @@ async def order(callback: CallbackQuery, state: FSMContext):
     user_data["service_species"] = PaidMenuButtons.Jantra.name
     user_data["fio"] = data["fio"]
     user_data["jantra"] = data["jantra"]
+    user_data["adminCallback"] = data["adminCallback"]
     user_data["min_delay"] = "1800"
     user_data["max_delay"] = "2700"
 
+    if data["adminCallback"] == None:
+        link = generate_payment_link(
+            cost=Decimal(f"{PaymentCredentials.price.money_calendar}.00"),
+            number=random.randint(10**6, (10**7) - 1),
+            user_data=user_data,
+            description=f"Консультация: {PaidMenuButtons.Jantra.value}",
+        )
 
-    link = generate_payment_link(
-        cost=Decimal(f"{PaymentCredentials.price.jantra}.00"),
-        number=random.randint(10**6, (10**7) - 1),
-        user_data=user_data,
-        description=f"Консультация: {PaidMenuButtons.Jantra.value}",
-    )
+        await message.answer(
+            text=CommonLexicon.pay_message,
+            reply_markup=get_payment_keyboard(
+                link=link, backbutton=PaidMenuButtons.BackToPaidMenu
+            ),
+        )
 
-    await message.answer(
-        text=CommonLexicon.pay_message,
-        reply_markup=get_payment_keyboard(
-            link=link, backbutton=PaidMenuButtons.BackToPaidMenu
-        ),
-    )
+    if data["adminCallback"] != None and F.from_user.id.in_(config.tg_bot.admin_ids):
+        user_data["min_delay"] = "1"
+        user_data["max_delay"] = "2"
+        response = ResponseController(user_data=user_data)
+        await response.launch()
+
     await state.clear()

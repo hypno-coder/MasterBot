@@ -1,5 +1,5 @@
 from .admin_menu import (AdminMenuButtons, AdminMenuLexicon,
-                         AdminPaidMenuButtons, LockControllerLexicon,
+                         AdminPaidButtons, LockControllerLexicon,
                          LockControlMenuButtons, LockMenuLexicon)
 from .advisor import (ANSWERS, AdvisorActionMenuButtons, AdvisorLexicon,
                       AdvisorMenuButtons, AdvisorPagiBtnCallback,

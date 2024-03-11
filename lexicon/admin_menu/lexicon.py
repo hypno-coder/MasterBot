@@ -8,6 +8,7 @@ class LockMenuLexicon:
     unblock_fail = "Разблокировка бота не удалась"
     block_success = "Бот Заблокирован"
     unblock_success = "Бот Разблокирован"
+    admin_access = "Админ панель:"
 
 
 class LockControllerLexicon:
