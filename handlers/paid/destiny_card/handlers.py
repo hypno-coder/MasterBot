@@ -11,13 +11,13 @@ from config_data import SpamConfig
 from filters import AgeFilter, DateFilter
 from keyboards import (choose_gender_keyboard,
                        destiny_card_action_menu_keyboard, get_payment_keyboard)
-from lexicon import (ActionChooseGenderButtons, CommonLexicon,
-                     DestinyCardActionMenuButtons, DestinyCardMenuButtons,
-                     PaidMenuButtons)
-from loader import payment as PaymentCredentials
+from lexicon import (ActionChooseGenderButtons, AdminPaidButtons,
+                     CommonLexicon, DestinyCardActionMenuButtons,
+                     DestinyCardMenuButtons, PaidMenuButtons)
+from loader import config, payment as PaymentCredentials
 from payment_services import generate_payment_link
 from payment_services.user_data_type import user_data
-from services import DestinyCard, DestinyCardClientType
+from services import DestinyCard, DestinyCardClientType, ResponseController
 from states import FSMDestinyCard
 
 destinyCardHandlerRouter: Router = Router()
@@ -27,6 +27,7 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.destiny_card_menu.name}
 @destinyCardHandlerRouter.callback_query(
     F.data.in_(
         [
+            AdminPaidButtons.AdminDestinyCard.name,
             DestinyCardMenuButtons.CalculateDestinyCard.name,
             DestinyCardActionMenuButtons.DestinyCardEditData.name,
         ]
@@ -34,7 +35,15 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.destiny_card_menu.name}
     flags=flags,
 )
 async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
+    admin_access = None
     message = cast(CallbackQuery, callback.message)
+
+    if callback.data == AdminPaidButtons.AdminDestinyCard.name:
+        admin_access = AdminPaidButtons.AdminDestinyCard.name
+        await message.answer(text="Доступ Администратора")
+
+    await state.set_data({"adminCallback": admin_access})
+
     await message.answer(text=CommonLexicon.enter_fio)
     await state.set_state(FSMDestinyCard.enter_date)
 
@@ -45,7 +54,9 @@ async def enter_birthday(message: Message, state: FSMContext) -> None:
         return
 
     fio: str = message.text
-    await state.set_data({"fio": fio})
+    data = await state.get_data()
+    data.update({"fio": fio})
+    await state.update_data(data)
 
     await message.answer(text=CommonLexicon.enter_date)
     await state.set_state(FSMDestinyCard.enter_gender)
@@ -152,12 +163,20 @@ async def order(callback: CallbackQuery, state: FSMContext):
     user_data["fio"] = data["fio"]
     user_data["birthday"] = data["birthday"]
     user_data["destiny_card"] = data["destiny_card"]
+    user_data["adminCallback"] = data["adminCallback"]
     user_data["min_delay"] = "3600"
     user_data["max_delay"] = "5400"
 
-
+    if data["adminCallback"] != None and F.from_user.id.in_(config.tg_bot.admin_ids):
+        user_data["min_delay"] = "100"
+        user_data["max_delay"] = "200"
+        response = ResponseController(user_data=user_data)
+        await response.launch()
+        await state.clear()
+        return
+    
     link = generate_payment_link(
-        cost=Decimal(f"{PaymentCredentials.price.destiny_card}.00"),
+        cost=Decimal(f"{PaymentCredentials.price.money_calendar}.00"),
         number=random.randint(10**6, (10**7) - 1),
         user_data=user_data,
         description=f"Консультация: {PaidMenuButtons.DestinyCard.value}",
@@ -169,4 +188,5 @@ async def order(callback: CallbackQuery, state: FSMContext):
             link=link, backbutton=PaidMenuButtons.BackToPaidMenu
         ),
     )
+
     await state.clear()

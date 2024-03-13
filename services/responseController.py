@@ -8,11 +8,12 @@ from aiogram.types import Message
 from aiogram.types.input_file import BufferedInputFile, FSInputFile
 
 from keyboards.keyboards_generator import Keyboard
-from lexicon import (CalendarLexicon, CodeLexicon, CommonLexicon,
-                     DestinyCardLexicon, JantraLexicon, PaidMenuButtons)
+from lexicon import (AdminPaidButtons, CalendarLexicon, CodeLexicon,
+                     CommonLexicon, DestinyCardLexicon, JantraLexicon,
+                     PaidMenuButtons)
 from loader import bot
 from payment_services.user_data_type import UserDataType
-from services import FinCode, Jantra, get_calendar_dates
+from services import FinCode, get_calendar_dates
 from staticfiles import FilePath
 
 
@@ -30,6 +31,11 @@ class ResponseController:
         self.jantra = user_data["jantra"]
         self.birthday = user_data["birthday"]
         self.service_species = user_data["service_species"]
+        self.back_button = (
+            PaidMenuButtons.BackToPaidMenu
+            if user_data["adminCallback"] == None
+            else AdminPaidButtons.BackToAdminPaidMenu
+        )
         self.deliver_for = {
             PaidMenuButtons.MoneyCalendar.name: self.__send_money_calendar_response,
             PaidMenuButtons.MoneyCode.name: self.__send_money_code_response,
@@ -62,7 +68,7 @@ class ResponseController:
             + CommonLexicon.message_delay
             + f"{round(self.min_delay/60)}-{round(self.max_delay/60)} минут",
             reply_markup=Keyboard.create_inline(
-                self.ITEMS_PER_ROW, backButton=PaidMenuButtons.BackToPaidMenu
+                self.ITEMS_PER_ROW, backButton=self.back_button
             ),
         )
 
@@ -149,6 +155,6 @@ class ResponseController:
             self.chat_id,
             text=CommonLexicon.back_menu,
             reply_markup=Keyboard.create_inline(
-                self.ITEMS_PER_ROW, backButton=PaidMenuButtons.BackToPaidMenu
+                self.ITEMS_PER_ROW, backButton=self.back_button
             ),
         )

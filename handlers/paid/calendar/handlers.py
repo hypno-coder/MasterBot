@@ -10,12 +10,14 @@ from config_data import SpamConfig
 from filters import AgeFilter, DateFilter
 from keyboards import (calendar_action_menu_keyboard,
                        get_data_by_month_for_a_calendar, get_payment_keyboard)
-from lexicon import (CalendarActionMenuButtons, CalendarLexicon,
-                     CalendarMenuButtons, CalendarSelectMonthMenuButtons,
-                     CommonLexicon, PaidMenuButtons)
-from loader import payment as PaymentCredentials
+from lexicon import (AdminPaidButtons, CalendarActionMenuButtons,
+                     CalendarLexicon, CalendarMenuButtons,
+                     CalendarSelectMonthMenuButtons, CommonLexicon,
+                     PaidMenuButtons)
+from loader import config, payment as PaymentCredentials
 from payment_services import generate_payment_link
 from payment_services.user_data_type import user_data
+from services import ResponseController
 from states import FSMCalendar
 
 calendarHandlerRouter: Router = Router()
@@ -25,6 +27,7 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.calendar_menu.name}
 @calendarHandlerRouter.callback_query(
     F.data.in_(
         [
+            AdminPaidButtons.AdminMoneyCalendar.name,
             CalendarMenuButtons.CalculateMoneyCalendar.name,
             CalendarActionMenuButtons.CalendarEditData.name,
         ]
@@ -32,21 +35,28 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.calendar_menu.name}
     flags=flags,
 )
 async def enter_full_name(callback: CallbackQuery, state: FSMContext) -> None:
+    admin_access = None
     message = cast(CallbackQuery, callback.message)
+
+    if callback.data == AdminPaidButtons.AdminMoneyCalendar.name:
+        admin_access = AdminPaidButtons.AdminMoneyCalendar.name
+        await message.answer(text="Доступ Администратора")
+
+    await state.set_data({"adminCallback": admin_access})
+
     await message.answer(text=CommonLexicon.enter_fio)
     await state.set_state(FSMCalendar.enter_date)
 
 
-@calendarHandlerRouter.message(
-    FSMCalendar.enter_date, 
-    flags=flags
-)
+@calendarHandlerRouter.message(FSMCalendar.enter_date, flags=flags)
 async def enter_birthday(message: Message, state: FSMContext) -> None:
     if message.text is None:
         return
 
     fio: str = message.text
-    await state.set_data({"fio": fio})
+    data = await state.get_data()
+    data.update({"fio": fio})
+    await state.update_data(data)
 
     await message.answer(text=CommonLexicon.enter_date)
     await state.set_state(FSMCalendar.select_month)
@@ -119,10 +129,7 @@ async def wrong_age(message: Message) -> None:
     await message.reply(CommonLexicon.legal_age)
 
 
-@calendarHandlerRouter.message(
-    FSMCalendar.check_data, 
-    flags=flags
-)
+@calendarHandlerRouter.message(FSMCalendar.check_data, flags=flags)
 async def wrong_input(message: Message) -> None:
     if message.text == None:
         return
@@ -146,9 +153,18 @@ async def order(callback: CallbackQuery, state: FSMContext):
     user_data["fio"] = data["fio"]
     user_data["month"] = data["month"].isoformat()
     user_data["birthday"] = data["birthday"]
+    user_data["adminCallback"] = data["adminCallback"]
     user_data["min_delay"] = "900"
     user_data["max_delay"] = "1800"
-    
+
+    if data["adminCallback"] != None and F.from_user.id.in_(config.tg_bot.admin_ids):
+        user_data["min_delay"] = "1"
+        user_data["max_delay"] = "2"
+        response = ResponseController(user_data=user_data)
+        await response.launch()
+        await state.clear()
+        return
+
     link = generate_payment_link(
         cost=Decimal(f"{PaymentCredentials.price.money_calendar}.00"),
         number=random.randint(10**6, (10**7) - 1),
@@ -162,4 +178,5 @@ async def order(callback: CallbackQuery, state: FSMContext):
             link=link, backbutton=PaidMenuButtons.BackToPaidMenu
         ),
     )
+
     await state.clear()

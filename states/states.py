@@ -12,6 +12,7 @@ class FSMCode(StatesGroup):
     calculate = State()
     checkout_query = State()
     successful_payment = State()
+    admin_fast_response = State()
 
 
 class FSMCalendar(StatesGroup):
@@ -21,6 +22,7 @@ class FSMCalendar(StatesGroup):
     calculate = State()
     checkout_query = State()
     successful_payment = State()
+    admin_fast_response = State()
 
 
 class FSMDestinyCard(StatesGroup):
@@ -30,6 +32,7 @@ class FSMDestinyCard(StatesGroup):
     calculate = State()
     checkout_query = State()
     successful_payment = State()
+    admin_fast_response = State()
 
 
 class FSMJantra(StatesGroup):
@@ -38,6 +41,7 @@ class FSMJantra(StatesGroup):
     calculate_data = State()
     checkout_query = State()
     successful_payment = State()
+    admin_fast_response = State()
 
 
 class FSMHoroscope(StatesGroup):
