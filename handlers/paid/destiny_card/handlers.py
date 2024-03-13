@@ -168,8 +168,10 @@ async def order(callback: CallbackQuery, state: FSMContext):
     user_data["max_delay"] = "5400"
 
     if data["adminCallback"] != None and F.from_user.id.in_(config.tg_bot.admin_ids):
+
         user_data["min_delay"] = "1"
         user_data["max_delay"] = "2"
+
         response = ResponseController(user_data=user_data)
         await response.launch()
         await state.clear()

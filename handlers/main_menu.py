@@ -42,7 +42,7 @@ async def start_main_menu(
         )
     if event.from_user == None:
         return
-    
+
     if event.from_user.id in config.tg_bot.admin_ids:
         await bot.send_message(
             chat_id=chat_id,
