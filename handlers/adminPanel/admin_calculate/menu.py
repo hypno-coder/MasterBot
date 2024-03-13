@@ -12,9 +12,6 @@ adminCalcMenuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.paid_menu.name}
 
 
-@adminCalcMenuRouter.message(
-    Command(commands="admin"), F.from_user.id.in_(config.tg_bot.admin_ids)
-)
 @adminCalcMenuRouter.callback_query(
     F.data.in_(
         [
