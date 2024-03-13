@@ -68,7 +68,7 @@ class ResponseController:
             + CommonLexicon.message_delay
             + f"{round(self.min_delay/60)}-{round(self.max_delay/60)} минут",
             reply_markup=Keyboard.create_inline(
-                self.ITEMS_PER_ROW, backButton=PaidMenuButtons.BackToPaidMenu
+                self.ITEMS_PER_ROW, backButton=self.back_button
             ),
         )
 

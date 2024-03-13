@@ -167,25 +167,26 @@ async def order(callback: CallbackQuery, state: FSMContext):
     user_data["min_delay"] = "3600"
     user_data["max_delay"] = "5400"
 
-    if data["adminCallback"] == None:
-        link = generate_payment_link(
-            cost=Decimal(f"{PaymentCredentials.price.money_calendar}.00"),
-            number=random.randint(10**6, (10**7) - 1),
-            user_data=user_data,
-            description=f"Консультация: {PaidMenuButtons.DestinyCard.value}",
-        )
-
-        await message.answer(
-            text=CommonLexicon.pay_message,
-            reply_markup=get_payment_keyboard(
-                link=link, backbutton=PaidMenuButtons.BackToPaidMenu
-            ),
-        )
-
     if data["adminCallback"] != None and F.from_user.id.in_(config.tg_bot.admin_ids):
-        user_data["min_delay"] = "1"
-        user_data["max_delay"] = "2"
+        user_data["min_delay"] = "100"
+        user_data["max_delay"] = "200"
         response = ResponseController(user_data=user_data)
         await response.launch()
+        await state.clear()
+        return
+    
+    link = generate_payment_link(
+        cost=Decimal(f"{PaymentCredentials.price.money_calendar}.00"),
+        number=random.randint(10**6, (10**7) - 1),
+        user_data=user_data,
+        description=f"Консультация: {PaidMenuButtons.DestinyCard.value}",
+    )
+
+    await message.answer(
+        text=CommonLexicon.pay_message,
+        reply_markup=get_payment_keyboard(
+            link=link, backbutton=PaidMenuButtons.BackToPaidMenu
+        ),
+    )
 
     await state.clear()
