@@ -178,7 +178,7 @@ async def order(callback: CallbackQuery, state: FSMContext):
         return
     
     link = generate_payment_link(
-        cost=Decimal(f"{PaymentCredentials.price.money_calendar}.00"),
+        cost=Decimal(f"{PaymentCredentials.price.destiny_card}.00"),
         number=random.randint(10**6, (10**7) - 1),
         user_data=user_data,
         description=f"Консультация: {PaidMenuButtons.DestinyCard.value}",
