@@ -27,6 +27,7 @@ logging.basicConfig(
 
 @app.on_event("startup")
 async def on_startup():
+    print(WEBHOOK_URL)
     webhook_info = await bot.get_webhook_info()
     if webhook_info != WEBHOOK_URL:
         try:
