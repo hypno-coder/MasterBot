@@ -26,4 +26,4 @@ from .mailing import (MailingActionMenuButtons, MailingButtonMenu,
 from .main_menu import MainMenuButtons, MainMenuLexicon
 from .middlewares import MiddlewareButtons, MiddlewareLexicon
 from .paid_menu import PaidMenuButtons, PaidMenuLexicon
-from .sonnik import SonnikActionMenuButtons, SonnikLexicon, SonnikMenuButtons
+from .sonnik import SonnikActionMenuButtons, SonnikLexicon, SonnikMenuButtons, letterComparator
