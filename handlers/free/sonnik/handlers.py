@@ -70,17 +70,21 @@ async def process_image(message: Message, bot: Bot, state: FSMContext) -> None:
         )
         return
 
+    first_iteration = True
     for article in articles:
-        await bot.send_message(chat_id=chat_id, text=article["header"])
-        await bot.send_message(chat_id=chat_id, text=article["paragraph"])
-        await bot.send_message(chat_id=chat_id, text=CommonLexicon.divider)
+        if not first_iteration and article["title"] != "_":
+                await bot.send_message(chat_id=chat_id, text=CommonLexicon.divider)
+        first_iteration = False
+        if article["title"] != "_":
+            await bot.send_message(chat_id=chat_id, text=article["title"])
+        if article["paragraph"] != "_":
+            await bot.send_message(chat_id=chat_id, text=article["paragraph"])
 
     await bot.send_message(
         chat_id=chat_id,
         text=SonnikLexicon.change_action,
         reply_markup=sonnik_repeat_keyboard,
     )
-
 
 @sonnikHandlerRouter.message(FSMSonnik.sleeping_pattern)
 async def text_filter(message: Message, bot: Bot):

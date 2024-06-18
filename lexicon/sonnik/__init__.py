@@ -1,2 +1,2 @@
-from .lexicon import SonnikLexicon
+from .lexicon import SonnikLexicon, letterComparator
 from .buttons import SonnikActionMenuButtons, SonnikMenuButtons 
