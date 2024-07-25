@@ -10,7 +10,7 @@ from aiogram.types.input_file import BufferedInputFile, FSInputFile
 from keyboards.keyboards_generator import Keyboard
 from lexicon import (AdminPaidButtons, CalendarLexicon, CodeLexicon,
                      CommonLexicon, DestinyCardLexicon, JantraLexicon,
-                     PaidMenuButtons)
+                     MainMenuButtons, PaidMenuButtons)
 from loader import bot
 from payment_services.user_data_type import UserDataType
 from services import FinCode, get_calendar_dates
@@ -41,6 +41,7 @@ class ResponseController:
             PaidMenuButtons.MoneyCode.name: self.__send_money_code_response,
             PaidMenuButtons.Jantra.name: self.__send_jantra_response,
             PaidMenuButtons.DestinyCard.name: self.__send_destiny_card_response,
+            MainMenuButtons.MoenyCollection.name: self.__send_money_collection_response,
         }
         self.date = (
             datetime.fromisoformat(user_data["month"])
@@ -48,6 +49,7 @@ class ResponseController:
             else datetime.now()
         )
         self.destiny_card = user_data["destiny_card"]
+        self.sbornik_id: str
 
     async def launch(self) -> None:
         await self.__send_greeting()
@@ -82,6 +84,14 @@ class ResponseController:
 
         except Exception as ex:
             print(ex)
+
+    async def __send_money_collection_response(self) -> None:
+        sbornik = FSInputFile(FilePath.sbornik.value)
+        await bot.send_document(
+            self.chat_id,
+            sbornik,
+            caption="БлагоДарю за покупку. Используйте полученную информацию во благо!",
+        )
 
     async def __send_money_calendar_response(self) -> None:
         if isinstance(self.date, str):
