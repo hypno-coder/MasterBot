@@ -14,6 +14,7 @@ class LockControlMenuButtons(Enum):
 
 
 class AdminPaidButtons(Enum):
+    AdminMoenyCollection = 'Денежный сборник'
     AdminJantra = "Янтра"
     AdminMoneyCode = "ФинКод"
     AdminMoneyCalendar = "Денежный Календарь"
