@@ -42,10 +42,9 @@ class Horoscope:
         beautifulsoup: BeautifulSoup = BeautifulSoup(
             markup=response_result, features="lxml"
         )
-        text = beautifulsoup.find(name="div", class_="article__text")
+        text = beautifulsoup.find("section", {'data-qa': 'Article'})
         if text == None:
             return
-
         return text.text
 
     async def __get_page(self, link):
