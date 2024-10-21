@@ -41,7 +41,6 @@ class ResponseController:
             PaidMenuButtons.MoneyCode.name: self.__send_money_code_response,
             PaidMenuButtons.Jantra.name: self.__send_jantra_response,
             PaidMenuButtons.DestinyCard.name: self.__send_destiny_card_response,
-            MainMenuButtons.MoenyCollection.name: self.__send_money_collection_response,
         }
         self.date = (
             datetime.fromisoformat(user_data["month"])
