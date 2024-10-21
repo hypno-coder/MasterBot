@@ -6,13 +6,11 @@ from .free import freeRouter
 from .main_menu import mainMenuRouter
 from .message_hunter import messageHunterRouter
 from .paid import paidRouter
-from .sbornik import sbornikRouter
 
 # folder root router
 mainRouter: Router = Router()
 
 # connected routers
-mainRouter.include_router(sbornikRouter)
 mainRouter.include_router(commonRouter)
 mainRouter.include_router(mainMenuRouter)
 mainRouter.include_router(freeRouter)
