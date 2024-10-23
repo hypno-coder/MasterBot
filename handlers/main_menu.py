@@ -4,10 +4,30 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from config_data import SpamConfig
-from keyboards import admin_access_keyboard, main_menu_keyboard
-from lexicon import MainMenuButtons, MainMenuLexicon, MiddlewareButtons
 from lexicon.admin_menu.lexicon import LockMenuLexicon
 from loader import config
+from keyboards import (
+    Keyboard, 
+    code_menu_buttons, 
+    calendar_menu_buttons,
+    destiny_card_menu_buttons,
+    jantra_menu_buttons,
+    admin_access_keyboard, 
+    main_menu_keyboard,
+)
+from lexicon import (
+    MainMenuButtons, 
+    MainMenuLexicon, 
+    MiddlewareButtons, 
+    CodePagiBtnCallback,
+    CalendarPagiBtnCallback,
+    DestinyCardPagiBtnCallback,
+    JantraPagiBtnCallback,
+    code_description,
+    jantra_description,
+    destiny_card_description,
+    calendar_description,
+) 
 
 mainMenuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.main_menu.name}
@@ -25,9 +45,53 @@ async def start_main_menu(
    
     if isinstance(event, Message):
         chat_id = event.chat.id
-        await event.answer(
-            text=MainMenuLexicon.select_features, reply_markup=main_menu_keyboard
-        )
+        assert event.text 
+
+        match event.text.split(" ")[1] if len(event.text.split(" ")) > 1 else event.text:
+            case "calendar":
+                await event.answer(
+                    text=calendar_description[1],
+                    reply_markup=Keyboard.create_pagi(
+                        CalendarPagiBtnCallback.backward,
+                        "1",
+                        CalendarPagiBtnCallback.forward,
+                        keyboard=calendar_menu_buttons,
+                    ),
+                )
+            case "money_code":
+                await event.answer(
+                    text=code_description[1],
+                    reply_markup=Keyboard.create_pagi(
+                        CodePagiBtnCallback.backward,
+                        "1",
+                        CodePagiBtnCallback.forward,
+                        keyboard=code_menu_buttons,
+                    ),
+                )
+            case "destiny_card":
+                await event.answer(
+                    text=destiny_card_description[1],
+                    reply_markup=Keyboard.create_pagi(
+                        DestinyCardPagiBtnCallback.backward,
+                        "1",
+                        DestinyCardPagiBtnCallback.forward,
+                        keyboard=destiny_card_menu_buttons,
+                    ),
+                )
+            case "jantra":
+                await event.answer(
+                    text=jantra_description[1],
+                    reply_markup=Keyboard.create_pagi(
+                        JantraPagiBtnCallback.backward,
+                        "1",
+                        JantraPagiBtnCallback.forward,
+                        keyboard=jantra_menu_buttons,
+                    ),
+                )
+            case "/start":
+                await event.answer(
+                    text=MainMenuLexicon.select_features, reply_markup=main_menu_keyboard
+                )
         await event.delete()
 
     elif isinstance(event, CallbackQuery):
