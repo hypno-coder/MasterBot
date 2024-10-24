@@ -12,9 +12,7 @@ flags: dict[str, str] = {"throttling_key": SpamConfig.sonnik_menu.name}
 
 @sonnikMenuRouter.callback_query(F.data == FreeMenuButtons.Sonnik.name, flags=flags)
 async def sonnik_menu(callback: CallbackQuery) -> None:
-    if callback.message == None:
-        return
-
+    assert callback.message
     await callback.message.edit_text(
         text=SonnikLexicon.description, reply_markup=sonnik_menu_keyboard
     )
