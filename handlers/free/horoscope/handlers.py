@@ -17,9 +17,7 @@ flags: dict[str, str] = {"throrling_key": SpamConfig.horoscope_menu.name}
     F.data == FreeMenuButtons.Horoscope.name, flags=flags
 )
 async def choose_zodiac(callback: CallbackQuery, state: FSMContext) -> None:
-    if callback.message == None:
-        return
-
+    assert callback.message
     await callback.message.edit_text(
         text=HoroscopeLexicon.make_choise, reply_markup=zodiac_menu
     )
