@@ -1,6 +1,6 @@
-from .admin_menu import (AdminMenuButtons, AdminMenuLexicon,
-                         AdminPaidButtons, LockControllerLexicon,
-                         LockControlMenuButtons, LockMenuLexicon)
+from .admin_menu import (AdminMenuButtons, AdminMenuLexicon, AdminPaidButtons,
+                         LockControllerLexicon, LockControlMenuButtons,
+                         LockMenuLexicon)
 from .advisor import (ANSWERS, AdvisorActionMenuButtons, AdvisorLexicon,
                       AdvisorMenuButtons, AdvisorPagiBtnCallback,
                       advisor_description)
@@ -18,7 +18,8 @@ from .destiny_card import (DestinyCardActionMenuButtons, DestinyCardLexicon,
                            destiny_card_description)
 from .errors import QueryErrText
 from .free_menu import FreeMenuButtons, FreeMenuLexicon
-from .horoscope import HoroscopeLexicon, ZodiacButtons, UnitedZodiacButtons, PeriodZodiacButtons
+from .horoscope import (HoroscopeLexicon, PeriodZodiacButtons,
+                        UnitedZodiacButtons, ZodiacButtons, horoscopeStars)
 from .jantra import (JantraActionMenuButtons, JantraLexicon, JantraMenuButtons,
                      JantraPagiBtnCallback, jantra_description)
 from .mailing import (MailingActionMenuButtons, MailingButtonMenu,
@@ -26,4 +27,5 @@ from .mailing import (MailingActionMenuButtons, MailingButtonMenu,
 from .main_menu import MainMenuButtons, MainMenuLexicon
 from .middlewares import MiddlewareButtons, MiddlewareLexicon
 from .paid_menu import PaidMenuButtons, PaidMenuLexicon
-from .sonnik import SonnikActionMenuButtons, SonnikLexicon, SonnikMenuButtons, letterComparator
+from .sonnik import (SonnikActionMenuButtons, SonnikLexicon, SonnikMenuButtons,
+                     letterComparator)

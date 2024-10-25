@@ -22,24 +22,10 @@ class PeriodZodiacButtons(Enum):
     tomorrow    = 'завтра'
     week        = 'неделя'
     month       = 'месяц'
+    compatibility = '-=совместимость=-'
 
-class UnitedZodiacButtons(Enum):
-    today       = 'сегодня'
-    tomorrow    = 'завтра'
-    week        = 'неделя'
-    month       = 'месяц'
-
-    aries       = 'Овен ♈️'
-    taurus      = 'Телец ♉️'
-    gemini      = 'Близнецы ♊️'
-    cancer      = 'Рак ♋️'
-    leo         = 'Лев ♌️'
-    virgo       = 'Дева ♍️'
-    libra       = 'Весы ♎️'
-    scorpio     = 'Скорпион ♏️'
-    sagittarius = 'Стрелец ♐️'
-    capricorn   = 'Козерог ♑️'
-    aquarius    = 'Водолей ♒️'
-    pisces      = 'Рыбы ♓️'
-
-
+UnitedZodiacButtons = Enum(
+    'CombinedZodiacButtons', 
+    {**{item.name: item.value for item in PeriodZodiacButtons}, 
+     **{item.name: item.value for item in ZodiacButtons}}
+)

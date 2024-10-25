@@ -1,4 +1,3 @@
-from re import U
 from aiogram import F, Router
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
@@ -6,8 +5,8 @@ from aiogram.types import CallbackQuery
 
 from config_data import SpamConfig
 from keyboards import active_zodiac_menu, zodiac_menu
-from lexicon import (FreeMenuButtons, HoroscopeLexicon,
-                     PeriodZodiacButtons, UnitedZodiacButtons, ZodiacButtons)
+from lexicon import (FreeMenuButtons, HoroscopeLexicon, PeriodZodiacButtons,
+                     UnitedZodiacButtons, ZodiacButtons, horoscopeStars)
 from services import Horoscope
 from states import FSMHoroscope
 
@@ -33,7 +32,7 @@ async def get_horoscope(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.answer()
     if not callback.data or not callback.message:
         return
-    period = "today" 
+    period = "today"
     value: str = callback.data
 
     if value in ZodiacButtons.__members__:
@@ -44,13 +43,18 @@ async def get_horoscope(callback: CallbackQuery, state: FSMContext) -> None:
 
     horoscope: Horoscope = Horoscope(zodiac=data["zodiac"], period=period)
     resp = await horoscope.get()
+    finance = horoscopeStars[resp["finance"]]
+    health = horoscopeStars[resp["health"]]
+    love = horoscopeStars[resp["love"]]
     try:
         if not resp:
             await callback.message.edit_text(
                 text=HoroscopeLexicon.error, reply_markup=callback.message.reply_markup
             )
             return
-        result: str = f"<b>{resp['title']}: </b> \n\n {resp['text']} \n\n <b>{resp['title']}</b>"
+        result: str = (
+            f"<b>{resp['title']}: </b> \n\n {resp['text']} \n\n <b>{resp['title']}</b>\n\n <b>Финансы</b>   {finance}\n <b>Здоровье</b>  {health}\n <b>Любовь</b>     {love}"
+        )
         await callback.message.edit_text(text=result, reply_markup=active_zodiac_menu)
 
     except TelegramBadRequest:

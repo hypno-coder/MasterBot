@@ -53,5 +53,8 @@ class Keyboard:
                     text=backButton.value, callback_data=backButton.name
                 )
             )
-        kb_builder.adjust(len_first_line or width, width)
+        if len_first_line:
+            kb_builder.adjust(len_first_line, 1, width)
+        else:
+            kb_builder.adjust(width)
         return kb_builder.as_markup()

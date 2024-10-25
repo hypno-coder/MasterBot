@@ -27,7 +27,7 @@ class Horoscope:
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
         }
 
-    async def get(self) -> dict[str, str | None]:
+    async def get(self) -> dict[str, str]:
         self.__reset_cache()
         key_cache = f"{self.zodiac}_{self.period}"
         if key_cache in self.__cache:
@@ -37,7 +37,7 @@ class Horoscope:
         self.__cache[key_cache] = text
         return text
 
-    async def __get_text(self) -> dict[str, str | None]:
+    async def __get_text(self) -> dict[str, str]:
         response = {}
         link = f"https://horo.mail.ru/prediction/{self.zodiac}/{self.period}/"
         response_result = await self.__get_page(link=link)
@@ -46,10 +46,16 @@ class Horoscope:
         )
         text = beautifulsoup.find("section", {'data-qa': 'Article'})
         title = beautifulsoup.find("h1", {'data-qa': 'Title'})
+        rating_list = beautifulsoup.find_all("ul", class_="b5ce145b7d")
+
+
         assert text
         assert title 
         response["text"] = text.text 
         response["title"] = title.text
+        response["finance"] = rating_list[0]["aria-label"] 
+        response["health"] = rating_list[1]["aria-label"] 
+        response["love"] = rating_list[2]["aria-label"]
         return response 
 
     async def __get_page(self, link):
