@@ -18,7 +18,7 @@ from .destiny_card import (DestinyCardActionMenuButtons, DestinyCardLexicon,
                            destiny_card_description)
 from .errors import QueryErrText
 from .free_menu import FreeMenuButtons, FreeMenuLexicon
-from .horoscope import HoroscopeLexicon, ZodiacButtons
+from .horoscope import HoroscopeLexicon, ZodiacButtons, UnitedZodiacButtons, PeriodZodiacButtons
 from .jantra import (JantraActionMenuButtons, JantraLexicon, JantraMenuButtons,
                      JantraPagiBtnCallback, jantra_description)
 from .mailing import (MailingActionMenuButtons, MailingButtonMenu,

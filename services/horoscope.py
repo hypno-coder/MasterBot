@@ -10,13 +10,14 @@ class Horoscope:
     __cache = {}
     __last_reset_time = "15.09.2023"
 
-    def __new__(cls, zodiac: str):
+    def __new__(cls, zodiac: str, period: str):
         if not cls.__instance:
             cls.__instance = super().__new__(cls)
         return cls.__instance
 
-    def __init__(self, zodiac: str):
+    def __init__(self, zodiac: str, period: str):
         self.zodiac = zodiac
+        self.period = period 
         __ua = UserAgent()
         self.__headers = {
             "User-Agent": __ua.random,
@@ -26,26 +27,30 @@ class Horoscope:
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
         }
 
-    async def get(self) -> str | None:
+    async def get(self) -> dict[str, str | None]:
         self.__reset_cache()
-        if self.zodiac in self.__cache:
-            return self.__cache[self.zodiac]
+        key_cache = f"{self.zodiac}_{self.period}"
+        if key_cache in self.__cache:
+            return self.__cache[key_cache]
         text = await self.__get_text()
-        if text == None:
-            return
-        self.__cache[self.zodiac] = text
+        assert text
+        self.__cache[key_cache] = text
         return text
 
-    async def __get_text(self) -> str | None:
-        link = f"https://horo.mail.ru/prediction/{self.zodiac}/today/"
+    async def __get_text(self) -> dict[str, str | None]:
+        response = {}
+        link = f"https://horo.mail.ru/prediction/{self.zodiac}/{self.period}/"
         response_result = await self.__get_page(link=link)
         beautifulsoup: BeautifulSoup = BeautifulSoup(
             markup=response_result, features="lxml"
         )
         text = beautifulsoup.find("section", {'data-qa': 'Article'})
-        if text == None:
-            return
-        return text.text
+        title = beautifulsoup.find("h1", {'data-qa': 'Title'})
+        assert text
+        assert title 
+        response["text"] = text.text 
+        response["title"] = title.text
+        return response 
 
     async def __get_page(self, link):
         async with httpx.AsyncClient(

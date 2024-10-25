@@ -6,7 +6,7 @@ from .keyboards_generator import Keyboard
 MENU_ITEMS_PER_ROW = 1
 
 jantra_action_menu_keyboard: InlineKeyboardMarkup = Keyboard.create_inline(
-        MENU_ITEMS_PER_ROW, JantraActionMenuButtons) 
+        MENU_ITEMS_PER_ROW, keyboard=JantraActionMenuButtons) 
 
 jantra_menu_buttons = [
         InlineKeyboardButton(

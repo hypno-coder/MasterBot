@@ -7,7 +7,7 @@ from .common import choose_gender_keyboard
 from .destiny_card import (destiny_card_action_menu_keyboard,
                            destiny_card_menu_buttons)
 from .free import free_menu_keyboard
-from .horoscope import zodiac_menu
+from .horoscope import zodiac_menu, active_zodiac_menu
 from .jantra import jantra_action_menu_keyboard, jantra_menu_buttons
 from .keyboards_generator import Keyboard
 from .mailing import (get_mailing_button, mailing_action_menu_keyboard,

@@ -1,11 +1,13 @@
+from re import U
 from aiogram import F, Router
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from config_data import SpamConfig
-from keyboards import zodiac_menu
-from lexicon import FreeMenuButtons, HoroscopeLexicon, ZodiacButtons
+from keyboards import active_zodiac_menu, zodiac_menu
+from lexicon import (FreeMenuButtons, HoroscopeLexicon,
+                     PeriodZodiacButtons, UnitedZodiacButtons, ZodiacButtons)
 from services import Horoscope
 from states import FSMHoroscope
 
@@ -25,26 +27,31 @@ async def choose_zodiac(callback: CallbackQuery, state: FSMContext) -> None:
 
 
 @horoscopeHandlerRouter.callback_query(
-    FSMHoroscope.get, lambda a: a.data in ZodiacButtons.__members__
+    FSMHoroscope.get, lambda a: a.data in UnitedZodiacButtons.__members__
 )
-async def get_horoscope(callback: CallbackQuery) -> None:
+async def get_horoscope(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.answer()
     if not callback.data or not callback.message:
         return
-    zodiac: str = callback.data
-    horoscope: Horoscope = Horoscope(zodiac)
-    resp: str | None = await horoscope.get()
+    period = "today" 
+    value: str = callback.data
+
+    if value in ZodiacButtons.__members__:
+        await state.set_data({"zodiac": value})
+    if value in PeriodZodiacButtons.__members__:
+        period = value
+    data = await state.get_data()
+
+    horoscope: Horoscope = Horoscope(zodiac=data["zodiac"], period=period)
+    resp = await horoscope.get()
     try:
         if not resp:
             await callback.message.edit_text(
                 text=HoroscopeLexicon.error, reply_markup=callback.message.reply_markup
             )
             return
-        name = getattr(ZodiacButtons, zodiac).value
-        result: str = f"<b>{name}: </b> \n\n {resp}"
-        await callback.message.edit_text(
-            text=result, reply_markup=callback.message.reply_markup
-        )
+        result: str = f"<b>{resp['title']}: </b> \n\n {resp['text']} \n\n <b>{resp['title']}</b>"
+        await callback.message.edit_text(text=result, reply_markup=active_zodiac_menu)
 
     except TelegramBadRequest:
         await callback.answer()
