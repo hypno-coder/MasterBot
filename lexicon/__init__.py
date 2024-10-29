@@ -18,8 +18,10 @@ from .destiny_card import (DestinyCardActionMenuButtons, DestinyCardLexicon,
                            destiny_card_description)
 from .errors import QueryErrText
 from .free_menu import FreeMenuButtons, FreeMenuLexicon
-from .horoscope import (HoroscopeLexicon, PeriodZodiacButtons,
-                        UnitedZodiacButtons, ZodiacButtons, horoscopeStars)
+from .horoscope import (CompareZodiacButtons, GetCompareZodiacButtons,
+                        HoroCompatibility, HoroscopeLexicon,
+                        PeriodZodiacButtons, UnitedZodiacButtons,
+                        ZodiacButtons, horoscopeStars)
 from .jantra import (JantraActionMenuButtons, JantraLexicon, JantraMenuButtons,
                      JantraPagiBtnCallback, jantra_description)
 from .mailing import (MailingActionMenuButtons, MailingButtonMenu,

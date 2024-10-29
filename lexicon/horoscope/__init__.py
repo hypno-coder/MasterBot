@@ -1,2 +1,3 @@
-from .buttons import ZodiacButtons, UnitedZodiacButtons, PeriodZodiacButtons 
-from .lexicon import HoroscopeLexicon, horoscopeStars
+from .buttons import (CompareZodiacButtons, GetCompareZodiacButtons, PeriodZodiacButtons,
+                      UnitedZodiacButtons, ZodiacButtons)
+from .lexicon import HoroscopeLexicon, horoscopeStars, HoroCompatibility

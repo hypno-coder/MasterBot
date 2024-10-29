@@ -5,4 +5,5 @@ class FreeMenuButtons(Enum):
     Sonnik = 'Сонник'
     Horoscope = 'Гороскоп'
     Advisor = 'Волшебный Советник'
+    Compare = 'Cовместимость'
 
