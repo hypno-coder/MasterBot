@@ -11,7 +11,7 @@ advisorMenuRouter: Router = Router()
 flags: dict[str, str] = {"throttling_key": SpamConfig.advisor_menu.name}
 
 
-@advisorMenuRouter.callback_query(F.data == FreeMenuButtons.Advisor.name, flags=flags)
+@advisorMenuRouter.callback_query(flags=flags)
 async def advisor_menu(callback: CallbackQuery, state: FSMContext) -> None:
     if callback.message == None:
         return

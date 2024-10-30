@@ -32,7 +32,10 @@ class Keyboard:
 
     @staticmethod
     def create_inline(
-        width: int, keyboard: Type[Enum] | None = None, backButton: Enum | None = None
+        width: int, 
+        len_first_line: int | None = None,
+        keyboard: Type[Enum] | None = None, 
+        backButton: Enum | None = None
     ) -> InlineKeyboardMarkup:
 
         kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
@@ -50,5 +53,8 @@ class Keyboard:
                     text=backButton.value, callback_data=backButton.name
                 )
             )
-        kb_builder.adjust(width)
+        if len_first_line:
+            kb_builder.adjust(len_first_line, 1, width)
+        else:
+            kb_builder.adjust(width)
         return kb_builder.as_markup()

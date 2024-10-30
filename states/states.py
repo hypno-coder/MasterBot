@@ -46,6 +46,11 @@ class FSMJantra(StatesGroup):
 
 class FSMHoroscope(StatesGroup):
     get = State()
+    choose_your_zodiac = State()
+    choose_partner_zodiac = State() 
+    get_compare_zodiac = State()
+    compare_response = State()
+
 
 
 class FSMAdvisor(StatesGroup):

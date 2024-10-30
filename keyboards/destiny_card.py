@@ -9,7 +9,7 @@ MENU_ITEMS_PER_ROW = 1
 
 
 destiny_card_action_menu_keyboard: InlineKeyboardMarkup = Keyboard.create_inline(
-    MENU_ITEMS_PER_ROW, DestinyCardActionMenuButtons
+    MENU_ITEMS_PER_ROW, keyboard=DestinyCardActionMenuButtons
 )
 
 destiny_card_menu_buttons = [
