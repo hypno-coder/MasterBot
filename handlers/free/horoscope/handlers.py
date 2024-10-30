@@ -97,7 +97,7 @@ async def choose_your_zodiac(callback: CallbackQuery, state: FSMContext) -> None
         {"your_gender": callback.data, "gender_partner": gender_partner}
     )
 
-    message_text = f"Вы: {ActionChooseGenderButtons[callback.data].value}\nПартнер: {ActionChooseGenderButtons[gender_partner].value} \n\n укажите свой знак зодиака"
+    message_text = f"Вы: {ActionChooseGenderButtons[callback.data].value}\nПартнер: {ActionChooseGenderButtons[gender_partner].value} \n\n Укажите Ваш знак зодиака"
     await callback.message.edit_text(text=message_text, reply_markup=zodiac_menu)
     await state.set_state(FSMHoroscope.choose_partner_zodiac)
 
@@ -115,7 +115,7 @@ async def choose_partner_zodiac(callback: CallbackQuery, state: FSMContext) -> N
     your_zodiac = ZodiacButtons[callback.data].value
     gender_partner = ActionChooseGenderButtons[data["gender_partner"]].value
 
-    message_text = f"Вы: {your_gender}, {your_zodiac}\nПартнер: {gender_partner}\n\n укажите знак зодиака партнера"
+    message_text = f"Вы: {your_gender}, {your_zodiac}\nПартнер: {gender_partner}\n\n Укажите знак зодиака Вашего партнера"
     await state.update_data(data)
     await callback.message.edit_text(text=message_text, reply_markup=zodiac_menu)
     await state.set_state(FSMHoroscope.get_compare_zodiac)
@@ -135,7 +135,7 @@ async def get_compare_zodiac(callback: CallbackQuery, state: FSMContext) -> None
     partner_zodiac = ZodiacButtons[callback.data].value
 
     message_text = (
-        f"Вы: {your_gender}, {your_zodiac}\nПартнер: {gender_partner}, {partner_zodiac}"
+        f"===================\nВы: {your_gender}, {your_zodiac}\nПартнер: {gender_partner}, {partner_zodiac}\n==================="
     )
     data.update(
         {

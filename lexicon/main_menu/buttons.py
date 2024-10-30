@@ -1,13 +1,17 @@
 from enum import Enum
+
 from lexicon import FreeMenuButtons
 
-class MainMenuButtons(Enum):
-    BackToMainMenu = 'Главное Меню'
-    FreeServices = 'Бесплатные Услуги 🆓'
-    PaidServices = 'Премиум функции 💰'
+
+class MainMenu(Enum):
+    BackToMainMenu = "Главное Меню"
+    PaidServices = "Премиум функции 💰"
 
 
-UnitedMainMenuButtons = Enum(
-    'UnitedMainMenuButtons', 
-    {**{item.name: item.value for item in MainMenuButtons}, 
-     **{item.name: item.value for item in FreeMenuButtons}})
+MainMenuButtons = Enum(
+    "MainMenuButtons",
+    {
+        **{item.name: item.value for item in FreeMenuButtons},
+        **{item.name: item.value for item in MainMenu},
+    },
+)
