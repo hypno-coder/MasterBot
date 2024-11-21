@@ -10,7 +10,7 @@ from aiogram.types.input_file import BufferedInputFile, FSInputFile
 from keyboards.keyboards_generator import Keyboard
 from lexicon import (AdminPaidButtons, CalendarLexicon, CodeLexicon,
                      CommonLexicon, DestinyCardLexicon, JantraLexicon,
-                     MainMenuButtons, PaidMenuButtons)
+                     PaidMenuButtons)
 from loader import bot
 from payment_services.user_data_type import UserDataType
 from services import FinCode, get_calendar_dates
