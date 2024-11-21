@@ -6,5 +6,6 @@ class FilePath(Enum):
     money_calendar_pdf = 'staticfiles/media/money_calendar_instruction.pdf'
     jantra_pdf = 'staticfiles/media/jantra_chislo_udachi.pdf'
     sbornik = 'staticfiles/media/sbornik.pdf'
+    greeting ='staticfiles/media/greeting.mp4'
     
 
