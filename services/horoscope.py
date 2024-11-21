@@ -100,17 +100,14 @@ class Horoscope:
         )
         text = beautifulsoup.find(
             "div", 
-            class_="article__item article__item_alignment_left article__item_html"
+            class_="c1cd057491"
         )
         
-        title = beautifulsoup.find("h1", class_="hdr_bold_huge")
-        compare = beautifulsoup.find("div", class_="p-item__left-icon-text")
+        title = beautifulsoup.find("h1", class_="c30ebf5669 abf242312f ef123d1686")
         assert text 
         assert title 
-        assert compare 
-        formatted_text = re.sub(r'(\d+\.\s)([^:]+:)', r'\n<b>\1\2</b>', text.text)
+        formatted_text = re.sub(r'(\d+\.\s[^:]+:\s*[А-ЯЁ][а-яё]+)', r'\n\n<b>\1</b>\n', text.text)
         return {
-            "compare": compare.text,
             "title": title.text,
             "text": formatted_text.strip()
         }

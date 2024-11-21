@@ -168,7 +168,7 @@ async def compare_response(callback: CallbackQuery, state: FSMContext) -> None:
     )
     result = await horoscope.get_compare()
     assert callback.message
-    message_text = f"<b>Ваша совместимость: {result['compare']}</b>\n\n{result['title']}\n\n{result['text']}"
+    message_text = f"{result['title']}\n\n{result['text']}"
     await callback.message.edit_text(
         text=message_text, reply_markup=action_zodiac_compare_menu
     )
