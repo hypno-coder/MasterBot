@@ -15,6 +15,8 @@ from loader import bot
 from payment_services.user_data_type import UserDataType
 from services import FinCode, get_calendar_dates
 from staticfiles import FilePath
+from utils import remove_links_from_html
+
 
 
 class ResponseController:
@@ -84,14 +86,6 @@ class ResponseController:
         except Exception as ex:
             print(ex)
 
-    async def __send_money_collection_response(self) -> None:
-        sbornik = FSInputFile(FilePath.sbornik.value)
-        await bot.send_document(
-            self.chat_id,
-            sbornik,
-            caption="БлагоДарю за покупку. Используйте полученную информацию во благо!",
-        )
-
     async def __send_money_calendar_response(self) -> None:
         if isinstance(self.date, str):
             return
@@ -144,7 +138,7 @@ class ResponseController:
 
     async def __send_destiny_card_response(self) -> None:
         destiny_card_byte = pdfkit.from_string(
-            input=self.destiny_card, options={"encoding": "utf-8"}
+            input=remove_links_from_html(self.destiny_card), options={"encoding": "utf-8"}
         )
         if not isinstance(destiny_card_byte, bytes):
             return
