@@ -3,6 +3,7 @@ from asyncio import sleep
 from datetime import datetime
 
 from aiogram.types.input_file import BufferedInputFile, FSInputFile
+from bs4 import BeautifulSoup
 
 from keyboards.keyboards_generator import Keyboard
 from lexicon import (CalendarLexicon, CodeLexicon, CommonLexicon,
@@ -11,6 +12,15 @@ from loader import bot
 from payment_services.user_data_type import UserDataType
 from services import FinCode, Jantra, get_calendar_dates
 from staticfiles import FilePath
+
+
+
+def remove_links_from_html(html_content):
+    soup = BeautifulSoup(html_content, "html.parser")
+    # Найдем все теги <a> и заменим их на их текстовое содержимое
+    for a_tag in soup.find_all("a"):
+        a_tag.replace_with(a_tag.get_text())
+    return str(soup)
 
 
 async def remove_message(chat_id: int, message_id: int, delay: int = 60) -> None:
