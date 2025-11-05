@@ -8,3 +8,7 @@ class CommonMenuButtons:
 class ActionChooseGenderButtons(Enum):
     Male = "Mужчина"
     Female = "Женщина"
+
+class ActionChoosePaymentButtons(Enum):
+    payment_in_russia = "Оплата из России"
+    payment_other_countries = "Оплата из других стран"

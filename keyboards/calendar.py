@@ -10,7 +10,7 @@ from .keyboards_generator import Keyboard
 MENU_ITEMS_PER_ROW = 1
 
 calendar_action_menu_keyboard: InlineKeyboardMarkup = Keyboard.create_inline(
-    MENU_ITEMS_PER_ROW, keyboard=CalendarActionMenuButtons
+    MENU_ITEMS_PER_ROW, keyboard=CalendarActionMenuButtons, backButton=None
 )
 
 calendar_menu_buttons = [
