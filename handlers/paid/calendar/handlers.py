@@ -144,7 +144,7 @@ async def wrong_input(message: Message) -> None:
     F.data == CalendarActionMenuButtons.CalendarConfirmData.name,
     flags=flags,
 )
-async def choosing_payment_method(callback: CallbackQuery) -> None:
+async def choosing_payment_method(callback: CallbackQuery, state: FSMContext) -> None:
     if callback.message == None:
         return
     callback.answer()
@@ -155,9 +155,11 @@ async def choosing_payment_method(callback: CallbackQuery) -> None:
             ActionChoosePaymentButtons,
         )
     )
+    await state.set_state(FSMCalendar.successful_payment)
 
 
 @calendarHandlerRouter.callback_query(
+    FSMCalendar.successful_payment,
     F.data.in_(
         [
             ActionChoosePaymentButtons.payment_in_russia.name,

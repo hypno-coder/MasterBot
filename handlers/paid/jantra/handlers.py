@@ -9,11 +9,11 @@ from aiogram.types import CallbackQuery, Message
 
 from config_data import SpamConfig
 from filters import AgeFilter, DateFilter
-from keyboards import get_payment_keyboard, jantra_action_menu_keyboard
+from keyboards import get_payment_keyboard, jantra_action_menu_keyboard, create_common_keyboard
 from lexicon import (AdminPaidButtons, CommonLexicon, JantraActionMenuButtons,
-                     JantraMenuButtons, PaidMenuButtons)
+                     JantraMenuButtons, PaidMenuButtons, ActionChoosePaymentButtons)
 from loader import config, payment as PaymentCredentials
-from payment_services import generate_payment_link
+from payment_services import generate_payment_link, ProdamusClient
 from payment_services.user_data_type import user_data
 from services import Jantra, ResponseController
 from states import FSMJantra
@@ -119,8 +119,33 @@ async def wrong_input(message: Message) -> None:
     await message.reply(CommonLexicon.invalid_format_date)
 
 
+    
 @jantraHandlerRouter.callback_query(
-    F.data == JantraActionMenuButtons.JantraConfirmData.name, flags=flags
+    F.data == JantraActionMenuButtons.JantraConfirmData.name,
+    flags=flags,
+)
+async def choosing_payment_method(callback: CallbackQuery, state: FSMContext) -> None:
+    if callback.message == None:
+        return
+    callback.answer()
+    
+    await callback.message.answer(
+        text=CommonLexicon.choose_payment_method,
+        reply_markup=create_common_keyboard(
+            ActionChoosePaymentButtons,
+        )
+    )
+    await state.set_state(FSMJantra.successful_payment)
+
+
+@jantraHandlerRouter.callback_query(
+    FSMJantra.successful_payment,
+    F.data.in_(
+        [
+            ActionChoosePaymentButtons.payment_in_russia.name,
+            ActionChoosePaymentButtons.payment_other_countries.name,
+        ]
+    ),
 )
 async def order(callback: CallbackQuery, state: FSMContext):
     callback.answer()
@@ -147,12 +172,23 @@ async def order(callback: CallbackQuery, state: FSMContext):
         await state.clear()
         return
     
-    link = generate_payment_link(
-        cost=Decimal(f"{PaymentCredentials.price.jantra}.00"),
-        number=random.randint(10**6, (10**7) - 1),
-        user_data=user_data,
-        description=f"Консультация: {PaidMenuButtons.Jantra.value}",
-    )
+    if callback.data == ActionChoosePaymentButtons.payment_in_russia.name:
+        link = generate_payment_link(
+            cost=Decimal(f"{PaymentCredentials.price.jantra}.00"),
+            number=random.randint(10**6, (10**7) - 1),
+            user_data=user_data,
+            description=f"Консультация: {PaidMenuButtons.Jantra.value}",
+        )
+    
+    if callback.data == ActionChoosePaymentButtons.payment_other_countries.name:
+        prodamus = ProdamusClient("link")
+        link = prodamus.generate_link(
+            price=str(PaymentCredentials.price.jantra),
+            order_id=str(random.randint(10**6, (10**7) - 1)),
+            name=PaidMenuButtons.Jantra.value,
+            user_data=user_data
+
+        )
 
     await message.answer(
         text=CommonLexicon.pay_message,

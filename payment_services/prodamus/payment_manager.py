@@ -43,7 +43,6 @@ class ProdamusClient:
             '_param_id': order_id
         }
         redis_db.setex(order_id, 6000, json.dumps(user_data))
-        print(order_id)
         signature = self.make_signature(data)
         data['signature'] = signature
         link = self.linktoform + '?' + urlencode(self._http_build_query(data))
