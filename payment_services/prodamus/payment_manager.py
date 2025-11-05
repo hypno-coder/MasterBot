@@ -5,41 +5,52 @@ from collections.abc import MutableMapping
 from typing import Literal
 from urllib.parse import urlencode
 
-# from loader import payment 
+from payment_services.user_data_type import UserDataType
+from loader import payment
+from database.connector import redis_db
 
 class ProdamusClient:
-    # linktoform = payment.prodamus.link_to_form
-    # secret_key = payment.prodamus.secret_key
-    linktoform = 'https://christina-astra.payform.ru/'
-    secret_key = '657fc2074e897d8f8ac806e0583b30ecbd0f79b64b5e1b213508b68540427e9c'
+    linktoform: str = payment.prodamus.link_to_form
+    secret_key: str = payment.prodamus.secret_key
+
+    def __init__(self, mode: Literal["link", "webhook"]):
+        self.mode = mode
     
-    def generate_link(self) -> str:
+    def generate_link(
+            self, 
+            order_id: str,
+            price: str,
+            name: str,
+            user_data: UserDataType
+    ) -> str:
 
         data = {
-            'order_id': "123556",
-            'customer_email': 'housegum@gmail.com',
+            'order_id': order_id,
             'products': [
                 {
-                    'name': 'artur',
-                    'price': '123',
+                    'name': name ,
+                    'price': price,
                     'quantity': '1',
+                    'type': 'service'
                 },
             ],
-            'customer_extra': 'Dopolnitelniy text',
+            'customer_extra': "Обязательно укажите Email, на него прийдет чек",
             'do': 'pay',
             'urlSuccess': 'https://t.me/ChrisMsBot',
             'npd_income_type': 'FROM_INDIVIDUAL',
-            'paid_content': 'лололо ты оплатил',
-            'callbackType': 'json'
+            'paid_content': 'Оплата прошла успешно, результат можно получить по этой ссылке: https://t.me/MasterAstraBot',
+            'callbackType': 'json',
+            '_param_id': order_id
         }
-
-        signature = self.make_signature(data, "link")
+        redis_db.setex(order_id, 6000, json.dumps(user_data))
+        print(order_id)
+        signature = self.make_signature(data)
         data['signature'] = signature
         link = self.linktoform + '?' + urlencode(self._http_build_query(data))
         return link
 
-    def make_signature(self, data: dict, mode: Literal["link", "webhook"]) -> str:
-        match mode:
+    def make_signature(self, data: dict) -> str:
+        match self.mode:
             case "link":
                 self._deep_int_to_string(data)
                 payload = json.dumps(data, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
@@ -52,7 +63,7 @@ class ProdamusClient:
         payload = payload.replace("/", "\\/")
         return hmac.new(self.secret_key.encode("utf8"), payload.encode("utf8"), hashlib.sha256).hexdigest()
     
-    def _deep_int_to_string(self, d):
+    def _deep_int_to_string(self, d) -> None:
         for k, v in d.items():
             if isinstance(v, MutableMapping):
                 self._deep_int_to_string(v)
@@ -62,7 +73,7 @@ class ProdamusClient:
             else:
                 d[k] = str(v)
 
-    def _deep_str_and_sort(self, d):
+    def _deep_str_and_sort(self, d) -> str | list | dict:
         if isinstance(d, dict):
             return {k: self._deep_str_and_sort(d[k]) for k in sorted(d.keys())}
         if isinstance(d, list):
@@ -70,7 +81,7 @@ class ProdamusClient:
         return str(d)
         
 
-    def _http_build_query(self, dictionary, parent_key=False):
+    def _http_build_query(self, dictionary, parent_key=False) -> dict:
         items = []
         for key, value in dictionary.items():
             new_key = str(parent_key) + '[' + key + ']' if parent_key else key
@@ -82,6 +93,3 @@ class ProdamusClient:
             else:
                 items.append((new_key, value))
         return dict(items)
-
-prodamus = ProdamusClient()
-print(prodamus.generate_link())
