@@ -1,14 +1,18 @@
 import asyncio
 import json
 import logging
+import hmac
 
 import uvicorn
 from aiogram import types
+from http import HTTPStatus
+from fastapi import Request 
 
 from commands import set_command_menu
 from database.connector import redis_db
 from handlers import mainRouter
 from loader import app, bot, dp
+from payment_services import ProdamusClient
 from middlewares import (BotLockCheckerMiddleware, SubscriberMiddleware,
                          ThrottlingMiddleware, UserSaverMiddleware)
 from services import ResponseController
@@ -74,6 +78,32 @@ async def bot_webhook_payment(
     response = ResponseController(user_data=json.loads(user_data))
     asyncio.create_task(response.launch())
     return f"OK{InvId}"
+
+
+@app.post("/prodamus")
+async def prodamus_webhook(request: Request):
+    sign_header = request.headers.get("Sign")
+    if not sign_header:
+        return HTTPStatus.BAD_REQUEST
+
+    try:
+        data = await request.json()
+    except Exception:
+        return HTTPStatus.BAD_REQUEST
+
+    prodamus = ProdamusClient("webhook")
+    expected = prodamus.make_signature(data) 
+
+    if not hmac.compare_digest(expected, sign_header):
+        return HTTPStatus.FORBIDDEN
+
+    user_data = redis_db.get(data["_param_id"])
+    if user_data is None:
+        return HTTPStatus.FORBIDDEN
+
+    response = ResponseController(user_data=json.loads(user_data))
+    asyncio.create_task(response.launch())
+    return HTTPStatus.OK
 
 
 @app.on_event("shutdown")

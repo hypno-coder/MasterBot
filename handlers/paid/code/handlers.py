@@ -164,8 +164,8 @@ async def order(callback: CallbackQuery, state: FSMContext):
     user_data["fio"] = data["fio"]
     user_data["birthday"] = data["birthday"]
     user_data["adminCallback"] = data["adminCallback"]
-    user_data["min_delay"] = "900"
-    user_data["max_delay"] = "1800"
+    user_data["min_delay"] = "180"
+    user_data["max_delay"] = "360"
 
     if data["adminCallback"] != None and F.from_user.id.in_(config.tg_bot.admin_ids):
         user_data["min_delay"] = "1"
