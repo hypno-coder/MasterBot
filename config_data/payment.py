@@ -18,10 +18,16 @@ class Robokassa:
     password_1: str
     password_2: str
 
+@dataclass
+class Prodamus:
+    secret_key: str
+    link_to_form: str
+
 
 @dataclass
 class PaymentCredentials:
     robokassa: Robokassa
+    prodamus: Prodamus
     currency: str
     price: Price
 
@@ -37,6 +43,10 @@ def load_payment(path: str | None) -> PaymentCredentials:
             is_test=env("IS_TEST"),
             password_1=env("PASSWORD_1"),
             password_2=env("PASSWORD_2"),
+        ),
+        prodamus=Prodamus(
+            secret_key=env("PROD_SECRET_KEY"),
+            link_to_form=env("PROD_LINK_TO_FORM"),
         ),
         currency=env("CURRENCY"),
         price=Price(

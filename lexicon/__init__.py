@@ -11,7 +11,7 @@ from .calendar import (CalendarActionMenuButtons, CalendarLexicon,
 from .code import (CodeActionMenuButtons, CodeLexicon, CodeMenuButtons,
                    CodePagiBtnCallback, code_description)
 from .commands import COMMANDS
-from .common import (ActionChooseGenderButtons, CommonLexicon,
+from .common import (ActionChooseGenderButtons, ActionChoosePaymentButtons, CommonLexicon,
                      CommonMenuButtons, PagiLexicon)
 from .destiny_card import (DestinyCardActionMenuButtons, DestinyCardLexicon,
                            DestinyCardMenuButtons, DestinyCardPagiBtnCallback,

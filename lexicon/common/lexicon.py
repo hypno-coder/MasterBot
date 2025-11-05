@@ -22,6 +22,7 @@ class CommonLexicon:
     wait_result = "Ожидайте, ваша заявка в прцессе обработки..."
     help_message = "Для того что бы получить услуги бота, вам нужно использовать меню. Для этого нажмите /start"
     gender = "Ваш пол: "
+    choose_payment_method = "Выберите способ оплаты"
 
 
 class PagiLexicon:
