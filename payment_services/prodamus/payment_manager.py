@@ -36,7 +36,7 @@ class ProdamusClient:
             ],
             'customer_extra': "Обязательно укажите Email, на него прийдет чек",
             'do': 'pay',
-            'urlSuccess': 'https://t.me/ChrisMsBot',
+            'urlSuccess': 'https://t.me/MasterAstraBot',
             'npd_income_type': 'FROM_INDIVIDUAL',
             'paid_content': 'Оплата прошла успешно, результат можно получить по этой ссылке: https://t.me/MasterAstraBot',
             'callbackType': 'json',

@@ -1,5 +1,5 @@
 import asyncio
-import json
+import json 
 import logging
 import hmac
 
@@ -58,7 +58,7 @@ async def bot_webhook(update: dict):
     await dp.feed_update(bot=bot, update=telegram_update)
 
 
-@app.get(WEBHOOK_PATH + "/payment")
+@app.get("/robokassa")
 async def bot_webhook_payment(
     out_summ,
     OutSum,
