@@ -206,7 +206,7 @@ async def order(callback: CallbackQuery, state: FSMContext):
             cost=Decimal(f"{PaymentCredentials.price.destiny_card}.00"),
             number=random.randint(10**6, (10**7) - 1),
             user_data=user_data,
-            description=f"Консультация: {PaidMenuButtons.DestinyCard.value}",
+            description=f"Консультация: Комплексный анализ персональных характеристик.",
         )
     
     if callback.data == ActionChoosePaymentButtons.payment_other_countries.name:
@@ -214,7 +214,7 @@ async def order(callback: CallbackQuery, state: FSMContext):
         link = prodamus.generate_link(
             price=str(PaymentCredentials.price.destiny_card),
             order_id=str(random.randint(10**6, (10**7) - 1)),
-            name=PaidMenuButtons.DestinyCard.value,
+            name=f"Консультация: Комплексный анализ персональных характеристик.",
             user_data=user_data
 
         )

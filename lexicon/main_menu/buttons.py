@@ -5,7 +5,7 @@ from lexicon import FreeMenuButtons
 
 class MainMenu(Enum):
     BackToMainMenu = "Главное Меню"
-    PaidServices = "Премиум функции 💰"
+#    PaidServices = "Премиум функции 💰"
 
 
 MainMenuButtons = Enum(
