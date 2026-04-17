@@ -10,7 +10,7 @@ class MainMenu(Enum):
 
 MainMenuButtons = Enum(
     "MainMenuButtons",
-    {
+   {
         **{item.name: item.value for item in FreeMenuButtons},
         **{item.name: item.value for item in MainMenu},
     },
