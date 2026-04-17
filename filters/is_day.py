@@ -15,5 +15,5 @@ class DayFilter(BaseFilter):
         if event.message.chat.id in config.tg_bot.admin_ids:
             return True
         else:
-            today = datetime.tofday()
+            today = datetime.today()
             return today.weekday() == self.thursday
